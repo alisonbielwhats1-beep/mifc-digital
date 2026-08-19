@@ -2,6 +2,8 @@
 
 Fundação inicial para migrar o MIPS/Power BI da Metalsa para uma aplicação web.
 
+Estado atual, pendências e ponto de retomada: [`docs/CURRENT-STATUS.md`](docs/CURRENT-STATUS.md). Contexto completo para outro computador: [`PROJECT-HANDOFF.md`](PROJECT-HANDOFF.md).
+
 ## Estado atual
 
 A fundação executável inclui:

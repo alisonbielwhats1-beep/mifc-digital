@@ -2,6 +2,8 @@
 
 Este documento permite retomar o projeto em outro computador sem depender da memória da conversa original. A tarefa do Codex está fixada com o título **MIFC Digital — Projeto e Implementação** e deve aparecer no mesmo login.
 
+O checkpoint canônico e mais recente está em [`docs/CURRENT-STATUS.md`](docs/CURRENT-STATUS.md). Ele registra exatamente o que foi concluído, o que está parcial, o que não foi validado e a próxima ação.
+
 ## Objetivo
 
 Migrar o modelo MIFC/MIPS usado em Excel e Power BI para uma aplicação web da Metalsa. A aplicação combina:
@@ -77,6 +79,8 @@ npm run build
 6. Concluir Overview/Resultados com os valores validados.
 7. Executar validação ponta a ponta e preparar publicação do aplicativo.
 
+Para a ordem atualizada e detalhada, seguir `docs/CURRENT-STATUS.md`; em caso de divergência entre documentos antigos e esse checkpoint, o checkpoint mais recente prevalece.
+
 ## Prompt sugerido no outro computador
 
 > Continue o projeto MIFC Digital a partir de `PROJECT-HANDOFF.md`. Preserve o visual das imagens em `assets/ui-references`, mantenha o Oracle estritamente somente leitura e não altere os arquivos de origem. Antes de implementar, confira o estado atual, rode os testes e informe exatamente o próximo item pendente.
@@ -84,6 +88,7 @@ npm run build
 ## Documentos úteis
 
 - `docs/MASTER-PROMPTS-MIFC.md`
+- `docs/CURRENT-STATUS.md`
 - `docs/EXECUTION-PLAN-UNTIL-FRIDAY.md`
 - `docs/source-of-truth-matrix.md`
 - `docs/excel-manual-automatic-map.md`
