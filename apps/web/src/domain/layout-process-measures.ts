@@ -25,6 +25,21 @@ export function formatProcessDays(value: number): string {
   return value.toLocaleString("pt-BR", { minimumFractionDigits: 5, maximumFractionDigits: 5 });
 }
 
+/**
+ * Formata somente os resultados numéricos. A chave técnica da medida continua
+ * disponível na linhagem/tooltip, mas nunca ocupa a faixa visual do cliente.
+ * Se qualquer medida necessária estiver ausente, a etapa falha fechada com “—”.
+ */
+export function formatMeasureValues(
+  measureKeys: string[],
+  values: Record<string, number>,
+): string {
+  if (!measureKeys.length) return "—";
+  const resolved = measureKeys.map((key) => values[key]);
+  if (resolved.some((value) => value === undefined || !Number.isFinite(value))) return "—";
+  return resolved.map((value) => formatProcessDays(value)).join(" / ");
+}
+
 export function calculateLayoutProcessMeasures(
   demand: Record<string, number> | null,
   capacity: LayoutCapacityMinutes,

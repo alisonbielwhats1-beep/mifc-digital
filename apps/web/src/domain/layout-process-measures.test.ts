@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calculateLayoutProcessMeasures, formatProcessDays } from "./layout-process-measures.js";
+import { calculateLayoutProcessMeasures, formatMeasureValues, formatProcessDays } from "./layout-process-measures.js";
 
 describe("tempos de processo do Layout", () => {
   it("combina demandas Oracle com minutos locais conforme o PBIP", () => {
@@ -46,5 +46,12 @@ describe("tempos de processo do Layout", () => {
     expect(formatProcessDays(.0006)).toBe("0,001");
     expect(formatProcessDays(.0004)).toBe("0,00040");
     expect(formatProcessDays(.0012)).toBe("0,001");
+  });
+
+  it("mostra somente números na linha do cliente e falha fechada quando falta uma medida", () => {
+    expect(formatMeasureValues(["T-RF3"], { "T-RF3": .0006 })).toBe("0,001");
+    expect(formatMeasureValues(["T-LPP2", "T-SCA-REB"], { "T-LPP2": .0004, "T-SCA-REB": .0012 })).toBe("0,00040 / 0,001");
+    expect(formatMeasureValues(["T-RF3"], {})).toBe("—");
+    expect(formatMeasureValues(["T-LPP2", "T-SCA-REB"], { "T-LPP2": .0004 })).toBe("—");
   });
 });

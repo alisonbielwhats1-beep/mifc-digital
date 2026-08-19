@@ -181,10 +181,18 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - exclusão com vários blocos selecionados remove também suas conexões, exige confirmação e pode ser desfeita;
 - migração de Layout schema 5 aplica a composição legível às revisões locais existentes sem apagar propriedades ou medidas.
 
+### Auditoria de paridade Power BI
+
+- as faixas de clientes exibem somente valores numéricos; nomes/chaves de medidas permanecem apenas na linhagem e no tooltip;
+- uma medida ausente aparece como `—`, sem usar `T-RF3`, `T-B1` ou outra chave técnica como falso valor;
+- a interface sinaliza `Paridade Power BI parcial` enquanto a matriz completa não estiver validada;
+- a auditoria em `docs/power-bi-parity-audit.md` registra a cobertura atual e as lacunas de filtros, relacionamentos, parâmetros e medidas;
+- o TMDL recebido contém 309 medidas e o Layout catalogado usa 62 medidas únicas; não há declaração de paridade integral nesta revisão.
+
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 65 testes aprovados (14 arquivos);
+- `npm test`: 66 testes aprovados (14 arquivos);
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
 - `npm run test:e2e`: não executado neste checkpoint porque o binário do Playwright/Chromium não está disponível no ambiente de trabalho;

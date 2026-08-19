@@ -53,11 +53,12 @@ test("entra e sai da tela cheia restaurando o enquadramento", async ({ page, bro
 test("renderiza as quatro linhas de clientes e gera evidência visual", async ({ page }, testInfo) => {
   const lanes = page.locator(".client-lane");
   await expect(lanes).toHaveCount(4);
-  await expect(page.getByTestId("client-lane-FH")).toContainText("T-T-FH");
-  await expect(page.getByTestId("client-lane-VM")).toContainText("T-T-VM");
-  await expect(page.getByTestId("client-lane-SCA")).toContainText("T-T-SCA");
-  await expect(page.getByTestId("client-lane-DAF")).toContainText("T-T-DAF");
-  await expect(page.locator(".client-stage-marker")).toHaveCount(28);
+  await expect(page.getByTestId("client-lane-FH").locator(".client-lane-label strong")).toHaveText("Volvo FH");
+  await expect(page.getByTestId("client-lane-VM").locator(".client-lane-label strong")).toHaveText("Volvo VM");
+  await expect(page.getByTestId("client-lane-SCA").locator(".client-lane-label strong")).toHaveText("Scania");
+  await expect(page.getByTestId("client-lane-DAF").locator(".client-lane-label strong")).toHaveText("DAF");
+  await expect(page.locator(".client-measure-keys")).not.toContainText(/T-(RF|B|M|P|C|L|S|EMB)/);
+  await expect(page.locator(".client-stage-marker")).toHaveCount(40);
 
   const screenshot = await page.getByTestId("client-lead-time-board").screenshot({ animations: "disabled" });
   expect(screenshot.byteLength).toBeGreaterThan(20_000);

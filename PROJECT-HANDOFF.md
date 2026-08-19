@@ -46,6 +46,8 @@ Os arquivos de origem externos não devem ser alterados. O PBIP e os anexos orig
 - Layout ampliado para apresentação, com textos responsivos, linhas de cliente legíveis e Beattys 3–4–2–1 em cascata conforme o arranjo físico do Power BI;
 - cada pico das faixas de cliente acompanha horizontalmente a máquina física correspondente; FH usa Beatty 4, VM Beatty 1, Scania Beatty 3 e DAF Beatty 2;
 - arraste normal move apenas o bloco clicado; seleção e arraste em grupo exigem `Ctrl/Shift`, e a exclusão conjunta preserva um único passo de desfazer.
+- faixas de cliente mostram somente números, nunca nomes/chaves de medida no lugar do resultado; ausência falha fechada com `—`;
+- a paridade com o Power BI permanece explicitamente parcial e está auditada em `docs/power-bi-parity-audit.md`.
 
 ## Segurança Oracle
 

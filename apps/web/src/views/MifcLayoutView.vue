@@ -9,7 +9,7 @@ import MifcSymbolPalette from "@/components/layout/MifcSymbolPalette.vue";
 import { buildClientProcessPath, clientProcessLanes, mappingForClientStage, positionClientStages, type ClientProcessLane, type ClientStageMapping, type PositionedClientStage } from "@/domain/client-process-matrix";
 import { edgeGeometry } from "@/domain/layout-graph";
 import { beginNodePointerSelection, finishNodePointerSelection } from "@/domain/layout-selection";
-import { calculateLayoutProcessMeasures, formatProcessDays } from "@/domain/layout-process-measures";
+import { calculateLayoutProcessMeasures, formatMeasureValues, formatProcessDays } from "@/domain/layout-process-measures";
 import { useMifcFormsStore } from "@/stores/mifc-forms";
 import { LAYOUT_WORLD_HEIGHT, LAYOUT_WORLD_WIDTH, useMifcLayoutStore, type LayoutEdge, type LayoutNode, type LayoutNodeProperties, type LayoutNodeType, type LayoutTool } from "@/stores/mifc-layout";
 import { useUiStore } from "@/stores/ui";
@@ -170,8 +170,8 @@ function mappingTitle(lane: ClientProcessLane, stage: PositionedClientStage) {
 function formatMeasureDetailed(value: number) { return value.toLocaleString("pt-BR", { minimumFractionDigits: 6, maximumFractionDigits: 8 }); }
 function stageMeasureLabel(lane: ClientProcessLane, stage: PositionedClientStage) {
   const mapping = mappingFor(lane, stage);
-  if (!mapping?.participates) return stage.id.startsWith("beatty-") ? "" : "—";
-  return mapping.processMeasureKeys.map((key) => processMeasureValues.value[key] === undefined ? key : `${key} · ${formatProcessDays(processMeasureValues.value[key])} d`).join(" / ");
+  if (!mapping?.participates) return "";
+  return formatMeasureValues(mapping.processMeasureKeys, processMeasureValues.value);
 }
 async function loadLayoutMeasures() {
   try {
@@ -226,12 +226,9 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
           </svg>
           <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="node" :zoom="zoom" :selected="selectedNodeIds.includes(node.id)" :primary="selectedNode?.id===node.id" :connecting="activeTool==='connect'" :live-metrics="liveMetricsForNode(node)" :action-summary="actionSummaryForNode(node)" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize"/>
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
-            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Filtro ${selectedDate} · ${filteredRowSummary.toLocaleString('pt-BR')} linhas · Oracle + parâmetros por máquina · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
-            <div class="client-stage-labels" aria-label="Etapas rastreadas no Power BI">
-              <button v-for="stage in positionedClientStages" :key="stage.id" type="button" :class="{ 'beatty-stage': stage.id.startsWith('beatty-') }" :style="{ left: `${stage.centerX}px` }" :title="`Alinhado ao bloco ${stage.layoutNodeId}`" @click="selectNode(stage.layoutNodeId)">{{ stage.label }}</button>
-            </div>
+            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Somente valores em dias · subida = processo · reta = sem processo</span><em class="parity-warning">Paridade Power BI parcial</em><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Filtro ${selectedDate} · ${filteredRowSummary.toLocaleString('pt-BR')} linhas · Oracle + parâmetros locais · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
             <div v-for="lane in clientLanes" :key="lane.key" class="client-lane" :data-client="lane.key" :data-testid="`client-lane-${lane.key}`">
-              <div class="client-lane-label"><strong>{{ lane.label }}</strong><small>{{ lane.totalMeasureKey }}</small></div>
+              <div class="client-lane-label"><strong>{{ lane.label }}</strong></div>
               <svg :viewBox="`0 0 ${WORLD_WIDTH} 56`" :width="WORLD_WIDTH" height="56" role="img" :aria-label="`Linha de processos do cliente ${lane.label}`">
                 <path class="client-process-line" :d="lane.path"/>
                 <g v-for="stage in positionedClientStages" :key="stage.id" :class="['client-stage-marker', { active: mappingFor(lane,stage)?.participates, pending: mappingFor(lane,stage)?.validationStatus === 'pending' }]" :transform="`translate(${stage.centerX} 0)`">
@@ -291,16 +288,13 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
 .edge-group.material_pull .edge-line { stroke-dasharray:9 4; }
 .edge-group.selected .edge-line { stroke:var(--brand-blue); stroke-width:3; }
 .curve-handle { fill:#fff; stroke:var(--brand-blue); stroke-width:3; cursor:move; }
-.client-lead-time-board { position:absolute; z-index:14; right:0; bottom:8px; left:0; height:330px; padding-top:50px; border-top:2px solid #d4dde8; background:rgba(255,255,255,.98); }
+.client-lead-time-board { position:absolute; z-index:14; right:0; bottom:8px; left:0; height:330px; padding-top:42px; border-top:2px solid #d4dde8; background:rgba(255,255,255,.98); }
 .client-board-title { position:absolute; top:5px; left:20px; display:flex; align-items:baseline; gap:10px; color:#263746; }
 .client-board-title strong { font-size:16px; text-transform:uppercase; }
 .client-board-title span { color:var(--text-tertiary); font-size:12px; }
 .client-board-title em { margin-left:8px; color:#a66f00; font-size:11px; font-style:normal; }
 .client-board-title em.connected { color:#15803d; }
-.client-stage-labels { position:absolute; z-index:2; top:27px; right:0; left:0; height:23px; }
-.client-stage-labels button { position:absolute; width:180px; padding:0; border:0; background:transparent; color:#405066; font-size:13px; font-weight:700; line-height:1.1; transform:translateX(-50%); cursor:pointer; }
-.client-stage-labels button.beatty-stage { width:38px; font-size:12px; }
-.client-stage-labels button:hover { color:var(--brand-blue); text-decoration:underline; }
+.client-board-title em.parity-warning { padding:2px 6px; border:1px solid #f1c76d; border-radius:999px; background:#fff8e7; color:#9a6500; font-weight:700; }
 .client-lane { position:relative; height:68px; border-top:1px solid #e4e9f0; }
 .client-lane-label { position:absolute; z-index:3; top:14px; left:20px; display:grid; width:150px; }
 .client-lane-label strong { color:#263746; font-size:16px; }
