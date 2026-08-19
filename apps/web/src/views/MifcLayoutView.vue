@@ -8,13 +8,13 @@ import MifcPropertiesPanel from "@/components/layout/MifcPropertiesPanel.vue";
 import MifcSymbolPalette from "@/components/layout/MifcSymbolPalette.vue";
 import { buildClientProcessPath, clientProcessLanes, positionClientStages, type ClientProcessLane, type ClientStageMapping, type PositionedClientStage } from "@/domain/client-process-matrix";
 import { edgeGeometry } from "@/domain/layout-graph";
-import { calculateLayoutProcessMeasures } from "@/domain/layout-process-measures";
+import { calculateLayoutProcessMeasures, formatProcessDays } from "@/domain/layout-process-measures";
 import { useMifcFormsStore } from "@/stores/mifc-forms";
-import { useMifcLayoutStore, type LayoutEdge, type LayoutNode, type LayoutNodeProperties, type LayoutNodeType, type LayoutTool } from "@/stores/mifc-layout";
+import { LAYOUT_WORLD_HEIGHT, LAYOUT_WORLD_WIDTH, useMifcLayoutStore, type LayoutEdge, type LayoutNode, type LayoutNodeProperties, type LayoutNodeType, type LayoutTool } from "@/stores/mifc-layout";
 import { useUiStore } from "@/stores/ui";
 
-const WORLD_WIDTH = 1680;
-const WORLD_HEIGHT = 820;
+const WORLD_WIDTH = LAYOUT_WORLD_WIDTH;
+const WORLD_HEIGHT = LAYOUT_WORLD_HEIGHT;
 const layout = useMifcLayoutStore();
 const forms = useMifcFormsStore();
 const ui = useUiStore();
@@ -30,7 +30,10 @@ const renameFocusRequest = ref(0);
 const showLayers = ref(false);
 const visibleLayers = reactive({ information: true, material: true, metrics: true });
 const activeFlow = ref<MifcFlowType>("material_push");
-const oracleMeasures = ref<{ ready: boolean; values: Record<string, number> | null; updatedAt: string | null }>({ ready: false, values: null, updatedAt: null });
+type MeasureDiagnostics = { contextDate: string; rows: Record<string, { cached: number; filtered: number }> };
+const todayKey = () => { const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`; };
+const selectedDate = ref(todayKey());
+const oracleMeasures = ref<{ ready: boolean; values: Record<string, number> | null; diagnostics?: MeasureDiagnostics; updatedAt: string | null }>({ ready: false, values: null, updatedAt: null });
 let layoutMeasuresTimer: ReturnType<typeof setInterval> | undefined;
 const interaction = reactive({ mode: "" as ""|"drag"|"resize"|"curve"|"pan", id: "", pointerId: -1, startX: 0, startY: 0, originX: 0, originY: 0, originWidth: 0, originHeight: 0, originCurve: 0, horizontal: true, recorded: false });
 
@@ -44,10 +47,17 @@ const clientLanes = computed(() => clientProcessLanes.map((lane) => ({ ...lane, 
 const availableMinutes = (capacityId: string) => (forms.capacityRows.find((row) => row.id === capacityId)?.availableHoursPerDay ?? 0) * 60;
 const processMeasureValues = computed<Record<string, number>>(() => calculateLayoutProcessMeasures(oracleMeasures.value.values, {
   rf3: availableMinutes("cap-rf3"),
-  beatty: availableMinutes("cap-beatty"),
+  beatty1: availableMinutes("cap-beatty"),
+  beatty2: availableMinutes("cap-beatty-2"),
+  beatty3: availableMinutes("cap-beatty-3"),
+  beatty4: availableMinutes("cap-beatty-4"),
+  lct: availableMinutes("cap-lct"),
+  pa: availableMinutes("cap-pa"),
+  cnc: availableMinutes("cap-cnc"),
   paint: availableMinutes("cap-paint"),
   stenhoj: availableMinutes("cap-stenhoj"),
 }));
+const filteredRowSummary = computed(() => Object.values(oracleMeasures.value.diagnostics?.rows ?? {}).reduce((total, item) => total + item.filtered, 0));
 const worldStyle = computed(() => ({ width:`${WORLD_WIDTH}px`, height:`${WORLD_HEIGHT}px`, transform:`translate(${pan.x}px,${pan.y}px) scale(${zoom.value})` }));
 
 function isInformationNode(node: LayoutNode) { return ["database","information","text"].includes(node.type); }
@@ -100,18 +110,18 @@ function mappingTitle(lane: ClientProcessLane, stage: PositionedClientStage) {
   if (!mapping) return `${lane.label} · ${stage.label}`;
   const process = mapping.processMeasureKeys.length ? mapping.processMeasureKeys.join(" + ") : "sem medida de processo";
   const stock = mapping.stockMeasureKeys.length ? mapping.stockMeasureKeys.join(" + ") : "sem medida de estoque";
-  const observed = mapping.processMeasureKeys.map((key) => processMeasureValues.value[key] === undefined ? null : `${key}: ${formatMeasure(processMeasureValues.value[key])} dia`).filter(Boolean).join(" · ");
-  return `${lane.label} · ${stage.label}\nProcesso: ${process}${observed ? `\nValor: ${observed}` : ""}\nEstoque/logística: ${stock}\n${mapping.evidence}`;
+  const observed = mapping.processMeasureKeys.map((key) => processMeasureValues.value[key] === undefined ? null : `${key}: ${formatProcessDays(processMeasureValues.value[key])} dia (valor calculado ${formatMeasureDetailed(processMeasureValues.value[key])})`).filter(Boolean).join(" · ");
+  return `${lane.label} · ${stage.label}\nProcesso: ${process}${observed ? `\nValor: ${observed}` : ""}\nFiltro Calendar[Date]: ${selectedDate.value}\nEstoque/logística: ${stock}\n${mapping.evidence}`;
 }
-function formatMeasure(value: number) { return value.toLocaleString("pt-BR", { minimumFractionDigits: 3, maximumFractionDigits: 3 }); }
+function formatMeasureDetailed(value: number) { return value.toLocaleString("pt-BR", { minimumFractionDigits: 6, maximumFractionDigits: 8 }); }
 function stageMeasureLabel(lane: ClientProcessLane, stage: PositionedClientStage) {
   const mapping = mappingFor(lane, stage);
   if (!mapping?.participates) return "—";
-  return mapping.processMeasureKeys.map((key) => processMeasureValues.value[key] === undefined ? key : `${key} · ${formatMeasure(processMeasureValues.value[key])}`).join(" / ");
+  return mapping.processMeasureKeys.map((key) => processMeasureValues.value[key] === undefined ? key : `${key} · ${formatProcessDays(processMeasureValues.value[key])} d`).join(" / ");
 }
 async function loadLayoutMeasures() {
   try {
-    const response = await fetch("/api/layout/measures", { cache: "no-store" });
+    const response = await fetch(`/api/layout/measures?date=${encodeURIComponent(selectedDate.value)}`, { cache: "no-store" });
     if (!response.ok) return;
     oracleMeasures.value = await response.json() as typeof oracleMeasures.value;
   } catch { /* A tela continua com a linhagem quando a API local está indisponível. */ }
@@ -144,7 +154,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
 
 <template>
   <div ref="layoutPage" class="layout-page" :class="{ 'is-fullscreen': isFullscreen }">
-    <section class="layout-heading"><div class="breadcrumb"><strong>MIFC</strong><span>›</span><b>Layout</b><select class="revision-select" :value="activeRevision.id" @change="layout.switchRevision(($event.target as HTMLSelectElement).value)"><option v-for="revision in layout.revisions" :key="revision.id" :value="revision.id">{{ revision.label }}</option></select><span v-if="isDirty" class="dirty-dot">Alterações não salvas</span></div><div class="heading-actions"><button class="button button-secondary" type="button" @click="createRevision"><Plus :size="16"/>Nova revisão</button><button class="button button-primary" type="button" @click="saveLayout"><Save :size="16"/>Salvar layout<ChevronDown :size="14"/></button></div></section>
+    <section class="layout-heading"><div class="breadcrumb"><strong>MIFC</strong><span>›</span><b>Layout</b><select class="revision-select" :value="activeRevision.id" @change="layout.switchRevision(($event.target as HTMLSelectElement).value)"><option v-for="revision in layout.revisions" :key="revision.id" :value="revision.id">{{ revision.label }}</option></select><span v-if="isDirty" class="dirty-dot">Alterações não salvas</span></div><div class="heading-actions"><label class="date-context"><span>Calendar[Date]</span><input v-model="selectedDate" type="date" @change="loadLayoutMeasures"/></label><button class="button button-secondary" type="button" @click="createRevision"><Plus :size="16"/>Nova revisão</button><button class="button button-primary" type="button" @click="saveLayout"><Save :size="16"/>Salvar layout<ChevronDown :size="14"/></button></div></section>
     <nav class="layout-toolbar" aria-label="Ferramentas do layout">
       <button :class="{active:activeTool==='select'}" @click="setTool('select')"><MousePointer2 :size="16"/>Selecionar</button><button :class="{active:activeTool==='connect'}" @click="chooseConnect('material_push')"><Waypoints :size="16"/>Conectar</button>
       <select v-model="activeFlow" aria-label="Tipo da conexão" @change="setTool('connect')"><option value="material_push">Material</option><option value="material_pull">Material puxado</option><option value="information">Informação</option><option value="electronic_information">Eletrônica</option></select>
@@ -162,7 +172,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
           </svg>
           <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="node" :zoom="zoom" :selected="selectedNode?.id===node.id" :connecting="activeTool==='connect'" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize"/>
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
-            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Oracle automático + Capacidade local · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
+            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Filtro ${selectedDate} · ${filteredRowSummary.toLocaleString('pt-BR')} linhas · Oracle + parâmetros por máquina · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
             <div class="client-stage-labels" aria-label="Etapas rastreadas no Power BI">
               <button v-for="stage in positionedClientStages" :key="stage.id" type="button" :style="{ left: `${stage.centerX}px` }" :title="`Alinhado ao bloco ${stage.layoutNodeId}`" @click="selectNode(stage.layoutNodeId)">{{ stage.label }}</button>
             </div>
@@ -200,6 +210,8 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
 .dirty-dot::before { width:6px; height:6px; border-radius:50%; background:var(--brand-orange); content:""; }
 .heading-actions { display:flex; gap:8px; }
 .heading-actions .button { min-height:36px; padding:0 13px; font-size:11px; }
+.date-context { display:grid; gap:2px; color:var(--text-tertiary); font-size:8px; }
+.date-context input { height:30px; padding:0 8px; border:1px solid var(--border-subtle); border-radius:5px; color:var(--text-secondary); font:inherit; font-size:10px; }
 .layout-toolbar { position:relative; z-index:60; display:flex; min-height:48px; align-items:center; gap:3px; padding:0 14px; border-bottom:1px solid var(--border-subtle); background:#fff; }
 .layout-toolbar button { display:flex; min-height:32px; align-items:center; gap:6px; padding:0 10px; border:1px solid transparent; border-radius:5px; background:transparent; color:#52627a; font-size:10px; }
 .layout-toolbar button:hover:not(:disabled),.layout-toolbar button.active { border-color:#cfdbfb; background:var(--brand-blue-soft); color:var(--brand-blue-strong); }
@@ -244,7 +256,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
 .client-stage-marker.active circle { fill:#263746; stroke:#263746; }
 .client-stage-marker.pending circle { fill:#fff4d6; stroke:#c88800; stroke-dasharray:2 1; }
 .client-measure-keys { position:absolute; z-index:2; top:29px; right:0; left:0; height:11px; pointer-events:none; }
-.client-measure-keys span { position:absolute; max-width:110px; overflow:hidden; color:#4c5d70; font-size:6px; line-height:1; text-align:center; text-overflow:ellipsis; white-space:nowrap; transform:translateX(-50%); }
+.client-measure-keys span { position:absolute; max-width:142px; overflow:hidden; color:#4c5d70; font-size:6px; line-height:1; text-align:center; text-overflow:ellipsis; white-space:nowrap; transform:translateX(-50%); }
 .client-measure-keys span.inactive { color:#a1aab5; }
 .client-measure-keys span.pending { color:#a66f00; }
 .canvas-status { position:absolute; bottom:15px; left:15px; z-index:40; padding:7px 10px; border:1px solid var(--border-subtle); border-radius:6px; background:rgba(255,255,255,.94); color:var(--text-secondary); font-size:9px; box-shadow:var(--shadow-card); }

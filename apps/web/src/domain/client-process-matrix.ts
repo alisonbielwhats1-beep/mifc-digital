@@ -7,6 +7,7 @@ export interface ClientProcessStage {
   id: string;
   label: string;
   layoutNodeId: string;
+  relatedLayoutNodeIds?: string[];
 }
 
 export interface ClientStageMapping {
@@ -34,7 +35,7 @@ export const clientProcessStages: ClientProcessStage[] = [
   { id: "lct-rf2", label: "LCT / RF2", layoutNodeId: "node-cut" },
   { id: "rf3", label: "Roll Former 3", layoutNodeId: "node-stamp" },
   { id: "mesa-3", label: "Mesa 3", layoutNodeId: "node-weld-1" },
-  { id: "beattys", label: "Beattys", layoutNodeId: "node-weld-2" },
+  { id: "beattys", label: "Beatty I–IV", layoutNodeId: "node-weld-2", relatedLayoutNodeIds: ["node-weld-2", "node-beatty-2", "node-beatty-3", "node-beatty-4"] },
   { id: "pa-cnc", label: "P.A / CNC", layoutNodeId: "node-weld-3" },
   { id: "paint-rework", label: "Pintura / Rebitagem", layoutNodeId: "node-assembly" },
   { id: "shipping", label: "Stenhoj / Embalagem", layoutNodeId: "node-inspection" },
@@ -109,7 +110,7 @@ export const clientProcessLanes: ClientProcessLane[] = [
       mapped("lct-rf2", [], [], "Sem medida de processo DAF para LCT/RF2 no catálogo PBIP", "validated"),
       mapped("rf3", ["T-RF3"], ["E-P-D-DAF-RF3"], "PBIP: Roll Former 3 filtrado para DAF"),
       mapped("mesa-3", ["T-M3"], ["E-P-D-DAF-M3"], "PBIP: Mesa 3 no contexto DAF"),
-      mapped("beattys", ["T-B1"], ["D-E-DAF-B"], "PBIP: Beatty 1 e estoque DAF Beattys"),
+      mapped("beattys", ["T-B2"], ["D-E-DAF-B"], "PBIP: Beatty 2 e estoque DAF Beattys"),
       mapped("pa-cnc", ["T-CNC"], ["D-E-DAF-CL"], "PBIP: CNC e Cantilever DAF"),
       mapped("paint-rework", ["T-LPP2", "T-DAF-REB"], ["D-E-DAF-P.I", "D-E-DAF-REB"], "PBIP: pintura e rebitagem DAF"),
       mapped("shipping", ["T-STJ"], ["E-P-D-DAF-STJ", "E-P-D-DAF-EMB"], "PBIP: Stenhoj e embalagem DAF"),
@@ -123,11 +124,16 @@ export function positionClientStages(nodes: LayoutNode[]): PositionedClientStage
     const node = nodeMap.get(stage.layoutNodeId)
       ?? nodes.find((item) => item.id.endsWith(`-${stage.layoutNodeId}`))
       ?? nodes.find((item) => item.label === stage.label);
+    const relatedNodes = (stage.relatedLayoutNodeIds ?? [stage.layoutNodeId])
+      .map((id) => nodeMap.get(id) ?? nodes.find((item) => item.id.endsWith(`-${id}`)))
+      .filter((item): item is LayoutNode => Boolean(item));
+    const left = relatedNodes.length ? Math.min(...relatedNodes.map((item) => item.x)) : node?.x;
+    const right = relatedNodes.length ? Math.max(...relatedNodes.map((item) => item.x + item.width)) : node ? node.x + node.width : undefined;
     return {
       ...stage,
       layoutNodeId: node?.id ?? stage.layoutNodeId,
-      centerX: node ? node.x + node.width / 2 : 330 + index * 152,
-      width: node?.width ?? 108,
+      centerX: left !== undefined && right !== undefined ? (left + right) / 2 : 330 + index * 152,
+      width: left !== undefined && right !== undefined ? right - left : 108,
     };
   });
 }

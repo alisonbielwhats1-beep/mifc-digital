@@ -38,6 +38,11 @@ describe("matriz cliente × processo do Layout", () => {
     }
   });
 
+  it("mapeia cada cliente para a Beatty definida pelo PBIP", () => {
+    const measures = Object.fromEntries(clientProcessLanes.map((lane) => [lane.key, lane.mappings.find((mapping) => mapping.stageId === "beattys")?.processMeasureKeys]));
+    expect(measures).toEqual({ FH: ["T-B4"], VM: ["T-B1"], SCA: ["T-B3"], DAF: ["T-B2"] });
+  });
+
   it("mantém Volvo VM reto na Mesa 3 e sinaliza a validação pendente", () => {
     const vm = clientProcessLanes.find((lane) => lane.key === "VM")!;
     expect(vm.mappings.find((mapping) => mapping.stageId === "mesa-3")).toMatchObject({ participates: false, validationStatus: "pending", processMeasureKeys: ["T-M3"] });

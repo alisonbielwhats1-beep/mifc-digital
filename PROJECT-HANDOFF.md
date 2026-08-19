@@ -33,7 +33,7 @@ Os arquivos de origem externos não devem ser alterados. O PBIP e os anexos orig
 - tela de Integrações e estrutura Oracle preparada;
 - Oracle bloqueado para escrita e leituras ao vivo desabilitadas por padrão;
 - Layout baseado na imagem aprovada, não no canvas bruto ultralargo do Power BI;
-- Layout inicial com 29 blocos e 47 linhas semânticas;
+- Layout inicial com 32 blocos e 56 linhas semânticas, incluindo as quatro Beattys separadas;
 - blocos podem ser adicionados, movidos, redimensionados, duplicados e excluídos por revisão;
 - linhas podem ser criadas, selecionadas, reconectadas, curvadas, ter o tipo alterado e ser excluídas;
 - quatro faixas inferiores de Lead Time/Dados são derivadas dos blocos do Layout;

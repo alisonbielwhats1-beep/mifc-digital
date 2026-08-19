@@ -3,13 +3,13 @@
 Atualizado em: 2026-08-19  
 Branch: `main`  
 Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`  
-Último marco concluído: **Prompt 6.4 — medidas de processo adicionais no Layout**
+Último marco concluído: **Prompt 6.5 — paridade diária e quatro Beattys**
 
 ## Onde paramos
 
 O MVP local está executável e os Prompts 1 a 6.1 foram realizados. O projeto está em repositório público com código, documentação, referências visuais e recursos extraídos usados durante a análise.
 
-O Layout possui 29 blocos, 47 linhas editáveis e linhas específicas para Volvo FH, Volvo VM, Scania e DAF. A tela de Integrações agora consegue carregar, sob ação explícita do usuário, somente as consultas SQL aprovadas e manter os resultados na memória da API local.
+O Layout possui 32 blocos, 56 linhas editáveis e linhas específicas para Volvo FH, Volvo VM, Scania e DAF. A tela de Integrações agora consegue carregar, sob ação explícita do usuário, somente as consultas SQL aprovadas e manter os resultados na memória da API local.
 
 Uma leitura real da consulta `base1` foi validada pelo proprietário na rede autorizada: 3.888 linhas, transação somente leitura e resposta HTTP 200. Nenhuma operação de escrita foi executada.
 
@@ -59,8 +59,8 @@ Uma leitura real da consulta `base1` foi validada pelo proprietário na rede aut
 ### Prompt 6 — Layout MIFC
 
 - referência principal: `assets/ui-references/metalsa-mifc-layout.png`;
-- 29 blocos semânticos iniciais;
-- 47 linhas semânticas iniciais;
+- 32 blocos semânticos iniciais, incluindo Beatty 1, 2, 3 e 4 separadas;
+- 56 linhas semânticas iniciais;
 - adicionar, mover, redimensionar, duplicar e remover blocos;
 - criar, selecionar, reconectar, curvar, classificar e remover linhas;
 - tipos de fluxo de material, material puxado, informação e informação eletrônica;
@@ -123,10 +123,23 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - origem mista identificada no Layout como `Oracle automático + Capacidade local`;
 - testes específicos adicionados para demandas e tempos de processo, sem apresentar ausência de dado como valor observado.
 
+### Prompt 6.5 — paridade diária, filtros e máquinas separadas
+
+- cálculos do Layout passam a usar uma data explícita equivalente a `Calendar[Date]`, iniciando no dia local atual;
+- Base1, Base2 e DAF Slitters são filtradas em memória por `SHIP_DATE`, sem alterar o SQL aprovado e sem nova consulta Oracle;
+- diagnóstico informa data do filtro e quantidade de linhas usadas em relação ao cache;
+- Beatty 1, 2, 3 e 4 têm blocos, parâmetros e medidas separados;
+- rotas confirmadas pelo TMDL: VM → `T-B1`, DAF → `T-B2`, Scania → `T-B3`, Volvo FH → `T-B4`;
+- `T-LCT/RF2`, `T-P.A`, `T-CNC` e `T-EMB-VM` foram reproduzidas com as fórmulas do modelo semântico recebido;
+- LCT/RF2 respeita os dois códigos de MP definidos no DAX e embalagem VM respeita a contagem de datas de embarque a partir de `TODAY()` no fuso de São Paulo;
+- valores continuam em dias e usam três casas quando o arredondamento é representável (`0,001`); valores reais menores que `0,0005` ganham cinco casas para não aparecer como zero;
+- layout e cadastro de Capacidade possuem migração local, preservando revisões e parâmetros existentes;
+- Oracle permanece estritamente somente leitura; o filtro diário ocorre sobre o cache já autorizado.
+
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 43 testes aprovados;
+- `npm test`: 48 testes aprovados;
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
 - `npm run test:e2e`: suíte criada; execução pendente porque o ambiente de trabalho não permitiu baixar o navegador Chromium do Playwright;
@@ -134,7 +147,7 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 
 ## Parcial ou ainda não validado
 
-- Overview e Resultados ainda funcionam como prévias com dados locais; o Layout já recebe RF3, Beattys, Pintura, Stenhoj e Rebitagens por fonte mista;
+- Overview e Resultados ainda funcionam como prévias com dados locais; o Layout já recebe RF3, quatro Beattys, LCT/RF2, P.A, CNC, Pintura, Stenhoj, embalagem VM e Rebitagens por fonte mista;
 - os formulários estão funcionais, mas a validação operacional final de todos os campos contra o Excel 2026 deve ser feita pelo usuário da área;
 - 309 medidas existem no modelo Power BI; nem todas foram migradas para o Calculation Engine;
 - as 62 medidas usadas nos cartões do Layout foram catalogadas, mas seus valores atuais dependem das fontes online;
@@ -143,7 +156,7 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - a participação de Volvo VM na Mesa 3 requer confirmação operacional; até lá a linha permanece reta e sinalizada como pendente;
 - persistência atual é local no navegador; banco próprio da aplicação, autenticação e perfis ainda não foram implementados;
 - o código está no GitHub público, mas a aplicação ainda não foi hospedada como site online.
-- o parâmetro de tempo disponível da RF3 ainda usa o cadastro local de Capacidade; a leitura direta da planilha de parâmetros da rede permanece como melhoria posterior.
+- os parâmetros de tempo disponível por máquina ainda usam o cadastro local de Capacidade; para igualdade numérica completa com o Power BI, os minutos de RF3, Beattys 1–4, LCT, P.A, CNC, Pintura e Stenhoj precisam ter os mesmos valores da planilha `Máquinas` usada na atualização comparada.
 - o modo automático reduz picos por escalonamento, mas ainda não faz incremental no Oracle; falta uma chave de alteração confiável ou mecanismo CDC aprovado pelo DBA.
 
 ## Pendências em ordem recomendada
@@ -206,7 +219,7 @@ npm run test:e2e
 npm run dev
 ```
 
-Em seguida, abrir o Layout e fazer a conferência visual da pendência 1. Se a máquina estiver na rede Metalsa, preparar o `.env` e executar somente o preflight; não ativar consultas ao vivo antes de revisar a allowlist.
+Em seguida, abrir o Layout, selecionar a mesma data exibida/filtrada no Power BI e comparar `T-RF3`, `T-B1`, `T-B2`, `T-B3`, `T-B4`, `T-LCT/RF2`, `T-P.A` e `T-CNC`. Se houver divergência numérica, conferir na tela Capacidade se os minutos disponíveis das máquinas são iguais aos da planilha de parâmetros usada pelo Power BI.
 
 ## Prompt para retomada
 

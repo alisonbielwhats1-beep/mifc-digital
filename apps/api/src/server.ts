@@ -85,7 +85,9 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
   }
 
   if (method === "GET" && url.pathname === "/api/layout/measures") {
-    sendJson(response, 200, getCachedLayoutMeasures());
+    const contextDate = url.searchParams.get("date") ?? undefined;
+    if (contextDate && !/^\d{4}-\d{2}-\d{2}$/.test(contextDate)) throw new Error("Data de contexto inválida; use AAAA-MM-DD.");
+    sendJson(response, 200, getCachedLayoutMeasures(contextDate));
     return;
   }
 

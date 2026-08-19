@@ -37,12 +37,12 @@ describe("geometria do grafo MIFC", () => {
 describe("histórico e revisões do Layout", () => {
   it("inicia com o diagrama da referência e duplica blocos", () => {
     const store = useMifcLayoutStore(); store.hydrate();
-    expect(store.activeRevision.nodes).toHaveLength(29);
-    expect(store.activeRevision.edges).toHaveLength(47);
-    store.selectNode("node-weld-2"); store.duplicateSelected(); expect(store.activeRevision.nodes).toHaveLength(30);
+    expect(store.activeRevision.nodes).toHaveLength(32);
+    expect(store.activeRevision.edges).toHaveLength(56);
+    store.selectNode("node-weld-2"); store.duplicateSelected(); expect(store.activeRevision.nodes).toHaveLength(33);
     expect(store.activeRevision.nodes.at(-1)?.processId).toBeUndefined();
-    store.undo(); expect(store.activeRevision.nodes).toHaveLength(29);
-    store.redo(); expect(store.activeRevision.nodes).toHaveLength(30);
+    store.undo(); expect(store.activeRevision.nodes).toHaveLength(32);
+    store.redo(); expect(store.activeRevision.nodes).toHaveLength(33);
   });
 
   it("salva o grafo e cria uma nova revisão independente", () => {
@@ -50,7 +50,7 @@ describe("histórico e revisões do Layout", () => {
     expect(store.revisions).toHaveLength(2);
     expect(store.activeRevision.number).toBe(5);
     expect(store.activeRevision.nodes.every((node) => node.revisionId === store.activeRevision.id)).toBe(true);
-    expect(localStorage.getItem("mifc-digital:layout-reference-v2")).toContain('"schemaVersion":3');
+    expect(localStorage.getItem("mifc-digital:layout-reference-v2")).toContain('"schemaVersion":4');
   });
 
   it("move, redimensiona e conecta elementos com limites do canvas", () => {
@@ -61,8 +61,8 @@ describe("histórico e revisões do Layout", () => {
     const moved = store.activeRevision.nodes.find((node) => node.id === firstId)!;
     expect({ x: moved.x, y: moved.y, width: moved.width, height: moved.height }).toEqual({ x: 0, y: 536, width: 62, height: 180 });
     store.connectNode(firstId, "electronic_information"); store.connectNode(secondId, "electronic_information");
-    expect(store.activeRevision.edges).toHaveLength(48);
-    store.undo(); expect(store.activeRevision.edges).toHaveLength(47);
+    expect(store.activeRevision.edges).toHaveLength(57);
+    store.undo(); expect(store.activeRevision.edges).toHaveLength(56);
   });
 
   it("edita a curvatura e as pontas de uma linha", () => {
@@ -109,5 +109,6 @@ describe("histórico e revisões do Layout", () => {
     const migrated = useMifcLayoutStore(); migrated.hydrate();
     expect(migrated.activeRevision.nodes.find((node) => node.id === "node-cut")!.label).toBe("LCT / RF2");
     expect(migrated.activeRevision.nodes.find((node) => node.id === "node-stamp")!.label).toBe("RF3 Personalizado");
+    expect(migrated.activeRevision.nodes.filter((node) => /node-(weld-2|beatty-[234])$/.test(node.id))).toHaveLength(4);
   });
 });

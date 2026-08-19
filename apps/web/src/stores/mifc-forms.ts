@@ -86,7 +86,7 @@ export interface CapacityFormRow {
 }
 
 interface FormsSnapshot {
-  schemaVersion: 1;
+  schemaVersion: 2;
   shiftRows: ShiftRow[];
   volumeRows: VolumeFormRow[];
   logisticsRows: LogisticsFormRow[];
@@ -98,7 +98,7 @@ interface FormsSnapshot {
 const storageKey = "mifc-digital:prompt-3:revision-04";
 
 const defaults: FormsSnapshot = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   shiftRows: [
     { id: "shift-1", label: "1º turno", startTime: "06:00", endTime: "15:36", rolloverMinutes: 0, mealMinutes: 60, meetingMinutes: 5, status: "active" },
     { id: "shift-2", label: "2º turno", startTime: "15:36", endTime: "23:59", rolloverMinutes: 48, mealMinutes: 60, meetingMinutes: 0, status: "active" },
@@ -124,9 +124,15 @@ const defaults: FormsSnapshot = {
   ],
   capacityRows: [
     { id: "cap-rf3", sequence: 1, processCode: "P-001", process: "Roll Former 3", cycleTimeSeconds: 48, nominalCapacityPerHour: 75, referenceCapacityPerDay: 1200, shifts: 2, availableHoursPerDay: 16.7, efficiencyPercent: 85, targetWipPieces: 68, speedUnit: "peças/h", status: "active" },
-    { id: "cap-beatty", sequence: 2, processCode: "P-002", process: "Beatty", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
-    { id: "cap-paint", sequence: 3, processCode: "P-003", process: "Pintura", cycleTimeSeconds: 110, nominalCapacityPerHour: 33, referenceCapacityPerDay: 528, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 60, targetWipPieces: 150, speedUnit: "peças/h", status: "active" },
-    { id: "cap-stenhoj", sequence: 4, processCode: "P-004", process: "Stenhoj", cycleTimeSeconds: 60, nominalCapacityPerHour: 60, referenceCapacityPerDay: 960, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 110, speedUnit: "peças/h", status: "active" },
+    { id: "cap-beatty", sequence: 2, processCode: "P-002-B1", process: "Beatty 1", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
+    { id: "cap-beatty-2", sequence: 3, processCode: "P-002-B2", process: "Beatty 2", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
+    { id: "cap-beatty-3", sequence: 4, processCode: "P-002-B3", process: "Beatty 3", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
+    { id: "cap-beatty-4", sequence: 5, processCode: "P-002-B4", process: "Beatty 4", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
+    { id: "cap-lct", sequence: 6, processCode: "P-005", process: "LCT", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 0, speedUnit: "peças/h", status: "active" },
+    { id: "cap-pa", sequence: 7, processCode: "P-006", process: "P.A", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 0, speedUnit: "peças/h", status: "active" },
+    { id: "cap-cnc", sequence: 8, processCode: "P-007", process: "CNC Plasma", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 0, speedUnit: "peças/h", status: "active" },
+    { id: "cap-paint", sequence: 9, processCode: "P-003", process: "Pintura", cycleTimeSeconds: 110, nominalCapacityPerHour: 33, referenceCapacityPerDay: 528, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 60, targetWipPieces: 150, speedUnit: "peças/h", status: "active" },
+    { id: "cap-stenhoj", sequence: 10, processCode: "P-004", process: "Stenhoj", cycleTimeSeconds: 60, nominalCapacityPerHour: 60, referenceCapacityPerDay: 960, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 110, speedUnit: "peças/h", status: "active" },
   ],
 };
 
@@ -138,15 +144,36 @@ function createId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-function isSnapshot(value: unknown): value is FormsSnapshot {
+type StoredFormsSnapshot = Omit<FormsSnapshot, "schemaVersion"> & { schemaVersion: 1 | 2 };
+
+function isSnapshot(value: unknown): value is StoredFormsSnapshot {
   if (!value || typeof value !== "object") return false;
-  const candidate = value as Partial<FormsSnapshot>;
-  return candidate.schemaVersion === 1
+  const candidate = value as Partial<StoredFormsSnapshot>;
+  return [1, 2].includes(candidate.schemaVersion ?? 0)
     && Array.isArray(candidate.volumeRows)
     && Array.isArray(candidate.logisticsRows)
     && Array.isArray(candidate.bufferRows)
     && Array.isArray(candidate.capacityRows)
     && Array.isArray(candidate.shiftRows);
+}
+
+function migrateSnapshot(snapshot: StoredFormsSnapshot): FormsSnapshot {
+  const migrated = structuredClone(snapshot) as StoredFormsSnapshot;
+  const genericBeatty = migrated.capacityRows.find((row) => row.id === "cap-beatty");
+  if (genericBeatty) Object.assign(genericBeatty, { process: "Beatty 1", processCode: "P-002-B1" });
+  for (const defaultRow of defaults.capacityRows) {
+    if (migrated.capacityRows.some((row) => row.id === defaultRow.id)) continue;
+    if (genericBeatty && /^cap-beatty-[234]$/.test(defaultRow.id)) {
+      migrated.capacityRows.push({ ...structuredClone(genericBeatty), id: defaultRow.id, process: defaultRow.process, processCode: defaultRow.processCode });
+    } else migrated.capacityRows.push(structuredClone(defaultRow));
+  }
+  const canonicalOrder = defaults.capacityRows.map((row) => row.id);
+  migrated.capacityRows.sort((left, right) => {
+    const leftIndex = canonicalOrder.indexOf(left.id); const rightIndex = canonicalOrder.indexOf(right.id);
+    return (leftIndex < 0 ? Number.MAX_SAFE_INTEGER : leftIndex) - (rightIndex < 0 ? Number.MAX_SAFE_INTEGER : rightIndex);
+  });
+  migrated.capacityRows.forEach((row, index) => { row.sequence = index + 1; });
+  return { ...migrated, schemaVersion: 2 };
 }
 
 export const useMifcFormsStore = defineStore("mifc-forms", {
@@ -174,12 +201,14 @@ export const useMifcFormsStore = defineStore("mifc-forms", {
         const raw = localStorage.getItem(storageKey);
         const parsed: unknown = raw ? JSON.parse(raw) : null;
         if (isSnapshot(parsed)) {
-          this.shiftRows = parsed.shiftRows;
-          this.volumeRows = parsed.volumeRows;
-          this.logisticsRows = parsed.logisticsRows;
-          this.bufferRows = parsed.bufferRows;
-          this.capacityRows = parsed.capacityRows;
-          this.savedAt = parsed.savedAt;
+          const migrated = migrateSnapshot(parsed);
+          this.schemaVersion = migrated.schemaVersion;
+          this.shiftRows = migrated.shiftRows;
+          this.volumeRows = migrated.volumeRows;
+          this.logisticsRows = migrated.logisticsRows;
+          this.bufferRows = migrated.bufferRows;
+          this.capacityRows = migrated.capacityRows;
+          this.savedAt = migrated.savedAt;
         }
       } catch {
         // O formulário continua com o snapshot local de demonstração.
@@ -199,7 +228,7 @@ export const useMifcFormsStore = defineStore("mifc-forms", {
     save() {
       this.savedAt = new Date().toISOString();
       const snapshot: FormsSnapshot = {
-        schemaVersion: 1,
+        schemaVersion: 2,
         shiftRows: this.shiftRows,
         volumeRows: this.volumeRows,
         logisticsRows: this.logisticsRows,
