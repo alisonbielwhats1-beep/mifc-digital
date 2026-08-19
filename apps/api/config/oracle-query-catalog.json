@@ -151,8 +151,8 @@
     "enabled": true,
     "usedBy": ["Capacidade", "OEE", "Scrap"],
     "expectedSchema": "BOMES",
-    "expectedSourceObject": "BI_OEE_SCRAP",
-    "expectedFingerprint": "sha256:97c941f7c5faabcfa7926a0c5e1d30b889be4311e215244840fcc0c3907589ab",
+    "expectedSourceObject": "BI_HEATMAP_SCRAP",
+    "expectedFingerprint": "sha256:cd7c64e163991543d9c6ead0431ada6db8480762a0aecf1ed0e1520faff56d20",
     "maxRows": 20000,
     "timeoutSeconds": 30,
     "refreshSeconds": 60
@@ -167,8 +167,8 @@
     "enabled": true,
     "usedBy": ["Logística", "Buffer e Estoque", "Layout"],
     "expectedSchema": "BOMES",
-    "expectedSourceObject": "LOTES",
-    "expectedFingerprint": "sha256:4cc3c9fd71e3907e4658b0e6a97b6512ceec615e4e5a7c60e18a85040c034d76",
+    "expectedSourceObject": "BI_MFIC_LOTES",
+    "expectedFingerprint": "sha256:16ddb6e984f6c41741c5aecd111a0d4da42639d902cd01b0e79567b2dac9c737",
     "maxRows": 20000,
     "timeoutSeconds": 30,
     "refreshSeconds": 120
@@ -183,8 +183,8 @@
     "enabled": true,
     "usedBy": ["Capacidade", "Layout"],
     "expectedSchema": "BOMES",
-    "expectedSourceObject": "PARADAS",
-    "expectedFingerprint": "sha256:bb172fc3765eb329c200b0ab96d206a962794d6bfc0efc2ae4a133fb0b09cb5e",
+    "expectedSourceObject": "BI_MFIC_PARADAS",
+    "expectedFingerprint": "sha256:34d67c7c29ac840c981688411789b20d706cfcca6aff40cf5430a33063b5d518",
     "maxRows": 20000,
     "timeoutSeconds": 30,
     "refreshSeconds": 60
@@ -199,8 +199,8 @@
     "enabled": true,
     "usedBy": ["Capacidade", "Layout"],
     "expectedSchema": "BOMES",
-    "expectedSourceObject": "PRODUCAO",
-    "expectedFingerprint": "sha256:992c932c236be3971a0b0e9c4c4a2431b7b37fff962cbf4c16fd6b4b87320ffe",
+    "expectedSourceObject": "BI_MFIC_PROD",
+    "expectedFingerprint": "sha256:355bc7eb4684a5ddae5c0ff7bdf175182132fce4cc9cc0a2b56e906177db1f19",
     "maxRows": 20000,
     "timeoutSeconds": 30,
     "refreshSeconds": 60

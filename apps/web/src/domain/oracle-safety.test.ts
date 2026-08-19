@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import { extractEmbeddedSqlFromTmdl, extractNavigationTargetFromTmdl, fingerprintSql, materializeNavigationSelect, normalizeSql } from "../../../api/src/oracle/source-query.js";
 import { assertSelectOnly } from "../../../api/src/oracle/sql-policy.js";
@@ -22,6 +23,20 @@ describe("política Oracle somente leitura", () => {
 });
 
 describe("extração e assinatura do PBIP", () => {
+  it("mantém os quatro objetos físicos validados pelo PBIP com suas assinaturas", async () => {
+    const content = await readFile(new URL("../../../api/config/oracle-query-catalog.json", import.meta.url), "utf8");
+    const catalog = JSON.parse(content) as Array<{ id:string; expectedSchema?:string; expectedSourceObject?:string; expectedFingerprint?:string }>;
+    const expected:Record<string,string> = {
+      "bi-oee-scrap":"BI_HEATMAP_SCRAP", lotes:"BI_MFIC_LOTES", paradas:"BI_MFIC_PARADAS", producao:"BI_MFIC_PROD",
+    };
+    for (const [id, object] of Object.entries(expected)) {
+      const entry = catalog.find((item) => item.id === id)!;
+      expect(entry.expectedSchema).toBe("BOMES");
+      expect(entry.expectedSourceObject).toBe(object);
+      expect(entry.expectedFingerprint).toBe(fingerprintSql(`SELECT * FROM "BOMES"."${object}"`));
+    }
+  });
+
   it("decodifica a string M e normaliza o SQL antes da assinatura", () => {
     const tmdl = 'expression Base1 = Oracle.Database("MESBR", [Query="SELECT #(lf)  \""CODIGO\"" #(lf)FROM DUAL"])';
     const sql = extractEmbeddedSqlFromTmdl(tmdl, "Base1");

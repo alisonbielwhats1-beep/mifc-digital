@@ -84,7 +84,7 @@ export function materializeNavigationSelect(
     throw new Error(`Schema divergente na navegação M de ${entry.powerBiObject}.`);
   }
   if (!entry.expectedSourceObject || target.object.toUpperCase() !== entry.expectedSourceObject.toUpperCase()) {
-    throw new Error(`Objeto divergente na navegação M de ${entry.powerBiObject}.`);
+    throw new Error(`Objeto divergente na navegação M de ${entry.powerBiObject}: esperado ${entry.expectedSourceObject ?? "não configurado"}, encontrado ${target.object}.`);
   }
   return `SELECT * FROM "${target.schema.toUpperCase()}"."${target.object.toUpperCase()}"`;
 }

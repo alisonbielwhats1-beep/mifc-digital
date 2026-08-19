@@ -147,6 +147,7 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - produção restante, paradas programadas, paradas totais e downtime da RF3 seguem as expressões DAX catalogadas;
 - estoque em metros, quantidade de slitters, peso, golpes Scania/Volvo e estoque pós-LCT foram ligados às fontes materializadas;
 - os cards de processo mostram `Produzido / Demanda` quando a tabela `Produção` está realmente carregada; ausência de cache não aparece como zero observado;
+- os objetos físicos confirmados no PBIP são `BOMES.BI_HEATMAP_SCRAP`, `BOMES.BI_MFIC_LOTES`, `BOMES.BI_MFIC_PARADAS` e `BOMES.BI_MFIC_PROD`; a allowlist e os fingerprints usam exatamente esses destinos;
 - uma carga parcial válida inicia a atualização automática e preserva as tabelas que responderam, permitindo que uma fonte com falha seja tentada novamente sem derrubar as demais;
 - nenhuma operação DML/DDL, procedure, múltipla instrução ou consulta enviada pelo navegador foi liberada.
 
@@ -170,7 +171,7 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 56 testes aprovados (12 arquivos);
+- `npm test`: 57 testes aprovados (12 arquivos);
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
 - `npm run test:e2e`: não executado neste checkpoint porque o binário do Playwright/Chromium não está disponível no ambiente de trabalho;
