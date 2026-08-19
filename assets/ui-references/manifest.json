@@ -1,0 +1,37 @@
+{
+  "status": "approved-reference",
+  "source": "user-provided-reference-images",
+  "purpose": "Baseline visual para a implementação do MIFC Digital.",
+  "assets": [
+    {
+      "id": "mifc-layout",
+      "file": "metalsa-mifc-layout.png",
+      "screen": "Layout MIFC",
+      "tags": ["canvas", "symbols", "connections", "properties"]
+    },
+    {
+      "id": "mifc-overview",
+      "file": "metalsa-mifc-overview.png",
+      "screen": "Visão geral",
+      "tags": ["kpi", "comparison", "alerts", "activity"]
+    },
+    {
+      "id": "mifc-volume",
+      "file": "metalsa-mifc-volume.png",
+      "screen": "Volume",
+      "tags": ["form", "table", "input", "calculated"]
+    },
+    {
+      "id": "mifc-capacidade",
+      "file": "metalsa-mifc-capacidade.png",
+      "screen": "Capacidade",
+      "tags": ["processes", "capacity", "bottleneck", "utilization"]
+    },
+    {
+      "id": "mifc-integracoes",
+      "file": "metalsa-mifc-integracoes.png",
+      "screen": "Integrações",
+      "tags": ["oracle", "connection", "sql", "results", "read-only"]
+    }
+  ]
+}

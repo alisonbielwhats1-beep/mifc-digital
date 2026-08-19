@@ -1,0 +1,267 @@
+visual_id,x,y,width,height,measure,client,layout_lane,filter_context,description,source_class,upstream_tables,audit_note
+
+e6c3f3402eb068eafdda,6630.0,1606.667,126.667,53.333,T-LPP2,Volvo FH,Volvo FH — tempo de processo,Calendar[Date],Tempo de Pintura,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA; VM,
+
+dacab13316309277c8d3,3524.0,1610.0,1122.0,54.0,T-P.A,Volvo FH,Volvo FH — tempo de processo,Calendar[Date],Tempo de P.A,MISTO: banco + parâmetro,FH; Máquinas; SCANIA,
+
+570a905042f23e101023,8036.667,1613.333,126.667,53.333,T-STJ,Volvo FH,Volvo FH — tempo de processo,Calendar[Date],Tempo de Stenhoj,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA,
+
+1d6b3118f2a11813c190,1550.0,1614.0,124.0,54.0,T-RF3,Volvo FH,Volvo FH — tempo de processo,Calendar[Date],Tempo de Rollformer 3,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA; VM,
+
+b1fa73b7a748d91981a6,1982.0,1614.0,124.0,54.0,T-M3,Volvo FH,Volvo FH — tempo de processo,Calendar[Date],Tempo Mesa 3,CONSTANTE ou medida derivada,,
+
+0a53419bdab342d93f54,2398.0,1616.0,122.0,54.0,T-B4,Volvo FH,Volvo FH — tempo de processo,Calendar[Date],Tempo de Beatty 4,MISTO: banco + parâmetro,FH; Máquinas,
+
+da67aa096ed778077a96,2968.0,1616.0,122.0,54.0,T-B4,Volvo FH,Volvo FH — tempo de processo,Calendar[Date],Tempo de Beatty 4,MISTO: banco + parâmetro,FH; Máquinas,
+
+df4e425fe828fdf9e29c,920.0,1620.0,125.0,52.5,T-LCT/RF2,Volvo FH,Volvo FH — tempo de processo,Calendar[Date],Tempo de LCT/RF2,MISTO: banco + parâmetro,FH; Máquinas,
+
+0788729a56a4cad7db2e,1170.0,1620.0,125.0,52.5,T-LCT/RF2,Volvo FH,Volvo FH — tempo de processo,Calendar[Date],Tempo de LCT/RF2,MISTO: banco + parâmetro,FH; Máquinas,
+
+0777b1992e92cd40eed7,8468.333,1621.667,126.667,53.333,T-STJ,Volvo FH,Volvo FH — tempo de processo,Calendar[Date],Tempo de Stenhoj,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA,
+
+a9ca636dd10b628a1234,576.667,1640.0,353.333,80.0,Q-D-FH,Volvo FH,Volvo FH — estoque/logística,MP[Cliente]=FH,,BANCO/CÁLCULO,Calendar; DAF SLITTERS; FH; Lotes; SCANIA; VM,
+
+9e20e93d978ec96d9aef,371.667,1646.667,280.0,60.0,T-T,Volvo FH,Volvo FH — estoque/logística,MP[Cliente]=FH,Tempo de Transporte em Dias,CONSTANTE ou medida derivada,,
+
+f2b469e271c7fbbb6237,2520.0,1662.5,450.0,70.0,D-E-FH-B,Volvo FH,Volvo FH — estoque/logística,,Dias de Estoque FH Beattys,BANCO/CÁLCULO,FH,
+
+51757c07f885bd6587c5,6008.0,1664.0,126.0,54.0,D-E-FH-CL,Volvo FH,Volvo FH — estoque/logística,,Dias de Estoque FH Cantilever,BANCO/CÁLCULO,FH,
+
+2a58244d49a27c29c1f2,5502.5,1665.0,255.0,60.0,T-M,Volvo FH,Volvo FH — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+64fe752232b9609c5890,6889.0,1665.5,256.0,60.0,T-M,Volvo FH,Volvo FH — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+303831b42f82050ea689,8596.667,1666.667,256.667,60.0,T-M,Volvo FH,Volvo FH — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+75a6948392048d4a28f8,3085.0,1667.5,255.0,60.0,T-M,Volvo FH,Volvo FH — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+540097a7acae4b6fd1f9,1290.0,1668.0,110.0,58.0,T-M,Volvo FH,Volvo FH — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+9dadde5fa53fb2344efd,3311.429,1668.571,214.286,60.0,D-E-FH-P.A,Volvo FH,Volvo FH — estoque/logística,,Dias de Estoque VM P.A,BANCO/CÁLCULO,FH,
+
+621d291434cd78e4cf3b,6501.667,1670.0,126.667,53.333,D-E-FH-P.I,Volvo FH,Volvo FH — estoque/logística,,Dias de Estoque FH Pintura Input,BANCO/CÁLCULO,FH,
+
+286d08ac83b300460e80,7770.0,1670.0,255.0,60.0,E-P-D-FH-STJ,Volvo FH,Volvo FH — estoque/logística,Operações[Dados ]=Ag. Stenhøj,Estoque em Peças em Dias na FH Stenhoj,BANCO/CÁLCULO,Calendar; FH,
+
+2a6f68d9a0f5357a4e93,9710.0,1670.0,182.5,62.5,T-T-FH,Volvo FH,Volvo FH — estoque/logística,,Tempo Total FH,MISTO: banco + parâmetro,BI_MIFC_LCT_POS_STOCK; Calendar; DAF SLITTERS; Dados de embarque; FH; Lotes; MP; Operações; Relatorio_Item RF2; SCANIA; Segregacao; VM,
+
+9c4cb53e665d79ae679b,1865.0,1671.667,123.333,55.0,E-P-D-FH-M3,Volvo FH,Volvo FH — estoque/logística,,Estoque em Peças em Dias FH Mesa 3,BANCO/CÁLCULO,Calendar; FH; Segregacao,
+
+a21a846e88671448ecd7,1418.0,1672.0,124.0,52.0,E-D-P-RF2,Volvo FH,Volvo FH — estoque/logística,"Calendar[Date]; MP[MP]=4-MP600450SL411-0,4-MP600760SL445-0",,BANCO/CÁLCULO,FH; Relatorio_Item RF2,
+
+7151870f8be8df0577b4,1670.0,1675.0,156.667,55.0,E-P-D-FH-RF3,Volvo FH,Volvo FH — estoque/logística,Operações[Dados ]=Roll Former 3,Estoque em Peças em Dias na FH Pós Rollformer 3,BANCO/CÁLCULO,Calendar; FH,
+
+4bae6f89b00d9be4d5ca,1044.0,1676.0,124.0,52.0,E-D-P-LCT,Volvo FH,Volvo FH — estoque/logística,Calendar[Date],Estoque em dias Pós LCT,BANCO/CÁLCULO,BI_MIFC_LCT_POS_STOCK; FH,
+
+6ff19a1f0ceed8f834a6,8160.0,1676.667,150.0,60.0,T-M,Volvo FH,Volvo FH — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+f4ed4ae659fc249abdab,9220.0,1676.667,256.667,60.0,T-M,Volvo FH,Volvo FH — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+54aae782bb14b76d6972,9586.0,1678.0,128.0,54.0,E-P-D-FH-EMB,Volvo FH,Volvo FH — estoque/logística,Operações[Dados ]=Estoque FG; Dados de embarque[Data],Estoque em Peças em Dias FH Embalagem,BANCO/CÁLCULO,Calendar; FH,
+
+741a4331c4031bc64ecc,241.429,1678.571,112.857,52.857,T-B,Volvo FH,Volvo FH — estoque/logística,,Tempo Beneficiador,CONSTANTE ou medida derivada,,
+
+d4210aa06c14fd582474,6628.333,1711.667,126.667,53.333,T-LPP2,Volvo VM,Volvo VM — tempo de processo,Calendar[Date],Tempo de Pintura,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA; VM,
+
+70fe0eee33180ed26adf,2544.286,1721.429,121.429,54.286,T-B1,Volvo VM,Volvo VM — tempo de processo,Calendar[Date],Tempo de Beatty 1,MISTO: banco + parâmetro,Máquinas; VM,
+
+620f5e99876cf9079f05,1980.0,1722.0,124.0,54.0,T-M3,Volvo VM,Volvo VM — tempo de processo,Calendar[Date],Tempo Mesa 3,CONSTANTE ou medida derivada,,
+
+6ed12aeaada70bf36d83,8312.5,1723.75,125.0,55.0,T-EMB-VM,Volvo VM,Volvo VM — tempo de processo,Calendar[Date],Tempo de Embalagem VM,BANCO/CÁLCULO,VM,
+
+647ce91e2853ff09b5d2,3172.5,1725.0,290.0,55.0,T-B1,Volvo VM,Volvo VM — tempo de processo,Calendar[Date],Tempo de Beatty 1,MISTO: banco + parâmetro,Máquinas; VM,
+
+b56c9a691de728cf4379,5220.0,1725.0,286.667,50.0,T-CNC,Volvo VM,Volvo VM — tempo de processo,Calendar[Date],Tempo de CNC,MISTO: banco + parâmetro,DAF; DAF SLITTERS; Máquinas,
+
+1eaf4f0cef6af777d677,1550.0,1726.0,124.0,54.0,T-RF3,Volvo VM,Volvo VM — tempo de processo,Calendar[Date],Tempo de Rollformer 3,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA; VM,
+
+770b3c9b778556914b18,2662.0,1760.0,500.0,70.0,D-E-VM-B,Volvo VM,Volvo VM — estoque/logística,,Dias de Estoque VM Beattys,BANCO/CÁLCULO,VM,
+
+bd9e8f24ff523b591b3a,6008.0,1772.0,128.0,54.0,D-E-VM-CL,Volvo VM,Volvo VM — estoque/logística,,Dias de Estoque VM Cantilever,BANCO/CÁLCULO,VM,
+
+5ce96d0fc36e44874205,5502.5,1772.5,255.0,60.0,T-M,Volvo VM,Volvo VM — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+404dfb0bac48596af35f,9707.5,1775.0,182.5,62.5,T-T-VM,Volvo VM,Volvo VM — estoque/logística,,Tempo Total VM,MISTO: banco + parâmetro,Calendar; DAF SLITTERS; Dados de embarque; FH; Lotes; MP; Operações; SCANIA; VM,
+
+d9f4c0874ee344c4e5a0,6893.0,1775.5,256.0,60.0,T-M,Volvo VM,Volvo VM — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+a11413d4c000f1ed4a63,364.0,1776.0,282.0,60.0,T-T,Volvo VM,Volvo VM — estoque/logística,MP[Cliente]=FH,Tempo de Transporte em Dias,CONSTANTE ou medida derivada,,
+
+98dfd3063e6193897fb9,8596.667,1776.667,256.667,60.0,T-M,Volvo VM,Volvo VM — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+59cd0387868167383bc9,566.0,1780.0,356.0,60.0,Q-D-VM,Volvo VM,Volvo VM — estoque/logística,MP[Cliente]=VM,Quantidade de Dias VM,BANCO/CÁLCULO,DAF SLITTERS; FH; Lotes; SCANIA; VM,
+
+03950ee1f97804eb96c4,1290.0,1780.0,256.0,60.0,T-M,Volvo VM,Volvo VM — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+eeaeb78381f228f991e1,6500.0,1780.0,126.667,53.333,D-E-VM-P.I,Volvo VM,Volvo VM — estoque/logística,,Dias de Estoque VM Pintura Input,BANCO/CÁLCULO,VM,
+
+5b3c8d40c82bf14fda50,9220.0,1783.333,256.667,60.0,T-M,Volvo VM,Volvo VM — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+2f77b4ff0c596d3284f6,9586.0,1784.0,128.0,54.0,E-P-D-VM-EMB,Volvo VM,Volvo VM — estoque/logística,Operações[Dados ]=Estoque FG; Dados de embarque[Data],Estoque em Peças em Dias VM Embalagem,BANCO/CÁLCULO,Calendar; VM,
+
+e5c33c8290ea9e6cdfaa,1668.333,1785.0,143.333,55.0,E-P-D-VM-RF3,Volvo VM,Volvo VM — estoque/logística,Operações[Dados ]=Roll Former 3,Estoque em Peças em Dias na VM Pós Rollformer 3,BANCO/CÁLCULO,Calendar; VM,
+
+e3686990c60db04a4c30,242.857,1785.714,112.857,52.857,T-B,Volvo VM,Volvo VM — estoque/logística,,Tempo Beneficiador,CONSTANTE ou medida derivada,,
+
+9ebdb4ca8503158af84f,6628.333,1840.0,126.667,53.333,T-LPP2,Scania,Scania — tempo de processo,Calendar[Date],Tempo de Pintura,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA; VM,
+
+72636f09f37e9cf45c7b,7362.5,1840.0,125.0,55.0,T-SCA-REB,Scania,Scania — tempo de processo,Calendar[Date],Tempo de Scania Rebitagem,MISTO: banco + parâmetro,Máquinas; SCANIA,
+
+303566a8f2cb4dad05a1,8468.333,1840.0,126.667,53.333,T-STJ,Scania,Scania — tempo de processo,Calendar[Date],Tempo de Stenhoj,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA,
+
+35a16312245827724853,1546.0,1842.0,124.0,54.0,T-RF3,Scania,Scania — tempo de processo,Calendar[Date],Tempo de Rollformer 3,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA; VM,
+
+6b5db5c79e8d8f6ce279,2330.0,1842.0,122.0,54.0,T-B3,Scania,Scania — tempo de processo,Calendar[Date],Tempo de Beatty 3,MISTO: banco + parâmetro,Máquinas; SCANIA,
+
+77c8d99773185df1f87d,3522.0,1842.0,1420.0,54.0,T-P.A,Scania,Scania — tempo de processo,Calendar[Date],Tempo de P.A,MISTO: banco + parâmetro,FH; Máquinas; SCANIA,
+
+0f4388a8575edffe035b,8036.667,1843.333,126.667,53.333,T-STJ,Scania,Scania — tempo de processo,Calendar[Date],Tempo de Stenhoj,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA,
+
+d0c2bcea49564663e26f,1984.0,1844.0,124.0,54.0,T-M3,Scania,Scania — tempo de processo,Calendar[Date],Tempo Mesa 3,CONSTANTE ou medida derivada,,
+
+c15204b798fc6272d520,2840.0,1847.5,130.0,52.5,T-B3,Scania,Scania — tempo de processo,Calendar[Date],Tempo de Beatty 3,MISTO: banco + parâmetro,Máquinas; SCANIA,
+
+67151615a82deb6471f8,2448.0,1892.0,396.0,70.0,D-E-SCA-B,Scania,Scania — estoque/logística,,Dias de Estoque Scania Beattys,BANCO/CÁLCULO,SCANIA,
+
+7b9aacdde687b73c4e43,2967.5,1895.0,255.0,60.0,T-M,Scania,Scania — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+1214672b3184dd4c7be3,1290.0,1898.0,256.0,60.0,T-M,Scania,Scania — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+8684d41f23c0a8c8e4f1,9710.0,1898.333,181.667,61.667,T-T-SCA,Scania,Scania — estoque/logística,,Tempo Total Scania,MISTO: banco + parâmetro,Calendar; DAF SLITTERS; Dados de embarque; FH; Lotes; MP; Operações; SCANIA; Segregacao; VM,
+
+5dcaf9a965ec4a30ddc5,3311.429,1900.0,214.286,60.0,D-E-SCA-P.A,Scania,Scania — estoque/logística,,Dias de Estoque Scania P.A,BANCO/CÁLCULO,SCANIA,
+
+0e3ceb74217fde5a4a37,7490.0,1900.0,255.0,60.0,T-M,Scania,Scania — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+834f95033d2ba9ac5ac4,7770.0,1900.0,255.0,60.0,E-P-D-SCA-STJ,Scania,Scania — estoque/logística,Operações[Dados ]=Ag. Stenhøj,Estoque em Peças em Dias Scania Stenhoj,BANCO/CÁLCULO,Calendar; SCANIA,
+
+fc5e6dc1c85cabedee85,8596.667,1900.0,256.667,60.0,T-M,Scania,Scania — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+8d8b821734da3e0688f9,6893.0,1901.5,256.0,60.0,T-M,Scania,Scania — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+9f3b86ce5bb179284ddb,7095.0,1902.5,257.5,60.0,D-E-SCA-REB,Scania,Scania — estoque/logística,,Dias de Estoque Scania Rebitagem,BANCO/CÁLCULO,SCANIA,
+
+22a09580fbe361e06c5e,9220.0,1903.333,256.667,60.0,T-M,Scania,Scania — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+9ed7d4481b145bb08713,9586.667,1903.333,126.667,53.333,E-P-D-SCA-EMB,Scania,Scania — estoque/logística,"Operações[Dados ]=Ag. Emb1,Estoque FG; Dados de embarque[Data]",Estoque em Peças em Dias Scania Embalagem,BANCO/CÁLCULO,Calendar; SCANIA,
+
+3aba8d849e6f8f88bb90,366.0,1906.0,274.0,60.0,T-T,Scania,Scania — estoque/logística,MP[Cliente]=FH,Tempo de Transporte em Dias,CONSTANTE ou medida derivada,,
+
+90c34a3964270636140b,6008.0,1908.0,128.0,54.0,D-E-SCA-CL,Scania,Scania — estoque/logística,,Dias de Estoque Scania Cantilever,BANCO/CÁLCULO,SCANIA,
+
+7ee6d5195db93e104637,244.286,1908.571,112.857,52.857,T-B,Scania,Scania — estoque/logística,,Tempo Beneficiador,CONSTANTE ou medida derivada,,
+
+000b641b491e04688abc,1668.333,1910.0,145.0,53.333,E-P-D-SCA-RF3,Scania,Scania — estoque/logística,Operações[Dados ]=Roll Former 3,Estoque em Peças em Dias na Scania Pós Rollformer 3,BANCO/CÁLCULO,Calendar; SCANIA,
+
+ec5c5d3f42e7fe84874b,4947.5,1910.0,255.0,60.0,T-M,Scania,Scania — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+1948415612a91ac137bd,6501.667,1910.0,126.667,53.333,D-E-SCA-P.I,Scania,Scania — estoque/logística,,Dias de Estoque Scania Pintura Input,BANCO/CÁLCULO,SCANIA,
+
+08b971d13059b54717d9,8153.333,1910.0,150.0,60.0,T-M,Scania,Scania — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+1b2fc7c84263ec24ebef,5503.333,1911.667,255.0,60.0,T-M,Scania,Scania — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+b44035c3e1d6434022cb,580.0,1913.333,330.0,60.0,Q-D-SCA,Scania,Scania — estoque/logística,MP[Cliente]=Scania,Quantidade de Dias Scania,BANCO/CÁLCULO,DAF SLITTERS; FH; Lotes; SCANIA; VM,
+
+fa7897165dcaf1dd5874,1858.333,1913.333,123.333,55.0,E-P-D-SCA-M3,Scania,Scania — estoque/logística,,Estoque em Peças em Dias Scania Mesa 3,BANCO/CÁLCULO,Calendar; SCANIA; Segregacao,
+
+05785ece2dae0c091478,1984.0,1968.0,124.0,54.0,T-M3,DAF,DAF — tempo de processo,Calendar[Date],Tempo Mesa 3,CONSTANTE ou medida derivada,,
+
+5b967885da955681ef19,1548.0,1970.0,124.0,54.0,T-RF3,DAF,DAF — tempo de processo,Calendar[Date],Tempo de Rollformer 3,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA; VM,
+
+9bd9364c359fd65eb06e,2460.0,1970.0,206.0,54.0,T-B1,DAF,DAF — tempo de processo,Calendar[Date],Tempo de Beatty 1,MISTO: banco + parâmetro,Máquinas; VM,
+
+97dc93685bac91f71d36,3167.5,1970.0,292.5,52.5,T-B1,DAF,DAF — tempo de processo,Calendar[Date],Tempo de Beatty 1,MISTO: banco + parâmetro,Máquinas; VM,
+
+857b388a96507d4240c2,7355.0,1970.0,125.0,55.0,T-DAF-REB,DAF,DAF — tempo de processo,Calendar[Date],Tempo de DAF Rebitagem,MISTO: banco + parâmetro,DAF; DAF SLITTERS; Máquinas,
+
+c62f56809a2e230c8af9,8036.667,1973.333,126.667,53.333,T-STJ,DAF,DAF — tempo de processo,Calendar[Date],Tempo de Stenhoj,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA,
+
+9248cde03936178aab18,4805.0,1975.0,690.0,52.5,T-CNC,DAF,DAF — tempo de processo,Calendar[Date],Tempo de CNC,MISTO: banco + parâmetro,DAF; DAF SLITTERS; Máquinas,
+
+3475893b3eb183590612,6628.333,1975.0,126.667,53.333,T-LPP2,DAF,DAF — tempo de processo,Calendar[Date],Tempo de Pintura,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA; VM,
+
+d0323902c707e4752e94,8468.333,1975.0,126.667,53.333,T-STJ,DAF,DAF — tempo de processo,Calendar[Date],Tempo de Stenhoj,MISTO: banco + parâmetro,DAF; DAF SLITTERS; FH; Máquinas; SCANIA,
+
+de6d2997ef22c6cde3b5,2662.0,2012.0,500.0,70.0,D-E-DAF-B,DAF,DAF — estoque/logística,,Dias de Estoque DAF Beattys,BANCO/CÁLCULO,DAF; DAF SLITTERS,
+
+6b48133a63a9a883952a,364.0,2016.0,276.0,60.0,T-T,DAF,DAF — estoque/logística,MP[Cliente]=FH,Tempo de Transporte em Dias,CONSTANTE ou medida derivada,,
+
+de7de5307647ad82eea4,1294.0,2018.0,256.0,60.0,T-M,DAF,DAF — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+f7baf001ca4a8eb750ee,575.0,2021.667,328.333,60.0,Q-D-DAF,DAF,DAF — estoque/logística,MP[Cliente]=DAF,Quantidade de Dias DAF,BANCO/CÁLCULO,DAF; DAF SLITTERS; FH; Lotes; SCANIA; VM,
+
+77ede574aad99fa95193,1858.333,2025.0,123.333,55.0,E-P-D-DAF-M3,DAF,DAF — estoque/logística,,Estoque em Peças em Dias DAF Mesa 3,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS; Segregacao,
+
+3694ec78f08a96a64cd2,1670.0,2026.667,143.333,53.333,E-P-D-DAF-RF3,DAF,DAF — estoque/logística,Operações[Dados ]=Roll Former 3,Estoque em Peças em Dias na DAF Pós Rollformer 3,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS,
+
+0417075ed6fc26c118b0,9708.333,2028.333,183.333,61.667,T-T-DAF,DAF,DAF — estoque/logística,,Tempo Total DAF,MISTO: banco + parâmetro,Calendar; DAF; DAF SLITTERS; Dados de embarque; FH; Lotes; MP; Operações; SCANIA; Segregacao; VM,
+
+f01f2719b8dd930d261d,244.286,2028.571,112.857,52.857,T-B,DAF,DAF — estoque/logística,,Tempo Beneficiador,CONSTANTE ou medida derivada,,
+
+100c75bc2e7b770b6fa4,8603.333,2030.0,256.667,60.0,T-M,DAF,DAF — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+59c1a3320b351bc28746,9220.0,2033.333,256.667,60.0,T-M,DAF,DAF — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+5f196c709cea3887b89f,6008.0,2034.0,122.0,54.0,D-E-DAF-CL,DAF,DAF — estoque/logística,,Dias de Estoque DAF Cantilever,BANCO/CÁLCULO,DAF; DAF SLITTERS,
+
+a0c301f473c974c9050e,5501.667,2035.0,255.0,60.0,T-M,DAF,DAF — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+5712cd38245e4983c6ec,7490.0,2035.0,255.0,60.0,T-M,DAF,DAF — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+dd95f3747df9b70b7781,7770.0,2035.0,255.0,60.0,E-P-D-DAF-STJ,DAF,DAF — estoque/logística,Operações[Dados ]=Ag. Stenhøj,Estoque em Peças em Dias DAF Stenhoj,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS,
+
+a2c46ae278e01c811d84,6891.0,2035.5,256.0,60.0,T-M,DAF,DAF — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+66fd25afab4a663d3724,7095.0,2037.5,257.5,60.0,D-E-DAF-REB,DAF,DAF — estoque/logística,,Dias de Estoque DAF Rebitagem,BANCO/CÁLCULO,DAF; DAF SLITTERS,
+
+bd837fed380efcb7b2c9,9586.0,2038.0,128.0,54.0,E-P-D-DAF-EMB,DAF,DAF — estoque/logística,Operações[Dados ]=Estoque FG; Dados de embarque[Data],Estoque em Peças em Dias DAF Embalagem,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS,
+
+7138243036947463bcc5,6500.0,2038.333,126.667,53.333,D-E-DAF-P.I,DAF,DAF — estoque/logística,,Dias de Estoque DAF Pintura Input,BANCO/CÁLCULO,DAF; DAF SLITTERS,
+
+878e73f404a565a23b98,8160.0,2046.667,150.0,60.0,T-M,DAF,DAF — estoque/logística,,Tempo de Movimentação,CONSTANTE ou medida derivada,,
+
+4c9159ef10e705e0091e,1543.333,2083.333,126.667,53.333,Q-D-S-RF3,Compartilhado/por contexto,Segregação,,Quantidade de Dias Segregados RF3,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS; FH; SCANIA; Segregacao; VM,
+
+700eb206908a29ba15dc,1163.333,2090.0,126.667,53.333,Q-D-S-RF2,Compartilhado/por contexto,Segregação,,Quantidade de Dias Segregados RF2,BANCO/CÁLCULO,Calendar; FH; Segregacao,
+
+94196cffd53490024ed0,6623.333,2093.333,126.667,53.333,Q-D-S-LPP2,Compartilhado/por contexto,Segregação,Calendar[Date],Quantidade de Dias Segregados Pintura,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS; FH; SCANIA; Segregacao; VM,
+
+e8f157e39abd633e92a0,8303.333,2100.0,303.333,53.333,Q-D-S-EMB,Compartilhado/por contexto,Segregação,Calendar[Date],Quantidade de Dias Segregados Embalagem,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS; FH; SCANIA; Segregacao; VM,
+
+0e82d8cf040e60b20802,8036.667,2103.333,126.667,53.333,Q-D-S-STJ,Compartilhado/por contexto,Segregação,Calendar[Date],Quantidade de Dias Segregados Stenhoj,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS; FH; SCANIA; Segregacao,
+
+aaa6dbab78e7080f6949,2665.75,2134.5,500.0,70.0,D-E-DAF-B,DAF,Rodapé sobreposto,,Dias de Estoque DAF Beattys,BANCO/CÁLCULO,DAF; DAF SLITTERS,duplicação de cartões DAF; validar se deve permanecer
+
+3801e10fe91ad07be505,1297.75,2140.5,256.0,60.0,T-M,DAF,Rodapé sobreposto,,Tempo de Movimentação,CONSTANTE ou medida derivada,,duplicação de cartões DAF; validar se deve permanecer
+
+526c3716ffb362e4172e,1862.083,2147.5,123.333,55.0,E-P-D-DAF-M3,DAF,Rodapé sobreposto,,Estoque em Peças em Dias DAF Mesa 3,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS; Segregacao,duplicação de cartões DAF; validar se deve permanecer
+
+200baa6e0ce948a6e0aa,1673.75,2149.167,143.333,53.333,E-P-D-DAF-RF3,DAF,Rodapé sobreposto,Operações[Dados ]=Roll Former 3,Estoque em Peças em Dias na DAF Pós Rollformer 3,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS,duplicação de cartões DAF; validar se deve permanecer
+
+1c6edf674fe5684a5452,9712.083,2150.833,183.333,61.667,Q-D-S-T,Compartilhado/por contexto,Segregação,,Quantidade de Dias Segregados Total,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS; FH; SCANIA; Segregacao; VM,
+
+d2d0e184ac1177764f0f,8607.083,2152.5,256.667,60.0,T-M,DAF,Rodapé sobreposto,,Tempo de Movimentação,CONSTANTE ou medida derivada,,duplicação de cartões DAF; validar se deve permanecer
+
+55801c506eca6b634bbc,9223.75,2155.833,256.667,60.0,T-M,DAF,Rodapé sobreposto,,Tempo de Movimentação,CONSTANTE ou medida derivada,,duplicação de cartões DAF; validar se deve permanecer
+
+21433cc6cf8bc088f6be,6011.75,2156.5,122.0,54.0,D-E-DAF-CL,DAF,Rodapé sobreposto,,Dias de Estoque DAF Cantilever,BANCO/CÁLCULO,DAF; DAF SLITTERS,duplicação de cartões DAF; validar se deve permanecer
+
+bd42434f2f20260824be,5505.417,2157.5,255.0,60.0,T-M,DAF,Rodapé sobreposto,,Tempo de Movimentação,CONSTANTE ou medida derivada,,duplicação de cartões DAF; validar se deve permanecer
+
+bdaffc2ab6d03bc4799b,7493.75,2157.5,255.0,60.0,T-M,DAF,Rodapé sobreposto,,Tempo de Movimentação,CONSTANTE ou medida derivada,,duplicação de cartões DAF; validar se deve permanecer
+
+c6f8a94da5a709919a72,7773.75,2157.5,255.0,60.0,E-P-D-DAF-STJ,DAF,Rodapé sobreposto,Operações[Dados ]=Ag. Stenhøj,Estoque em Peças em Dias DAF Stenhoj,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS,duplicação de cartões DAF; validar se deve permanecer
+
+8559df93b94bcb372630,6894.75,2158.0,256.0,60.0,T-M,DAF,Rodapé sobreposto,,Tempo de Movimentação,CONSTANTE ou medida derivada,,duplicação de cartões DAF; validar se deve permanecer
+
+5993c2269f2a8fd9a1b4,7098.75,2160.0,257.5,60.0,D-E-DAF-REB,DAF,Rodapé sobreposto,,Dias de Estoque DAF Rebitagem,BANCO/CÁLCULO,DAF; DAF SLITTERS,duplicação de cartões DAF; validar se deve permanecer
+
+085f00dd33b59d318432,9589.75,2160.5,128.0,54.0,E-P-D-DAF-EMB,DAF,Rodapé sobreposto,Operações[Dados ]=Estoque FG; Dados de embarque[Data],Estoque em Peças em Dias DAF Embalagem,BANCO/CÁLCULO,Calendar; DAF; DAF SLITTERS,duplicação de cartões DAF; validar se deve permanecer
+
+792a9c0c55f4aa7387af,6503.75,2160.833,126.667,53.333,D-E-DAF-P.I,DAF,Rodapé sobreposto,,Dias de Estoque DAF Pintura Input,BANCO/CÁLCULO,DAF; DAF SLITTERS,duplicação de cartões DAF; validar se deve permanecer
+
+c5a59e19185e6192ed3c,8163.75,2169.167,150.0,60.0,T-M,DAF,Rodapé sobreposto,,Tempo de Movimentação,CONSTANTE ou medida derivada,,duplicação de cartões DAF; validar se deve permanecer
+
+
