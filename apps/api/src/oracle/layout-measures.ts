@@ -1,4 +1,4 @@
-import { getCachedTable } from "./table-sync.js";
+import { getCachedTable, getTableSyncStatus } from "./table-sync.js";
 import { deriveRf3Demand } from "./layout-measure-formulas.js";
 
 export function getCachedLayoutMeasures() {
@@ -16,5 +16,10 @@ export function getCachedLayoutMeasures() {
   }
 
   const values = deriveRf3Demand(base1!.rows, base2!.rows, dafSlitters!.rows);
-  return { ready: true as const, missing: [], values, updatedAt: new Date().toISOString() };
+  const updatedAt = getTableSyncStatus().tables
+    .filter((table) => ["base1", "base2", "daf-slitters"].includes(table.queryId))
+    .map((table) => table.syncedAt)
+    .sort()
+    .at(-1) ?? null;
+  return { ready: true as const, missing: [], values, updatedAt };
 }

@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { assertSafeOracleConfig, getOracleConfig } from "./config.js";
 import { executeAllowlistedSelect, testOracleConnection } from "./oracle/read-only-client.js";
 import { loadQueryCatalog } from "./oracle/query-catalog.js";
-import { getTableSyncStatus, syncApprovedTables } from "./oracle/table-sync.js";
+import { getTableSyncStatus, startAutomaticRefresh, syncApprovedTables } from "./oracle/table-sync.js";
 import { getCachedLayoutMeasures } from "./oracle/layout-measures.js";
 
 const MAX_BODY_BYTES = 16 * 1024;
@@ -42,6 +42,7 @@ function publicCatalogEntry(entry: Awaited<ReturnType<typeof loadQueryCatalog>>[
     usedBy: entry.usedBy,
     maxRows: entry.maxRows,
     timeoutSeconds: entry.timeoutSeconds,
+    refreshSeconds: entry.refreshSeconds,
   };
 }
 
@@ -102,7 +103,8 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
     const user = typeof body.user === "string" ? body.user : "";
     const password = typeof body.password === "string" ? body.password : "";
     const result = await syncApprovedTables({ user, password });
-    sendJson(response, 200, result);
+    const automaticRefresh = result.ok ? startAutomaticRefresh() : getTableSyncStatus().automaticRefresh;
+    sendJson(response, 200, { ...result, automaticRefresh });
     return;
   }
 

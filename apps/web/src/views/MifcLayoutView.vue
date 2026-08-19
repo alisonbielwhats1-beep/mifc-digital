@@ -31,6 +31,7 @@ const showLayers = ref(false);
 const visibleLayers = reactive({ information: true, material: true, metrics: true });
 const activeFlow = ref<MifcFlowType>("material_push");
 const oracleMeasures = ref<{ ready: boolean; values: Record<string, number> | null; updatedAt: string | null }>({ ready: false, values: null, updatedAt: null });
+let layoutMeasuresTimer: ReturnType<typeof setInterval> | undefined;
 const interaction = reactive({ mode: "" as ""|"drag"|"resize"|"curve"|"pan", id: "", pointerId: -1, startX: 0, startY: 0, originX: 0, originY: 0, originWidth: 0, originHeight: 0, originCurve: 0, horizontal: true, recorded: false });
 
 const nodesById = computed(() => new Map(activeRevision.value.nodes.map((node) => [node.id,node])));
@@ -137,8 +138,8 @@ async function saveLayout() { layout.save(); await ui.saveDemoRevision({revision
 async function createRevision() { layout.createRevision(); await ui.saveDemoRevision({revisionId:activeRevision.value.id,kind:"mifc-layout-new-revision"}); }
 function onKeydown(event: KeyboardEvent) { const target=event.target as HTMLElement; if (["INPUT","TEXTAREA","SELECT"].includes(target.tagName)) return; if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="z") { event.preventDefault(); event.shiftKey?layout.redo():layout.undo(); } else if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="y") { event.preventDefault(); layout.redo(); } else if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="d") { event.preventDefault(); duplicate(); } else if (["Delete","Backspace"].includes(event.key)) removeSelected(); }
 
-onMounted(async()=>{layout.hydrate();forms.hydrate();window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);await loadLayoutMeasures();await nextTick();fitView();});
-onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);window.removeEventListener("pointerup",endInteraction);window.removeEventListener("keydown",onKeydown);document.removeEventListener("fullscreenchange",onFullscreenChange);});
+onMounted(async()=>{layout.hydrate();forms.hydrate();window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);await loadLayoutMeasures();layoutMeasuresTimer=setInterval(()=>void loadLayoutMeasures(),30_000);await nextTick();fitView();});
+onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);window.removeEventListener("pointerup",endInteraction);window.removeEventListener("keydown",onKeydown);document.removeEventListener("fullscreenchange",onFullscreenChange);if(layoutMeasuresTimer)clearInterval(layoutMeasuresTimer);});
 </script>
 
 <template>
@@ -161,7 +162,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
           </svg>
           <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="node" :zoom="zoom" :selected="selectedNode?.id===node.id" :connecting="activeTool==='connect'" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize"/>
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
-            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? 'Oracle conectado · parâmetro local' : 'Aguardando leitura das tabelas' }}</em></div>
+            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Oracle automático · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
             <div class="client-stage-labels" aria-label="Etapas rastreadas no Power BI">
               <button v-for="stage in positionedClientStages" :key="stage.id" type="button" :style="{ left: `${stage.centerX}px` }" :title="`Alinhado ao bloco ${stage.layoutNodeId}`" @click="selectNode(stage.layoutNodeId)">{{ stage.label }}</button>
             </div>

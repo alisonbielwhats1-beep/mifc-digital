@@ -9,6 +9,7 @@ export interface OracleConfig {
   password: string;
   readOnly: boolean;
   liveReadsEnabled: boolean;
+  autoRefreshSeconds: number;
   catalogPath: string;
   apiPort: number;
 }
@@ -29,6 +30,7 @@ export function getOracleConfig(): OracleConfig {
     password: process.env.ORACLE_PASSWORD ?? "",
     readOnly: readBoolean("ORACLE_READ_ONLY", true),
     liveReadsEnabled: readBoolean("ORACLE_LIVE_READS_ENABLED", false),
+    autoRefreshSeconds: Number(process.env.ORACLE_AUTO_REFRESH_SECONDS ?? "300"),
     catalogPath:
       process.env.ORACLE_QUERY_CATALOG_PATH ??
       "apps/api/config/oracle-query-catalog.json",
@@ -47,4 +49,7 @@ export function assertSafeOracleConfig(config: OracleConfig): void {
     throw new Error("ORACLE_PORT inválida.");
   }
   if (!Number.isInteger(config.apiPort) || config.apiPort <= 0) throw new Error("API_PORT inválida.");
+  if (!Number.isInteger(config.autoRefreshSeconds) || config.autoRefreshSeconds < 60) {
+    throw new Error("ORACLE_AUTO_REFRESH_SECONDS precisa ser um número inteiro de pelo menos 60 segundos.");
+  }
 }

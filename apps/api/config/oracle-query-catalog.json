@@ -9,8 +9,9 @@
     "enabled": true,
     "usedBy": ["FH", "VM"],
     "expectedFingerprint": "sha256:fab0778fee9e1e72d2cf4bea1e5f9c85d22fbbdbf747cffc4458c325fbf60b3d",
-    "maxRows": 5000,
-    "timeoutSeconds": 30
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 300
   },
   {
     "id": "base2",
@@ -22,8 +23,9 @@
     "enabled": true,
     "usedBy": ["DAF"],
     "expectedFingerprint": "sha256:a05a5d18320d7754fa70a7d51ec01bfa2d3f1eb8a22d7a452faf86bc4581ab57",
-    "maxRows": 5000,
-    "timeoutSeconds": 30
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 300
   },
   {
     "id": "daf-slitters",
@@ -35,8 +37,9 @@
     "enabled": true,
     "usedBy": ["DAF"],
     "expectedFingerprint": "sha256:48e82393699128d2c6b59eb9f77ed67e6b1c40318109f468af722631ee793431",
-    "maxRows": 5000,
-    "timeoutSeconds": 30
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 60
   },
   {
     "id": "scania",
@@ -48,8 +51,9 @@
     "enabled": true,
     "usedBy": ["SCANIA"],
     "expectedFingerprint": "sha256:92030827b89ab194a23f5ca9a426a51292963fd21fcbe6528cdaef18f6759539",
-    "maxRows": 5000,
-    "timeoutSeconds": 30
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 300
   },
   {
     "id": "shipdate",
@@ -62,7 +66,8 @@
     "usedBy": ["Logística"],
     "expectedFingerprint": "sha256:ec506a76cfa7dfd752510dba7cf2519136d103fa9f75b21331736398d3d67557",
     "maxRows": 5000,
-    "timeoutSeconds": 30
+    "timeoutSeconds": 30,
+    "refreshSeconds": 120
   },
   {
     "id": "relatorio-bases",
@@ -101,7 +106,8 @@
     "usedBy": ["Segregação"],
     "expectedFingerprint": "sha256:ef28546854dec65d0f2366538e337681ea31d4f2718f6860c922cd2f86002996",
     "maxRows": 5000,
-    "timeoutSeconds": 30
+    "timeoutSeconds": 30,
+    "refreshSeconds": 60
   },
   {
     "id": "bi-punch-sca",

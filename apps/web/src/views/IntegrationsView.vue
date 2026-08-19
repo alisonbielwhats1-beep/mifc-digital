@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { AlertTriangle, CheckCircle2, Database, Eye, EyeOff, KeyRound, LoaderCircle, LockKeyhole, Network, RefreshCw, ShieldCheck } from "@lucide/vue";
 import DataOriginBadge from "@/components/DataOriginBadge.vue";
 
@@ -12,10 +12,16 @@ interface CatalogQuery {
 }
 interface SyncedTable {
   queryId: string; powerBiObject: string; usedBy: string[]; rowCount: number; columns: string[]; durationMs: number; syncedAt: string;
+  maxRows: number; limitReached: boolean; refreshSeconds: number;
+  delta: { added: number; removed: number; unchanged: number; changed: boolean };
 }
 interface SyncFailure { queryId: string; powerBiObject: string; message: string }
+interface AutomaticRefreshStatus {
+  active: boolean; refreshing: boolean; mode: "staggered-local-delta"; intervalSeconds: number; tickSeconds: number;
+  startedAt: string | null; nextRefreshAt: string | null; lastCompletedAt: string | null; lastQueryId: string | null; lastError: string | null; reason: string | null;
+}
 interface SyncStatus {
-  connected: boolean; tableCount: number; rowCount: number; lastSyncedAt: string | null; tables: SyncedTable[];
+  connected: boolean; tableCount: number; rowCount: number; lastSyncedAt: string | null; automaticRefresh: AutomaticRefreshStatus; tables: SyncedTable[];
 }
 
 const status = ref<OracleStatus | null>(null);
@@ -31,8 +37,28 @@ const syncState = ref<"idle" | "syncing" | "success" | "partial" | "error">("idl
 const syncMessage = ref("");
 const syncStatus = ref<SyncStatus | null>(null);
 const syncFailures = ref<SyncFailure[]>([]);
+let syncStatusTimer: ReturnType<typeof setInterval> | undefined;
 const confirmedQueries = computed(() => queries.value.filter((query) => query.enabled));
 const pendingQueries = computed(() => queries.value.filter((query) => !query.enabled));
+const automaticRefreshLabel = computed(() => {
+  const automatic = syncStatus.value?.automaticRefresh;
+  if (!automatic?.active) return automatic?.reason ?? "Aguardando conexão inicial";
+  if (automatic.refreshing) return `Atualizando ${automatic.lastQueryId ?? "tabela"}...`;
+  return automatic.nextRefreshAt ? `Próxima leitura ${formatDateTime(automatic.nextRefreshAt)}` : "Ativa";
+});
+
+function formatDateTime(value: string): string {
+  return new Date(value).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+function formatRefreshSeconds(value: number): string {
+  return value < 60 ? `${value}s` : `${Math.round(value / 60)} min`;
+}
+
+async function loadSyncStatus(): Promise<void> {
+  const response = await fetch("/api/oracle/sync-status", { cache: "no-store" });
+  syncStatus.value = await readJson<SyncStatus>(response);
+}
 
 async function readJson<T>(response: Response): Promise<T> {
   const body = await response.json() as T & { error?: string };
@@ -74,8 +100,7 @@ async function syncApprovedTables(): Promise<void> {
     syncMessage.value = result.message;
     syncFailures.value = result.failures;
     syncState.value = result.ok ? "success" : result.tables.length > 0 ? "partial" : "error";
-    const statusResponse = await fetch("/api/oracle/sync-status", { cache: "no-store" });
-    syncStatus.value = await readJson<SyncStatus>(statusResponse);
+    await loadSyncStatus();
   } catch (error: unknown) {
     syncState.value = "error";
     syncMessage.value = error instanceof Error ? error.message : "Falha ao carregar as tabelas aprovadas.";
@@ -104,7 +129,13 @@ async function testConnection(): Promise<void> {
   }
 }
 
-onMounted(loadConfiguration);
+onMounted(async () => {
+  await loadConfiguration();
+  syncStatusTimer = setInterval(() => void loadSyncStatus().catch(() => undefined), 15_000);
+});
+onBeforeUnmount(() => {
+  if (syncStatusTimer) clearInterval(syncStatusTimer);
+});
 </script>
 
 <template>
@@ -113,7 +144,7 @@ onMounted(loadConfiguration);
       <div><h1>Integrações</h1><p>Conexão Oracle preparada com proteção de leitura e catálogo fechado.</p></div>
       <button class="button button-secondary" type="button" :disabled="loading" @click="loadConfiguration"><RefreshCw :size="16" :class="{ spinning: loading }" /> Atualizar estado</button>
     </div>
-    <div class="context-banner"><span><strong>Nenhuma consulta é executada automaticamente.</strong> Você pode testar a conexão ou carregar, com um clique, somente as tabelas aprovadas; a senha não é salva.</span><DataOriginBadge origin="ORACLE_MES" /></div>
+    <div class="context-banner"><span><strong>{{ syncStatus?.automaticRefresh.active ? 'Atualização automática escalonada ativa.' : 'A atualização automática começa após a conexão inicial.' }}</strong> Uma tabela aprovada é lida por vez; a API compara as linhas localmente e mantém o Oracle em modo somente leitura.</span><DataOriginBadge origin="ORACLE_MES" /></div>
     <div v-if="loadError" class="api-warning" role="alert"><AlertTriangle :size="18" /><span><strong>API local indisponível.</strong> Reinicie a aplicação com <code>npm run dev</code>. {{ loadError }}</span></div>
 
     <section class="integration-card card">
@@ -145,13 +176,15 @@ onMounted(loadConfiguration);
           <div><span>Serviço</span><strong>{{ status?.oracle.serviceName ?? '—' }}</strong></div><div><span>Modo</span><strong class="safe-value"><ShieldCheck :size="15" /> Somente leitura</strong></div>
           <div><span>Credenciais no ambiente</span><strong>{{ status?.oracle.credentialsConfigured ? 'Configuradas' : 'Não armazenadas' }}</strong></div><div><span>Leituras de dados</span><strong class="paused-value">{{ status?.oracle.liveReadsEnabled ? 'Liberadas' : 'Desativadas' }}</strong></div>
           <div><span>Tabelas carregadas</span><strong>{{ syncStatus?.tableCount ?? 0 }}</strong></div><div><span>Linhas em memória local</span><strong>{{ (syncStatus?.rowCount ?? 0).toLocaleString('pt-BR') }}</strong></div>
+          <div><span>Atualização automática</span><strong :class="syncStatus?.automaticRefresh.active ? 'safe-value' : 'paused-value'">{{ syncStatus?.automaticRefresh.active ? 'Ativa' : 'Aguardando' }}</strong></div><div><span>Próxima atividade</span><strong>{{ automaticRefreshLabel }}</strong></div>
         </div>
       </article>
     </section>
 
     <section v-if="syncStatus?.tables.length" class="card sync-card">
       <header class="card-header"><div><span class="eyebrow">Leitura atual</span><h2>Tabelas conectadas em memória local</h2><p>Os dados permanecem apenas na API local enquanto o projeto estiver em execução.</p></div><span class="query-status confirmed">READ ONLY</span></header>
-      <div class="catalog-table-wrap"><table class="catalog-table"><thead><tr><th>Tabela</th><th>Uso</th><th>Linhas</th><th>Colunas</th><th>Tempo</th></tr></thead><tbody><tr v-for="table in syncStatus.tables" :key="table.queryId"><td><strong>{{ table.powerBiObject }}</strong><code>{{ table.queryId }}</code></td><td>{{ table.usedBy.join(', ') }}</td><td>{{ table.rowCount.toLocaleString('pt-BR') }}</td><td>{{ table.columns.join(', ') }}</td><td>{{ table.durationMs.toLocaleString('pt-BR') }} ms</td></tr></tbody></table></div>
+      <div v-if="syncStatus.automaticRefresh.lastError" class="api-warning" role="alert"><AlertTriangle :size="18"/><span><strong>Última atualização automática falhou.</strong> {{ syncStatus.automaticRefresh.lastError }}</span></div>
+      <div class="catalog-table-wrap"><table class="catalog-table"><thead><tr><th>Tabela</th><th>Uso</th><th>Linhas</th><th>Frequência</th><th>Alterações</th><th>Colunas</th><th>Tempo</th></tr></thead><tbody><tr v-for="table in syncStatus.tables" :key="table.queryId"><td><strong>{{ table.powerBiObject }}</strong><code>{{ table.queryId }}</code></td><td>{{ table.usedBy.join(', ') }}</td><td><span :class="{ 'limit-warning': table.limitReached }">{{ table.rowCount.toLocaleString('pt-BR') }}<template v-if="table.limitReached"> / limite {{ table.maxRows.toLocaleString('pt-BR') }}</template></span></td><td>A cada {{ formatRefreshSeconds(table.refreshSeconds) }}<code>{{ formatDateTime(table.syncedAt) }}</code></td><td><span v-if="table.delta.changed" class="delta-changed">+{{ table.delta.added }} / −{{ table.delta.removed }}</span><span v-else>Sem mudança</span></td><td>{{ table.columns.join(', ') }}</td><td>{{ table.durationMs.toLocaleString('pt-BR') }} ms</td></tr></tbody></table></div>
     </section>
 
     <section class="security-grid">
@@ -174,6 +207,6 @@ onMounted(loadConfiguration);
 .integration-card{display:grid;grid-template-columns:130px 1fr auto;align-items:center;gap:20px;padding:20px}.oracle-mark{display:flex;min-height:84px;align-items:center;justify-content:center;gap:10px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);color:#d13b2f;font-size:.75rem;line-height:1.2}.oracle-mark strong{color:var(--text-primary);font-size:1rem}.integration-title>div{display:flex;align-items:center;gap:10px}.integration-title h2,.integration-title p{margin:0}.integration-title h2{font-size:1.2rem}.integration-title p{margin-top:5px;color:var(--text-secondary);font-size:.8125rem}.safety-seal{display:grid;grid-template-columns:auto auto;align-items:center;gap:2px 7px;padding:10px 14px;border:1px solid #a7dfb8;border-radius:9px;background:#f0fbf3;color:#15803d;font-size:.68rem}.safety-seal svg{grid-row:1/3}.safety-seal strong{font-size:.75rem;letter-spacing:.04em}
 .workspace-grid{display:grid;grid-template-columns:minmax(420px,1.2fr) minmax(320px,.8fr);gap:14px}.card-header>div h2{margin-top:3px}.eyebrow{color:var(--brand-blue-strong);font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.credential-form{display:grid;gap:14px;padding:20px}.credential-form label{display:grid;gap:6px;color:var(--text-secondary);font-size:.75rem;font-weight:600}.credential-form input{width:100%;min-height:42px;padding:0 12px;border:1px solid var(--border-subtle);border-radius:8px;outline:none;color:var(--text-primary)}.credential-form input:focus{border-color:var(--brand-blue);box-shadow:0 0 0 3px var(--brand-blue-soft)}.password-field{position:relative}.password-field input{padding-right:44px}.password-field button{position:absolute;top:50%;right:7px;display:grid;width:32px;height:32px;place-items:center;transform:translateY(-50%);border:0;background:transparent;color:var(--text-secondary);cursor:pointer}.privacy-note{display:flex;align-items:flex-start;gap:7px;margin:0;color:var(--text-tertiary);font-size:.72rem;line-height:1.45}.privacy-note svg{flex:0 0 auto;margin-top:1px}.access-actions{display:flex;flex-wrap:wrap;gap:8px}.test-result{display:flex;align-items:flex-start;gap:8px;margin:0 20px 20px;padding:11px 12px;border-radius:8px;font-size:.76rem;line-height:1.45}.test-result svg{flex:0 0 auto}.test-result strong{display:block}.test-result ul{margin:6px 0 0;padding-left:18px}.test-result.success{background:#ecf9f0;color:#147a38}.test-result.partial{background:#fff8e8;color:#8a5700}.test-result.error{background:#fff1f0;color:#b42318}
 .environment-list{display:grid;grid-template-columns:1fr 1fr}.environment-list>div{display:grid;gap:5px;padding:18px;border-top:1px solid var(--border-subtle);border-right:1px solid var(--border-subtle)}.environment-list>div:nth-child(even){border-right:0}.environment-list span{color:var(--text-tertiary);font-size:.7rem}.environment-list strong{font-size:.8rem}.safe-value{display:flex;align-items:center;gap:5px;color:#15803d}.paused-value{color:var(--warning)}.security-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.security-grid article{padding:18px}.security-grid h2,.security-grid p{margin:0}.security-grid h2{margin-top:12px;font-size:.95rem}.security-grid p{margin-top:5px;color:var(--text-secondary);font-size:.8125rem}.security-icon{display:grid;width:40px;height:40px;place-items:center;border-radius:8px;background:var(--brand-blue-soft);color:var(--brand-blue)}
-.catalog-header{align-items:flex-end}.catalog-header p,.sync-card .card-header p{margin:5px 0 0;color:var(--text-secondary);font-size:.76rem}.catalog-metrics{display:flex;gap:8px}.catalog-metrics>div{display:grid;min-width:80px;padding:8px 12px;border:1px solid var(--border-subtle);border-radius:8px;text-align:center}.catalog-metrics strong{color:var(--brand-blue-strong);font-size:1rem}.catalog-metrics span{color:var(--text-tertiary);font-size:.65rem}.catalog-table-wrap{overflow-x:auto}.catalog-table{width:100%;border-collapse:collapse;font-size:.75rem}.catalog-table th,.catalog-table td{padding:11px 16px;border-top:1px solid var(--border-subtle);text-align:left}.catalog-table th{color:var(--text-tertiary);font-size:.66rem;letter-spacing:.03em;text-transform:uppercase}.catalog-table td strong,.catalog-table td code{display:block}.catalog-table td code{margin-top:2px;color:var(--text-tertiary);font-size:.66rem}.sync-card .catalog-table td:nth-child(4){max-width:460px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.query-status{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:.68rem;font-weight:650}.query-status.confirmed{background:#eaf8ee;color:#157a38}.query-status.pending{background:#fff7e8;color:#a15c00}.api-warning{display:flex;align-items:flex-start;gap:9px;padding:12px 14px;border:1px solid #f5c26b;border-radius:9px;background:#fff9ed;color:#805100;font-size:.78rem}.api-warning svg{flex:0 0 auto}.api-warning code{padding:1px 4px;border-radius:4px;background:#ffefcc}.spinning{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.catalog-header{align-items:flex-end}.catalog-header p,.sync-card .card-header p{margin:5px 0 0;color:var(--text-secondary);font-size:.76rem}.catalog-metrics{display:flex;gap:8px}.catalog-metrics>div{display:grid;min-width:80px;padding:8px 12px;border:1px solid var(--border-subtle);border-radius:8px;text-align:center}.catalog-metrics strong{color:var(--brand-blue-strong);font-size:1rem}.catalog-metrics span{color:var(--text-tertiary);font-size:.65rem}.catalog-table-wrap{overflow-x:auto}.catalog-table{width:100%;border-collapse:collapse;font-size:.75rem}.catalog-table th,.catalog-table td{padding:11px 16px;border-top:1px solid var(--border-subtle);text-align:left}.catalog-table th{color:var(--text-tertiary);font-size:.66rem;letter-spacing:.03em;text-transform:uppercase}.catalog-table td strong,.catalog-table td code{display:block}.catalog-table td code{margin-top:2px;color:var(--text-tertiary);font-size:.66rem}.sync-card .catalog-table td:nth-child(6){max-width:460px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.query-status{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:.68rem;font-weight:650}.query-status.confirmed{background:#eaf8ee;color:#157a38}.query-status.pending{background:#fff7e8;color:#a15c00}.api-warning{display:flex;align-items:flex-start;gap:9px;padding:12px 14px;border:1px solid #f5c26b;border-radius:9px;background:#fff9ed;color:#805100;font-size:.78rem}.api-warning svg{flex:0 0 auto}.api-warning code{padding:1px 4px;border-radius:4px;background:#ffefcc}.sync-card>.api-warning{margin:12px 16px}.limit-warning{color:#a15c00;font-weight:700}.delta-changed{color:#157a38;font-weight:700}.spinning{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:900px){.workspace-grid,.security-grid{grid-template-columns:1fr}.integration-card{grid-template-columns:100px 1fr}.safety-seal{grid-column:1/-1;justify-self:start}}@media(max-width:560px){.integration-card,.environment-list{grid-template-columns:1fr}.environment-list>div{border-right:0}.catalog-header{align-items:flex-start;flex-direction:column}.test-button{width:100%}.page-heading{align-items:flex-start;flex-direction:column}}
 </style>

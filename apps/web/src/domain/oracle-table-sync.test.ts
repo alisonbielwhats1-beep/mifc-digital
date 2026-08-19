@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { selectSyncCandidates } from "../../../api/src/oracle/sync-policy.js";
+import { calculateTableDelta, reachedRowLimit, selectSyncCandidates } from "../../../api/src/oracle/sync-policy.js";
 import type { QueryCatalogEntry } from "../../../api/src/oracle/query-catalog.js";
 
 const entry = (overrides: Partial<QueryCatalogEntry>): QueryCatalogEntry => ({
@@ -24,5 +24,19 @@ describe("sincronização das tabelas Oracle aprovadas", () => {
     ]);
 
     expect(selected.map((item) => item.id)).toEqual(["base1"]);
+  });
+
+  it("sinaliza quando a leitura alcança o limite configurado", () => {
+    expect(reachedRowLimit(5_000, 5_000)).toBe(true);
+    expect(reachedRowLimit(4_999, 5_000)).toBe(false);
+  });
+
+  it("calcula inclusões e remoções sem depender da ordem das colunas", () => {
+    const delta = calculateTableDelta(
+      [{ ID: 1, STATUS: "A" }, { ID: 2, STATUS: "A" }],
+      [{ STATUS: "A", ID: 1 }, { ID: 2, STATUS: "B" }, { ID: 3, STATUS: "A" }],
+    );
+
+    expect(delta).toEqual({ added: 2, removed: 1, unchanged: 1, changed: true });
   });
 });

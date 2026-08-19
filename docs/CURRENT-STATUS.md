@@ -3,7 +3,7 @@
 Atualizado em: 2026-08-19  
 Branch: `main`  
 Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`  
-Último marco concluído: **Prompt 6.2 — sincronização Oracle aprovada e primeira medida real no Layout**
+Último marco concluído: **Prompt 6.3 — atualização Oracle automática e escalonada**
 
 ## Onde paramos
 
@@ -98,14 +98,29 @@ Uma leitura real da consulta `base1` foi validada pelo proprietário na rede aut
 - valor de `T-RF3` exibido nas quatro faixas de cliente quando as tabelas estão conectadas;
 - parâmetro atual da RF3 vem do cadastro local de Capacidade (16,7 h / 1.002 min), com identificação explícita de fonte mista.
 
+### Prompt 6.3 — atualização automática escalonada
+
+- atualização iniciada somente depois da primeira carga autorizada das tabelas;
+- apenas uma consulta Oracle executada por vez, sem concorrência entre tabelas;
+- frequências por peso da fonte: 1 minuto para DAF Slitters e Segregação, 2 minutos para Shipdate e 5 minutos para Base1, Base2 e Scania;
+- intervalo mínimo protegido em 60 segundos e ciclo do agendador em 15 segundos;
+- comparação local por conjunto de linhas, com contagem de inclusões, remoções e linhas inalteradas;
+- painel de Integrações atualizado a cada 15 segundos, exibindo próxima leitura, delta, duração e eventual limite atingido;
+- Layout consulta as medidas em memória a cada 30 segundos, sem abrir nova conexão Oracle pelo navegador;
+- limites de Base1, Base2, DAF Slitters e Scania ampliados para 20.000 linhas, com alerta visual ao atingir o teto;
+- falha em uma atualização preserva o último conjunto válido em memória;
+- consultas permanecem com fingerprint aprovada, transação `READ ONLY`, rollback e fechamento obrigatório.
+
+Este modo é **quase em tempo real e incremental na memória local**. As consultas aprovadas atuais não possuem uma coluna confiável de última alteração; por isso cada tabela vencida ainda é relida integralmente no Oracle. Incremental real no banco (filtro por timestamp, SCN/CDC ou materialized view) depende de validação do DBA e de nova assinatura da consulta antes de ser habilitado.
+
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 39 testes aprovados;
+- `npm test`: 41 testes aprovados;
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
 - `npm run test:e2e`: suíte criada; execução pendente porque o ambiente de trabalho não permitiu baixar o navegador Chromium do Playwright;
-- branch local contém as alterações do Prompt 6.1 e ainda não foi enviada ao `origin/main`.
+- branch local contém as alterações até o Prompt 6.3 e ainda não foi enviada ao `origin/main`.
 
 ## Parcial ou ainda não validado
 
@@ -119,6 +134,7 @@ Uma leitura real da consulta `base1` foi validada pelo proprietário na rede aut
 - persistência atual é local no navegador; banco próprio da aplicação, autenticação e perfis ainda não foram implementados;
 - o código está no GitHub público, mas a aplicação ainda não foi hospedada como site online.
 - o parâmetro de tempo disponível da RF3 ainda usa o cadastro local de Capacidade; a leitura direta da planilha de parâmetros da rede permanece como melhoria posterior.
+- o modo automático reduz picos por escalonamento, mas ainda não faz incremental no Oracle; falta uma chave de alteração confiável ou mecanismo CDC aprovado pelo DBA.
 
 ## Pendências em ordem recomendada
 

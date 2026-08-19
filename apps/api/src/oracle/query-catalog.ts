@@ -14,6 +14,7 @@ export interface QueryCatalogEntry {
   expectedFingerprint?: string;
   maxRows?: number;
   timeoutSeconds?: number;
+  refreshSeconds?: number;
 }
 
 export async function loadQueryCatalog(): Promise<QueryCatalogEntry[]> {
