@@ -2,7 +2,7 @@
   {
     "id": "base1",
     "powerBiObject": "Base1",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/expressions.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/expressions.tmdl",
     "sourceType": "oracle",
     "queryMode": "embedded-sql",
     "status": "confirmed-pbip",
@@ -15,7 +15,7 @@
   {
     "id": "base2",
     "powerBiObject": "Base2",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/expressions.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/expressions.tmdl",
     "sourceType": "oracle",
     "queryMode": "embedded-sql",
     "status": "confirmed-pbip",
@@ -28,7 +28,7 @@
   {
     "id": "daf-slitters",
     "powerBiObject": "DAF SLITTERS",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/DAF SLITTERS.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/DAF SLITTERS.tmdl",
     "sourceType": "oracle",
     "queryMode": "embedded-sql",
     "status": "confirmed-pbip",
@@ -41,7 +41,7 @@
   {
     "id": "scania",
     "powerBiObject": "SCANIA",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/SCANIA.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/SCANIA.tmdl",
     "sourceType": "oracle",
     "queryMode": "embedded-sql",
     "status": "confirmed-pbip",
@@ -54,7 +54,7 @@
   {
     "id": "shipdate",
     "powerBiObject": "SHIPDATE",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/SHIPDATE.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/SHIPDATE.tmdl",
     "sourceType": "oracle",
     "queryMode": "embedded-sql",
     "status": "confirmed-pbip",
@@ -67,7 +67,7 @@
   {
     "id": "relatorio-bases",
     "powerBiObject": "Relatorio_bases",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/Relatorio_bases.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/Relatorio_bases.tmdl",
     "sourceType": "oracle",
     "queryMode": "embedded-sql",
     "status": "confirmed-pbip",
@@ -80,7 +80,7 @@
   {
     "id": "relatorio-item-rf2",
     "powerBiObject": "Relatorio_Item RF2",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/Relatorio_Item RF2.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/Relatorio_Item RF2.tmdl",
     "sourceType": "oracle",
     "queryMode": "embedded-sql",
     "status": "confirmed-pbip",
@@ -93,7 +93,7 @@
   {
     "id": "segregacao",
     "powerBiObject": "Segregacao",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/Segregacao.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/Segregacao.tmdl",
     "sourceType": "oracle",
     "queryMode": "embedded-sql",
     "status": "confirmed-pbip",
@@ -106,7 +106,7 @@
   {
     "id": "bi-punch-sca",
     "powerBiObject": "BI_PUNCH_SCA",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/expressions.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/expressions.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
     "status": "navigation-m-pending-materialization",
@@ -116,7 +116,7 @@
   {
     "id": "bi-punch-vdb",
     "powerBiObject": "BI_PUNCH_VDB",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/expressions.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/expressions.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
     "status": "navigation-m-pending-materialization",
@@ -126,7 +126,7 @@
   {
     "id": "bi-oee-scrap",
     "powerBiObject": "BI_OEE_SCRAP",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/BI_OEE_SCRAP.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/BI_OEE_SCRAP.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
     "status": "navigation-m-pending-materialization",
@@ -136,7 +136,7 @@
   {
     "id": "lotes",
     "powerBiObject": "Lotes",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/Lotes.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/Lotes.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
     "status": "navigation-m-pending-materialization",
@@ -146,7 +146,7 @@
   {
     "id": "paradas",
     "powerBiObject": "Paradas",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/Paradas.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/Paradas.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
     "status": "navigation-m-pending-materialization",
@@ -156,7 +156,7 @@
   {
     "id": "producao",
     "powerBiObject": "Produção",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/Produção.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/Produção.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
     "status": "navigation-m-pending-materialization",
@@ -166,7 +166,7 @@
   {
     "id": "bi-mifc-lct-pos-stock",
     "powerBiObject": "BI_MIFC_LCT_POS_STOCK",
-    "sourceFile": "MIFC.SemanticModel/MIFC.SemanticModel/definition/tables/BI_MIFC_LCT_POS_STOCK.tmdl",
+    "sourceFile": "MIFC.SemanticModel/definition/tables/BI_MIFC_LCT_POS_STOCK.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
     "status": "navigation-m-pending-materialization",
