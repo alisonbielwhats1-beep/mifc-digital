@@ -3,12 +3,12 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from "v
 import { storeToRefs } from "pinia";
 import { ChevronDown, Copy, Eye, Hand, Layers3, Maximize2, Minimize2, Minus, MousePointer2, Plus, Redo2, Save, Trash2, Type as TypeIcon, Undo2, Waypoints } from "@lucide/vue";
 import type { MifcFlowType } from "@mifc/domain";
-import { calculateProcessTimeDays } from "@mifc/calculation-engine";
 import MifcNodeCard from "@/components/layout/MifcNodeCard.vue";
 import MifcPropertiesPanel from "@/components/layout/MifcPropertiesPanel.vue";
 import MifcSymbolPalette from "@/components/layout/MifcSymbolPalette.vue";
 import { buildClientProcessPath, clientProcessLanes, positionClientStages, type ClientProcessLane, type ClientStageMapping, type PositionedClientStage } from "@/domain/client-process-matrix";
 import { edgeGeometry } from "@/domain/layout-graph";
+import { calculateLayoutProcessMeasures } from "@/domain/layout-process-measures";
 import { useMifcFormsStore } from "@/stores/mifc-forms";
 import { useMifcLayoutStore, type LayoutEdge, type LayoutNode, type LayoutNodeProperties, type LayoutNodeType, type LayoutTool } from "@/stores/mifc-layout";
 import { useUiStore } from "@/stores/ui";
@@ -41,13 +41,13 @@ const renderedEdges = computed(() => activeRevision.value.edges.map((edge) => {
 }).filter((edge): edge is NonNullable<typeof edge> => Boolean(edge)));
 const positionedClientStages = computed(() => positionClientStages(activeRevision.value.nodes));
 const clientLanes = computed(() => clientProcessLanes.map((lane) => ({ ...lane, path: buildClientProcessPath(lane, positionedClientStages.value) })));
-const rf3AvailableMinutes = computed(() => (forms.capacityRows.find((row) => row.id === "cap-rf3")?.availableHoursPerDay ?? 0) * 60);
-const processMeasureValues = computed<Record<string, number>>(() => {
-  const demand = oracleMeasures.value.values?.["D-P-RF3"] ?? 0;
-  const values: Record<string, number> = {};
-  if (demand > 0) values["T-RF3"] = calculateProcessTimeDays(rf3AvailableMinutes.value, demand);
-  return values;
-});
+const availableMinutes = (capacityId: string) => (forms.capacityRows.find((row) => row.id === capacityId)?.availableHoursPerDay ?? 0) * 60;
+const processMeasureValues = computed<Record<string, number>>(() => calculateLayoutProcessMeasures(oracleMeasures.value.values, {
+  rf3: availableMinutes("cap-rf3"),
+  beatty: availableMinutes("cap-beatty"),
+  paint: availableMinutes("cap-paint"),
+  stenhoj: availableMinutes("cap-stenhoj"),
+}));
 const worldStyle = computed(() => ({ width:`${WORLD_WIDTH}px`, height:`${WORLD_HEIGHT}px`, transform:`translate(${pan.x}px,${pan.y}px) scale(${zoom.value})` }));
 
 function isInformationNode(node: LayoutNode) { return ["database","information","text"].includes(node.type); }
@@ -162,7 +162,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
           </svg>
           <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="node" :zoom="zoom" :selected="selectedNode?.id===node.id" :connecting="activeTool==='connect'" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize"/>
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
-            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Oracle automático · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
+            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Oracle automático + Capacidade local · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
             <div class="client-stage-labels" aria-label="Etapas rastreadas no Power BI">
               <button v-for="stage in positionedClientStages" :key="stage.id" type="button" :style="{ left: `${stage.centerX}px` }" :title="`Alinhado ao bloco ${stage.layoutNodeId}`" @click="selectNode(stage.layoutNodeId)">{{ stage.label }}</button>
             </div>

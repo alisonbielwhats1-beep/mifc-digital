@@ -1,5 +1,5 @@
 import { getCachedTable, getTableSyncStatus } from "./table-sync.js";
-import { deriveRf3Demand } from "./layout-measure-formulas.js";
+import { deriveLayoutDemand } from "./layout-measure-formulas.js";
 
 export function getCachedLayoutMeasures() {
   const base1 = getCachedTable("base1");
@@ -15,7 +15,7 @@ export function getCachedLayoutMeasures() {
     return { ready: false as const, missing, values: null, updatedAt: null };
   }
 
-  const values = deriveRf3Demand(base1!.rows, base2!.rows, dafSlitters!.rows);
+  const values = deriveLayoutDemand(base1!.rows, base2!.rows, dafSlitters!.rows);
   const updatedAt = getTableSyncStatus().tables
     .filter((table) => ["base1", "base2", "daf-slitters"].includes(table.queryId))
     .map((table) => table.syncedAt)

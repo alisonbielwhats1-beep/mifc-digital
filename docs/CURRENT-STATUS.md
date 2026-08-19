@@ -3,7 +3,7 @@
 Atualizado em: 2026-08-19  
 Branch: `main`  
 Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`  
-Último marco concluído: **Prompt 6.3 — atualização Oracle automática e escalonada**
+Último marco concluído: **Prompt 6.4 — medidas de processo adicionais no Layout**
 
 ## Onde paramos
 
@@ -113,18 +113,28 @@ Uma leitura real da consulta `base1` foi validada pelo proprietário na rede aut
 
 Este modo é **quase em tempo real e incremental na memória local**. As consultas aprovadas atuais não possuem uma coluna confiável de última alteração; por isso cada tabela vencida ainda é relida integralmente no Oracle. Incremental real no banco (filtro por timestamp, SCN/CDC ou materialized view) depende de validação do DBA e de nova assinatura da consulta antes de ser habilitado.
 
+### Prompt 6.4 — medidas adicionais no Layout
+
+- demandas `D-P-B1`, `D-P-B3`, `D-P-B4`, `D-P-LPP2`, `D-P-STJ`, `D-P-SCA-REB` e `D-P-DAF-REB` reproduzidas conforme o DAX recebido;
+- tempos `T-B1`, `T-B3`, `T-B4`, `T-LPP2`, `T-STJ`, `T-SCA-REB` e `T-DAF-REB` calculados com demanda Oracle e minutos disponíveis do cadastro local de Capacidade;
+- `T-M3` publicado como zero porque a medida correspondente no PBIP é explicitamente constante `0`;
+- valores exibidos automaticamente nas etapas e clientes definidos pela matriz de linhagem;
+- `T-CNC`, `T-P.A`, `T-LCT/RF2` e `T-EMB-VM` permanecem sem número enquanto faltarem parâmetros ou fontes aprovadas suficientes;
+- origem mista identificada no Layout como `Oracle automático + Capacidade local`;
+- testes específicos adicionados para demandas e tempos de processo, sem apresentar ausência de dado como valor observado.
+
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 41 testes aprovados;
+- `npm test`: 43 testes aprovados;
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
 - `npm run test:e2e`: suíte criada; execução pendente porque o ambiente de trabalho não permitiu baixar o navegador Chromium do Playwright;
-- branch local contém as alterações até o Prompt 6.3 e ainda não foi enviada ao `origin/main`.
+- branch local contém as alterações até o Prompt 6.4 e ainda não foi enviada ao `origin/main`.
 
 ## Parcial ou ainda não validado
 
-- Overview e Resultados ainda funcionam como prévias com dados locais; a primeira ligação Oracle está no Layout (`T-RF3`);
+- Overview e Resultados ainda funcionam como prévias com dados locais; o Layout já recebe RF3, Beattys, Pintura, Stenhoj e Rebitagens por fonte mista;
 - os formulários estão funcionais, mas a validação operacional final de todos os campos contra o Excel 2026 deve ser feita pelo usuário da área;
 - 309 medidas existem no modelo Power BI; nem todas foram migradas para o Calculation Engine;
 - as 62 medidas usadas nos cartões do Layout foram catalogadas, mas seus valores atuais dependem das fontes online;

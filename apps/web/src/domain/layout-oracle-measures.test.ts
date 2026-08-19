@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { base1Client, deriveRf3Demand } from "../../../api/src/oracle/layout-measure-formulas.js";
+import { base1Client, deriveLayoutDemand } from "../../../api/src/oracle/layout-measure-formulas.js";
 
 describe("medidas Oracle da Roll Former 3", () => {
   it("reproduz a classificação de clientes da expressão Base1", () => {
@@ -12,7 +12,7 @@ describe("medidas Oracle da Roll Former 3", () => {
   });
 
   it("calcula P-T-D e D-P-RF3 conforme as medidas do PBIP", () => {
-    const values = deriveRf3Demand([
+    const values = deriveLayoutDemand([
       { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-1" },
       { PRODUCT_CLASS: "24", CHASSIS_NUMBER: "fh-2" },
       { PRODUCT_CLASS: "06", CHASSIS_NUMBER: "vm-1" },
@@ -35,6 +35,13 @@ describe("medidas Oracle da Roll Former 3", () => {
       "P-VM-F": 1,
       "P-T-D": 8,
       "D-P-RF3": 16,
+      "D-P-B1": 2,
+      "D-P-B3": 2,
+      "D-P-B4": 2,
+      "D-P-LPP2": 16,
+      "D-P-STJ": 14,
+      "D-P-SCA-REB": 2,
+      "D-P-DAF-REB": 10,
     });
   });
 });

@@ -1,12 +1,19 @@
 type OracleRow = Record<string, unknown>;
 
-export interface Rf3DemandMeasures {
+export interface LayoutDemandMeasures {
   "P-SCA-F": number;
   "P-DAF-S": number;
   "P-FH-F": number;
   "P-VM-F": number;
   "P-T-D": number;
   "D-P-RF3": number;
+  "D-P-B1": number;
+  "D-P-B3": number;
+  "D-P-B4": number;
+  "D-P-LPP2": number;
+  "D-P-STJ": number;
+  "D-P-SCA-REB": number;
+  "D-P-DAF-REB": number;
 }
 
 const asRows = (rows: unknown[]): OracleRow[] => rows.filter((row): row is OracleRow => Boolean(row) && typeof row === "object" && !Array.isArray(row));
@@ -27,11 +34,11 @@ export function base1Client(productClass: unknown): "FH" | "VM" | "SCA" | "B8" |
   return null;
 }
 
-export function deriveRf3Demand(
+export function deriveLayoutDemand(
   base1Rows: unknown[],
   base2Rows: unknown[],
   dafSlitterRows: unknown[],
-): Rf3DemandMeasures {
+): LayoutDemandMeasures {
   const base1 = asRows(base1Rows);
   const base2 = asRows(base2Rows);
   const dafSlitters = asRows(dafSlitterRows);
@@ -59,15 +66,29 @@ export function deriveRf3Demand(
     0,
   );
 
-  const measures: Rf3DemandMeasures = {
+  const measures: LayoutDemandMeasures = {
     "P-SCA-F": scaniaComponents / 2,
     "P-DAF-S": dafItems / 2 + dafSlitterPairs,
     "P-FH-F": fhItems / 2,
     "P-VM-F": vmItems / 2,
     "P-T-D": 0,
     "D-P-RF3": 0,
+    "D-P-B1": 0,
+    "D-P-B3": 0,
+    "D-P-B4": 0,
+    "D-P-LPP2": 0,
+    "D-P-STJ": 0,
+    "D-P-SCA-REB": 0,
+    "D-P-DAF-REB": 0,
   };
   measures["P-T-D"] = measures["P-SCA-F"] + measures["P-DAF-S"] + measures["P-FH-F"] + measures["P-VM-F"];
   measures["D-P-RF3"] = measures["P-T-D"] * 2;
+  measures["D-P-B1"] = measures["P-VM-F"] * 2;
+  measures["D-P-B3"] = measures["P-SCA-F"] * 2;
+  measures["D-P-B4"] = measures["P-FH-F"] * 2;
+  measures["D-P-LPP2"] = measures["P-T-D"] * 2;
+  measures["D-P-STJ"] = (measures["P-SCA-F"] + measures["P-FH-F"] + measures["P-DAF-S"]) * 2;
+  measures["D-P-SCA-REB"] = measures["P-SCA-F"] * 2;
+  measures["D-P-DAF-REB"] = measures["P-DAF-S"] * 2;
   return measures;
 }
