@@ -77,7 +77,7 @@
     "queryMode": "embedded-sql",
     "status": "confirmed-pbip",
     "enabled": true,
-    "usedBy": [],
+    "usedBy": ["Layout", "Buffer e Estoque"],
     "expectedFingerprint": "sha256:8edc8914ca801feacd2eabd154fe06ae1658a6aa6c41f7f5d4c8cdab14425fb4",
     "maxRows": 5000,
     "timeoutSeconds": 30
@@ -90,7 +90,7 @@
     "queryMode": "embedded-sql",
     "status": "confirmed-pbip",
     "enabled": true,
-    "usedBy": [],
+    "usedBy": ["Layout", "LCT / RF2"],
     "expectedFingerprint": "sha256:af304fc314b5e796e7e9003dccf028471c5d08b65fc4eb9797619b167391389e",
     "maxRows": 5000,
     "timeoutSeconds": 30
@@ -115,9 +115,15 @@
     "sourceFile": "MIFC.SemanticModel/definition/expressions.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
-    "status": "navigation-m-pending-materialization",
-    "enabled": false,
-    "usedBy": []
+    "status": "navigation-m-materialized-select",
+    "enabled": true,
+    "usedBy": ["Capacidade", "Scania"],
+    "expectedSchema": "BOMES",
+    "expectedSourceObject": "BI_PUNCH_SCA",
+    "expectedFingerprint": "sha256:64ee16cd43ad813d44aafcdafa6c999084cd31afbd614b850a921c2951a68f04",
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 60
   },
   {
     "id": "bi-punch-vdb",
@@ -125,9 +131,15 @@
     "sourceFile": "MIFC.SemanticModel/definition/expressions.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
-    "status": "navigation-m-pending-materialization",
-    "enabled": false,
-    "usedBy": []
+    "status": "navigation-m-materialized-select",
+    "enabled": true,
+    "usedBy": ["Capacidade", "Volvo"],
+    "expectedSchema": "BOMES",
+    "expectedSourceObject": "BI_PUNCH_VDB",
+    "expectedFingerprint": "sha256:ce9ad3ca1c4a4b540b64a227bec876e86fcd04a3ea23421b2b28527ab3782885",
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 60
   },
   {
     "id": "bi-oee-scrap",
@@ -135,9 +147,15 @@
     "sourceFile": "MIFC.SemanticModel/definition/tables/BI_OEE_SCRAP.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
-    "status": "navigation-m-pending-materialization",
-    "enabled": false,
-    "usedBy": []
+    "status": "navigation-m-materialized-select",
+    "enabled": true,
+    "usedBy": ["Capacidade", "OEE", "Scrap"],
+    "expectedSchema": "BOMES",
+    "expectedSourceObject": "BI_OEE_SCRAP",
+    "expectedFingerprint": "sha256:97c941f7c5faabcfa7926a0c5e1d30b889be4311e215244840fcc0c3907589ab",
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 60
   },
   {
     "id": "lotes",
@@ -145,9 +163,15 @@
     "sourceFile": "MIFC.SemanticModel/definition/tables/Lotes.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
-    "status": "navigation-m-pending-materialization",
-    "enabled": false,
-    "usedBy": []
+    "status": "navigation-m-materialized-select",
+    "enabled": true,
+    "usedBy": ["Logística", "Buffer e Estoque", "Layout"],
+    "expectedSchema": "BOMES",
+    "expectedSourceObject": "LOTES",
+    "expectedFingerprint": "sha256:4cc3c9fd71e3907e4658b0e6a97b6512ceec615e4e5a7c60e18a85040c034d76",
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 120
   },
   {
     "id": "paradas",
@@ -155,9 +179,15 @@
     "sourceFile": "MIFC.SemanticModel/definition/tables/Paradas.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
-    "status": "navigation-m-pending-materialization",
-    "enabled": false,
-    "usedBy": []
+    "status": "navigation-m-materialized-select",
+    "enabled": true,
+    "usedBy": ["Capacidade", "Layout"],
+    "expectedSchema": "BOMES",
+    "expectedSourceObject": "PARADAS",
+    "expectedFingerprint": "sha256:bb172fc3765eb329c200b0ab96d206a962794d6bfc0efc2ae4a133fb0b09cb5e",
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 60
   },
   {
     "id": "producao",
@@ -165,9 +195,15 @@
     "sourceFile": "MIFC.SemanticModel/definition/tables/Produção.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
-    "status": "navigation-m-pending-materialization",
-    "enabled": false,
-    "usedBy": []
+    "status": "navigation-m-materialized-select",
+    "enabled": true,
+    "usedBy": ["Capacidade", "Layout"],
+    "expectedSchema": "BOMES",
+    "expectedSourceObject": "PRODUCAO",
+    "expectedFingerprint": "sha256:992c932c236be3971a0b0e9c4c4a2431b7b37fff962cbf4c16fd6b4b87320ffe",
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 60
   },
   {
     "id": "bi-mifc-lct-pos-stock",
@@ -175,8 +211,14 @@
     "sourceFile": "MIFC.SemanticModel/definition/tables/BI_MIFC_LCT_POS_STOCK.tmdl",
     "sourceType": "oracle",
     "queryMode": "navigation-m",
-    "status": "navigation-m-pending-materialization",
-    "enabled": false,
-    "usedBy": []
+    "status": "navigation-m-materialized-select",
+    "enabled": true,
+    "usedBy": ["Buffer e Estoque", "Layout"],
+    "expectedSchema": "BOMES",
+    "expectedSourceObject": "BI_MIFC_LCT_POS_STOCK",
+    "expectedFingerprint": "sha256:6c73ba378c81513b489f6468da7a30ef2b66653f999e510413806ca60e83bfa2",
+    "maxRows": 20000,
+    "timeoutSeconds": 30,
+    "refreshSeconds": 60
   }
 ]

@@ -30,7 +30,12 @@ const renameFocusRequest = ref(0);
 const showLayers = ref(false);
 const visibleLayers = reactive({ information: true, material: true, metrics: true });
 const activeFlow = ref<MifcFlowType>("material_push");
-type MeasureDiagnostics = { contextDate: string; rows: Record<string, { cached: number; filtered: number }> };
+type MeasureDiagnostics = {
+  contextDate: string;
+  rows: Record<string, { cached: number; filtered: number }>;
+  operationalRows?: Record<string, number>;
+  operationalReady?: Record<string, boolean>;
+};
 const todayKey = () => { const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`; };
 const selectedDate = ref(todayKey());
 const oracleMeasures = ref<{ ready: boolean; values: Record<string, number> | null; diagnostics?: MeasureDiagnostics; updatedAt: string | null }>({ ready: false, values: null, updatedAt: null });
@@ -57,6 +62,26 @@ const processMeasureValues = computed<Record<string, number>>(() => calculateLay
   paint: availableMinutes("cap-paint"),
   stenhoj: availableMinutes("cap-stenhoj"),
 }));
+const productionKeys: Record<string, { production: string[]; demand: string[]; stops: string[] }> = {
+  "T-RF3": { production: ["P-RF3"], demand: ["D-P-RF3"], stops: ["P-P-RF3"] },
+  "T-B1": { production: ["P-B1"], demand: ["D-P-B1"], stops: ["P-P-B1"] },
+  "T-B2": { production: ["P-B2"], demand: ["D-P-B2"], stops: ["P-P-B2"] },
+  "T-B3": { production: ["P-B3"], demand: ["D-P-B3"], stops: ["P-P-B3"] },
+  "T-B4": { production: ["P-B4"], demand: ["D-P-B4"], stops: ["P-P-B4"] },
+  "T-P.A/T-CNC": { production: ["P-P.A", "P-CNC"], demand: ["D-P-P.A", "D-P-CNC"], stops: ["P-P-P.A", "P-P-CNC"] },
+  "T-LPP2": { production: ["P-LPP2"], demand: ["D-P-LPP2"], stops: ["P-P-LPP2"] },
+  "T-STJ/T-EMB-VM": { production: ["P-STJ"], demand: ["D-P-STJ"], stops: ["P-P-STJ"] },
+};
+function sumMeasureKeys(keys: string[]): number { return keys.reduce((total, key) => total + Number(oracleMeasures.value.values?.[key] ?? 0), 0); }
+function liveMetricsForNode(node: LayoutNode) {
+  const keys = productionKeys[node.properties.calculationKey];
+  if (!keys || !oracleMeasures.value.diagnostics?.operationalReady?.producao) return undefined;
+  return {
+    production: sumMeasureKeys(keys.production),
+    demand: sumMeasureKeys(keys.demand),
+    stopMinutes: oracleMeasures.value.diagnostics.operationalReady.paradas ? sumMeasureKeys(keys.stops) : undefined,
+  };
+}
 const filteredRowSummary = computed(() => Object.values(oracleMeasures.value.diagnostics?.rows ?? {}).reduce((total, item) => total + item.filtered, 0));
 const worldStyle = computed(() => ({ width:`${WORLD_WIDTH}px`, height:`${WORLD_HEIGHT}px`, transform:`translate(${pan.x}px,${pan.y}px) scale(${zoom.value})` }));
 
@@ -170,7 +195,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
             <defs><marker id="arrow-material" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1f2c38"/></marker><marker id="arrow-info" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#526170"/></marker></defs>
             <g v-for="edge in renderedEdges" v-show="isInformationEdge(edge)?visibleLayers.information:visibleLayers.material" :key="edge.id" class="edge-group" :class="[edge.flowType,{selected:selectedEdge?.id===edge.id}]" @click.stop="selectEdge(edge.id)"><path class="edge-hit" :d="edge.geometry.path"/><path class="edge-line" :d="edge.geometry.path" :marker-end="`url(#${isInformationEdge(edge)?'arrow-info':'arrow-material'})`"/><circle v-if="selectedEdge?.id===edge.id" class="curve-handle" :cx="edge.geometry.control.x" :cy="edge.geometry.control.y" r="8" @pointerdown="startCurve($event,edge)"/></g>
           </svg>
-          <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="node" :zoom="zoom" :selected="selectedNode?.id===node.id" :connecting="activeTool==='connect'" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize"/>
+          <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="node" :zoom="zoom" :selected="selectedNode?.id===node.id" :connecting="activeTool==='connect'" :live-metrics="liveMetricsForNode(node)" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize"/>
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
             <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Filtro ${selectedDate} · ${filteredRowSummary.toLocaleString('pt-BR')} linhas · Oracle + parâmetros por máquina · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
             <div class="client-stage-labels" aria-label="Etapas rastreadas no Power BI">

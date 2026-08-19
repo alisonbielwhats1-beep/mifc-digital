@@ -37,6 +37,58 @@ export function extractEmbeddedSqlFromTmdl(content: string, powerBiObject: strin
   return decodePowerQueryEscapes(decoded);
 }
 
+export interface NavigationTarget {
+  schema: string;
+  object: string;
+}
+
+function scopePowerBiObject(content: string, powerBiObject: string): string {
+  const expressionMarker = `expression ${powerBiObject} =`;
+  const quotedExpressionMarker = `expression '${powerBiObject}' =`;
+  const expressionStart = Math.max(content.indexOf(expressionMarker), content.indexOf(quotedExpressionMarker));
+  if (expressionStart < 0) return content;
+  const nextExpression = content.indexOf("\nexpression ", expressionStart + 1);
+  return content.slice(expressionStart, nextExpression >= 0 ? nextExpression : undefined);
+}
+
+function decodeNavigationName(value: string): string {
+  return value.replace(/""/g, '"').trim();
+}
+
+function assertOracleIdentifier(value: string, label: string): void {
+  if (!/^[A-Z][A-Z0-9_$#]*$/i.test(value)) {
+    throw new Error(`${label} Oracle inválido na navegação M: ${value}`);
+  }
+}
+
+export function extractNavigationTargetFromTmdl(content: string, powerBiObject: string): NavigationTarget {
+  const scoped = scopePowerBiObject(content, powerBiObject);
+  const schemaMatches = [...scoped.matchAll(/\{\s*\[\s*Schema\s*=\s*"((?:""|[^"])*)"\s*\]\s*\}\s*\[\s*Data\s*\]/gi)];
+  const objectMatches = [...scoped.matchAll(/\{\s*\[\s*Name\s*=\s*"((?:""|[^"])*)"(?:\s*,[^\]]*)?\]\s*\}\s*\[\s*Data\s*\]/gi)];
+  const schema = decodeNavigationName(schemaMatches.at(-1)?.[1] ?? "");
+  const object = decodeNavigationName(objectMatches.at(-1)?.[1] ?? "");
+  if (!schema || !object) {
+    throw new Error(`Destino Schema/Name não encontrado na navegação M de ${powerBiObject}.`);
+  }
+  assertOracleIdentifier(schema, "Schema");
+  assertOracleIdentifier(object, "Objeto");
+  return { schema, object };
+}
+
+export function materializeNavigationSelect(
+  content: string,
+  entry: Pick<QueryCatalogEntry, "powerBiObject" | "expectedSchema" | "expectedSourceObject">,
+): string {
+  const target = extractNavigationTargetFromTmdl(content, entry.powerBiObject);
+  if (!entry.expectedSchema || target.schema.toUpperCase() !== entry.expectedSchema.toUpperCase()) {
+    throw new Error(`Schema divergente na navegação M de ${entry.powerBiObject}.`);
+  }
+  if (!entry.expectedSourceObject || target.object.toUpperCase() !== entry.expectedSourceObject.toUpperCase()) {
+    throw new Error(`Objeto divergente na navegação M de ${entry.powerBiObject}.`);
+  }
+  return `SELECT * FROM "${target.schema.toUpperCase()}"."${target.object.toUpperCase()}"`;
+}
+
 export function normalizeSql(sql: string): string {
   return sql.replace(/\r\n?/g, "\n").split("\n").map((line) => line.trimEnd()).join("\n").trim();
 }
@@ -46,13 +98,15 @@ export function fingerprintSql(sql: string): string {
 }
 
 export async function extractCatalogSqlUnchecked(entry: QueryCatalogEntry): Promise<string> {
-  if (entry.queryMode !== "embedded-sql") throw new Error(`O objeto ${entry.id} usa navegação M e não possui SQL aprovado para execução.`);
   const config = getOracleConfig();
   const root = resolve(config.pbipPath);
   const sourcePath = resolve(root, entry.sourceFile);
   if (sourcePath !== root && !sourcePath.startsWith(`${root}${sep}`)) throw new Error("Caminho da consulta fora do PBIP autorizado.");
   const content = await readFile(sourcePath, "utf8");
-  return normalizeSql(extractEmbeddedSqlFromTmdl(content, entry.powerBiObject));
+  const sql = entry.queryMode === "embedded-sql"
+    ? extractEmbeddedSqlFromTmdl(content, entry.powerBiObject)
+    : materializeNavigationSelect(content, entry);
+  return normalizeSql(sql);
 }
 
 export async function loadCatalogSql(entry: QueryCatalogEntry): Promise<string> {

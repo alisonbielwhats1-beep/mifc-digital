@@ -105,7 +105,7 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
     const user = typeof body.user === "string" ? body.user : "";
     const password = typeof body.password === "string" ? body.password : "";
     const result = await syncApprovedTables({ user, password });
-    const automaticRefresh = result.ok ? startAutomaticRefresh() : getTableSyncStatus().automaticRefresh;
+    const automaticRefresh = result.tables.length > 0 ? startAutomaticRefresh() : getTableSyncStatus().automaticRefresh;
     sendJson(response, 200, { ...result, automaticRefresh });
     return;
   }

@@ -12,6 +12,8 @@ export interface QueryCatalogEntry {
   enabled: boolean;
   usedBy: string[];
   expectedFingerprint?: string;
+  expectedSchema?: string;
+  expectedSourceObject?: string;
   maxRows?: number;
   timeoutSeconds?: number;
   refreshSeconds?: number;

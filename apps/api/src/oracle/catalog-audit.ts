@@ -6,13 +6,17 @@ async function main(): Promise<void> {
   const catalog = await loadQueryCatalog();
   console.log("MIFC Digital — auditoria local do catálogo Oracle");
   for (const entry of catalog) {
-    if (entry.queryMode !== "embedded-sql") {
-      console.log(`${entry.id}\tnavigation-m\tPENDENTE`);
+    if (!entry.enabled) {
+      console.log(`${entry.id}\t${entry.queryMode}\tPENDENTE`);
       continue;
     }
     const sql = await extractCatalogSqlUnchecked(entry);
     assertSelectOnly(sql);
-    console.log(`${entry.id}\t${fingerprintSql(sql)}\tSELECT-ONLY`);
+    const fingerprint = fingerprintSql(sql);
+    if (fingerprint !== entry.expectedFingerprint) {
+      throw new Error(`Fingerprint divergente para ${entry.id}.`);
+    }
+    console.log(`${entry.id}\t${fingerprint}\tSELECT-ONLY`);
   }
   console.log("Nenhuma conexão Oracle foi aberta e nenhuma consulta foi executada.");
 }

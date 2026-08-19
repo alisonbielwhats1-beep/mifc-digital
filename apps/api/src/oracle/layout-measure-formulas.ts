@@ -1,6 +1,7 @@
 type OracleRow = Record<string, unknown>;
 
 export interface LayoutDemandMeasures {
+  [key: string]: number;
   "P-SCA-F": number;
   "P-DAF-S": number;
   "P-FH-F": number;

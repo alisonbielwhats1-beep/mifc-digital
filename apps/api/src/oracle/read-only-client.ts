@@ -58,12 +58,6 @@ export async function executeAllowlistedSelect(
   const sql = await loadCatalogSql(catalogEntry);
   assertSelectOnly(sql);
 
-  if (catalogEntry.queryMode !== "embedded-sql") {
-    throw new Error(
-      "Esta entrada usa navegação M. O SQL final precisa ser materializado e revisado antes da execução.",
-    );
-  }
-
   const activeCredentials = credentials ?? { user: config.user, password: config.password };
   if (!activeCredentials.user || !activeCredentials.password) {
     throw new Error(

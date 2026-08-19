@@ -15,7 +15,7 @@ const entry = (overrides: Partial<QueryCatalogEntry>): QueryCatalogEntry => ({
 });
 
 describe("sincronização das tabelas Oracle aprovadas", () => {
-  it("seleciona apenas SQL aprovado e com uso mapeado", () => {
+  it("seleciona SQL embutido ou navegação materializada com uso mapeado", () => {
     const selected = selectSyncCandidates([
       entry({ id: "base1" }),
       entry({ id: "sem-uso", usedBy: [] }),
@@ -23,7 +23,7 @@ describe("sincronização das tabelas Oracle aprovadas", () => {
       entry({ id: "navegacao", queryMode: "navigation-m" }),
     ]);
 
-    expect(selected.map((item) => item.id)).toEqual(["base1"]);
+    expect(selected.map((item) => item.id)).toEqual(["base1", "navegacao"]);
   });
 
   it("sinaliza quando a leitura alcança o limite configurado", () => {

@@ -3,7 +3,7 @@
 Atualizado em: 2026-08-19  
 Branch: `main`  
 Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`  
-Último marco concluído: **Prompt 6.5 — paridade diária e quatro Beattys**
+Último marco concluído: **Prompt 6.6 — materialização protegida das fontes operacionais**
 
 ## Onde paramos
 
@@ -136,14 +136,28 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - layout e cadastro de Capacidade possuem migração local, preservando revisões e parâmetros existentes;
 - Oracle permanece estritamente somente leitura; o filtro diário ocorre sobre o cache já autorizado.
 
+### Prompt 6.6 — tabelas operacionais e medidas observadas
+
+- as sete fontes antes marcadas como navegação M pendente foram materializadas como `SELECT *` somente nos objetos e no schema explicitamente aprovados pelo catálogo;
+- o destino `Schema/Name` é relido do TMDL, comparado à allowlist e assinado antes de qualquer conexão Oracle;
+- divergência de schema, objeto ou fingerprint bloqueia a consulta;
+- `BI_PUNCH_SCA`, `BI_PUNCH_VDB`, `BI_OEE_SCRAP`, `Lotes`, `Paradas`, `Produção` e `BI_MIFC_LCT_POS_STOCK` entram na carga sequencial e na atualização escalonada;
+- `Relatorio_bases` e `Relatorio_Item RF2`, já assinadas anteriormente, também receberam uso mapeado e passam a integrar a mesma carga; o conjunto inicial totaliza 15 fontes aprovadas;
+- produção distinta por `RAIL_ID` foi ligada às medidas `P-RF3`, `P-B1`, `P-B2`, `P-B3`, `P-B4`, `P-P.A`, `P-CNC`, `P-LPP2`, `P-STJ` e `P-T`;
+- produção restante, paradas programadas, paradas totais e downtime da RF3 seguem as expressões DAX catalogadas;
+- estoque em metros, quantidade de slitters, peso, golpes Scania/Volvo e estoque pós-LCT foram ligados às fontes materializadas;
+- os cards de processo mostram `Produzido / Demanda` quando a tabela `Produção` está realmente carregada; ausência de cache não aparece como zero observado;
+- uma carga parcial válida inicia a atualização automática e preserva as tabelas que responderam, permitindo que uma fonte com falha seja tentada novamente sem derrubar as demais;
+- nenhuma operação DML/DDL, procedure, múltipla instrução ou consulta enviada pelo navegador foi liberada.
+
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 48 testes aprovados;
+- `npm test`: 51 testes aprovados;
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
 - `npm run test:e2e`: suíte criada; execução pendente porque o ambiente de trabalho não permitiu baixar o navegador Chromium do Playwright;
-- branch local contém as alterações até o Prompt 6.4 e ainda não foi enviada ao `origin/main`.
+- branch local contém as alterações até o Prompt 6.6 e ainda não foi enviada ao `origin/main`.
 
 ## Parcial ou ainda não validado
 
