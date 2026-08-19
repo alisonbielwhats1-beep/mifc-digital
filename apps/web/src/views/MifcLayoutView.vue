@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from "v
 import { storeToRefs } from "pinia";
 import { ChevronDown, Copy, Eye, Hand, Layers3, Maximize2, Minimize2, Minus, MousePointer2, Plus, Redo2, Save, Trash2, Type as TypeIcon, Undo2, Waypoints } from "@lucide/vue";
 import type { MifcFlowType } from "@mifc/domain";
+import { calculateProcessTimeDays } from "@mifc/calculation-engine";
 import MifcNodeCard from "@/components/layout/MifcNodeCard.vue";
 import MifcPropertiesPanel from "@/components/layout/MifcPropertiesPanel.vue";
 import MifcSymbolPalette from "@/components/layout/MifcSymbolPalette.vue";
@@ -29,6 +30,7 @@ const renameFocusRequest = ref(0);
 const showLayers = ref(false);
 const visibleLayers = reactive({ information: true, material: true, metrics: true });
 const activeFlow = ref<MifcFlowType>("material_push");
+const oracleMeasures = ref<{ ready: boolean; values: Record<string, number> | null; updatedAt: string | null }>({ ready: false, values: null, updatedAt: null });
 const interaction = reactive({ mode: "" as ""|"drag"|"resize"|"curve"|"pan", id: "", pointerId: -1, startX: 0, startY: 0, originX: 0, originY: 0, originWidth: 0, originHeight: 0, originCurve: 0, horizontal: true, recorded: false });
 
 const nodesById = computed(() => new Map(activeRevision.value.nodes.map((node) => [node.id,node])));
@@ -38,6 +40,13 @@ const renderedEdges = computed(() => activeRevision.value.edges.map((edge) => {
 }).filter((edge): edge is NonNullable<typeof edge> => Boolean(edge)));
 const positionedClientStages = computed(() => positionClientStages(activeRevision.value.nodes));
 const clientLanes = computed(() => clientProcessLanes.map((lane) => ({ ...lane, path: buildClientProcessPath(lane, positionedClientStages.value) })));
+const rf3AvailableMinutes = computed(() => (forms.capacityRows.find((row) => row.id === "cap-rf3")?.availableHoursPerDay ?? 0) * 60);
+const processMeasureValues = computed<Record<string, number>>(() => {
+  const demand = oracleMeasures.value.values?.["D-P-RF3"] ?? 0;
+  const values: Record<string, number> = {};
+  if (demand > 0) values["T-RF3"] = calculateProcessTimeDays(rf3AvailableMinutes.value, demand);
+  return values;
+});
 const worldStyle = computed(() => ({ width:`${WORLD_WIDTH}px`, height:`${WORLD_HEIGHT}px`, transform:`translate(${pan.x}px,${pan.y}px) scale(${zoom.value})` }));
 
 function isInformationNode(node: LayoutNode) { return ["database","information","text"].includes(node.type); }
@@ -90,7 +99,21 @@ function mappingTitle(lane: ClientProcessLane, stage: PositionedClientStage) {
   if (!mapping) return `${lane.label} · ${stage.label}`;
   const process = mapping.processMeasureKeys.length ? mapping.processMeasureKeys.join(" + ") : "sem medida de processo";
   const stock = mapping.stockMeasureKeys.length ? mapping.stockMeasureKeys.join(" + ") : "sem medida de estoque";
-  return `${lane.label} · ${stage.label}\nProcesso: ${process}\nEstoque/logística: ${stock}\n${mapping.evidence}`;
+  const observed = mapping.processMeasureKeys.map((key) => processMeasureValues.value[key] === undefined ? null : `${key}: ${formatMeasure(processMeasureValues.value[key])} dia`).filter(Boolean).join(" · ");
+  return `${lane.label} · ${stage.label}\nProcesso: ${process}${observed ? `\nValor: ${observed}` : ""}\nEstoque/logística: ${stock}\n${mapping.evidence}`;
+}
+function formatMeasure(value: number) { return value.toLocaleString("pt-BR", { minimumFractionDigits: 3, maximumFractionDigits: 3 }); }
+function stageMeasureLabel(lane: ClientProcessLane, stage: PositionedClientStage) {
+  const mapping = mappingFor(lane, stage);
+  if (!mapping?.participates) return "—";
+  return mapping.processMeasureKeys.map((key) => processMeasureValues.value[key] === undefined ? key : `${key} · ${formatMeasure(processMeasureValues.value[key])}`).join(" / ");
+}
+async function loadLayoutMeasures() {
+  try {
+    const response = await fetch("/api/layout/measures", { cache: "no-store" });
+    if (!response.ok) return;
+    oracleMeasures.value = await response.json() as typeof oracleMeasures.value;
+  } catch { /* A tela continua com a linhagem quando a API local está indisponível. */ }
 }
 async function toggleFullscreen() {
   try {
@@ -114,7 +137,7 @@ async function saveLayout() { layout.save(); await ui.saveDemoRevision({revision
 async function createRevision() { layout.createRevision(); await ui.saveDemoRevision({revisionId:activeRevision.value.id,kind:"mifc-layout-new-revision"}); }
 function onKeydown(event: KeyboardEvent) { const target=event.target as HTMLElement; if (["INPUT","TEXTAREA","SELECT"].includes(target.tagName)) return; if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="z") { event.preventDefault(); event.shiftKey?layout.redo():layout.undo(); } else if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="y") { event.preventDefault(); layout.redo(); } else if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="d") { event.preventDefault(); duplicate(); } else if (["Delete","Backspace"].includes(event.key)) removeSelected(); }
 
-onMounted(async()=>{layout.hydrate();forms.hydrate();window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);await nextTick();fitView();});
+onMounted(async()=>{layout.hydrate();forms.hydrate();window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);await loadLayoutMeasures();await nextTick();fitView();});
 onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);window.removeEventListener("pointerup",endInteraction);window.removeEventListener("keydown",onKeydown);document.removeEventListener("fullscreenchange",onFullscreenChange);});
 </script>
 
@@ -138,7 +161,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
           </svg>
           <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="node" :zoom="zoom" :selected="selectedNode?.id===node.id" :connecting="activeTool==='connect'" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize"/>
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
-            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span></div>
+            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? 'Oracle conectado · parâmetro local' : 'Aguardando leitura das tabelas' }}</em></div>
             <div class="client-stage-labels" aria-label="Etapas rastreadas no Power BI">
               <button v-for="stage in positionedClientStages" :key="stage.id" type="button" :style="{ left: `${stage.centerX}px` }" :title="`Alinhado ao bloco ${stage.layoutNodeId}`" @click="selectNode(stage.layoutNodeId)">{{ stage.label }}</button>
             </div>
@@ -152,7 +175,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
                 </g>
               </svg>
               <div class="client-measure-keys" aria-hidden="true">
-                <span v-for="stage in positionedClientStages" :key="stage.id" :class="{ inactive: !mappingFor(lane,stage)?.participates, pending: mappingFor(lane,stage)?.validationStatus === 'pending' }" :style="{ left: `${stage.centerX}px` }">{{ mappingFor(lane,stage)?.participates ? mappingFor(lane,stage)?.processMeasureKeys.join(' / ') : '—' }}</span>
+                <span v-for="stage in positionedClientStages" :key="stage.id" :class="{ inactive: !mappingFor(lane,stage)?.participates, pending: mappingFor(lane,stage)?.validationStatus === 'pending' }" :style="{ left: `${stage.centerX}px` }">{{ stageMeasureLabel(lane,stage) }}</span>
               </div>
             </div>
           </div>
@@ -205,6 +228,8 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
 .client-board-title { position:absolute; top:5px; left:20px; display:flex; align-items:baseline; gap:10px; color:#263746; }
 .client-board-title strong { font-size:9px; text-transform:uppercase; }
 .client-board-title span { color:var(--text-tertiary); font-size:7px; }
+.client-board-title em { margin-left:8px; color:#a66f00; font-size:7px; font-style:normal; }
+.client-board-title em.connected { color:#15803d; }
 .client-stage-labels { position:absolute; z-index:2; top:4px; right:0; left:0; height:23px; }
 .client-stage-labels button { position:absolute; max-width:92px; padding:0; border:0; background:transparent; color:#405066; font-size:7px; line-height:1.1; transform:translateX(-50%); cursor:pointer; }
 .client-stage-labels button:hover { color:var(--brand-blue); text-decoration:underline; }

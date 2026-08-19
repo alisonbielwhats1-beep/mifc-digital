@@ -43,6 +43,7 @@ export async function testOracleConnection(credentials: OracleCredentials): Prom
 export async function executeAllowlistedSelect(
   queryId: string,
   binds: Record<string, unknown> = {},
+  credentials?: OracleCredentials,
 ): Promise<ReadOnlyQueryResult> {
   const config = getOracleConfig();
   assertSafeOracleConfig(config);
@@ -63,13 +64,14 @@ export async function executeAllowlistedSelect(
     );
   }
 
-  if (!config.user || !config.password) {
+  const activeCredentials = credentials ?? { user: config.user, password: config.password };
+  if (!activeCredentials.user || !activeCredentials.password) {
     throw new Error(
       "ORACLE_USER e ORACLE_PASSWORD precisam estar configurados localmente.",
     );
   }
 
-  const connection = await openConnection({ user: config.user, password: config.password });
+  const connection = await openConnection(activeCredentials);
   connection.callTimeout = (catalogEntry.timeoutSeconds ?? 30) * 1_000;
   const startedAt = performance.now();
 

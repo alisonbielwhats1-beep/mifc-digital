@@ -3,6 +3,8 @@ import { randomUUID } from "node:crypto";
 import { assertSafeOracleConfig, getOracleConfig } from "./config.js";
 import { executeAllowlistedSelect, testOracleConnection } from "./oracle/read-only-client.js";
 import { loadQueryCatalog } from "./oracle/query-catalog.js";
+import { getTableSyncStatus, syncApprovedTables } from "./oracle/table-sync.js";
+import { getCachedLayoutMeasures } from "./oracle/layout-measures.js";
 
 const MAX_BODY_BYTES = 16 * 1024;
 
@@ -76,12 +78,31 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
     return;
   }
 
+  if (method === "GET" && url.pathname === "/api/oracle/sync-status") {
+    sendJson(response, 200, getTableSyncStatus());
+    return;
+  }
+
+  if (method === "GET" && url.pathname === "/api/layout/measures") {
+    sendJson(response, 200, getCachedLayoutMeasures());
+    return;
+  }
+
   if (method === "POST" && url.pathname === "/api/oracle/test-connection") {
     const body = await readJsonBody(request);
     const user = typeof body.user === "string" ? body.user : "";
     const password = typeof body.password === "string" ? body.password : "";
     await testOracleConnection({ user, password });
     sendJson(response, 200, { ok: true, message: "Conexão Oracle validada em modo somente leitura. Nenhuma consulta foi executada." });
+    return;
+  }
+
+  if (method === "POST" && url.pathname === "/api/oracle/sync-approved") {
+    const body = await readJsonBody(request);
+    const user = typeof body.user === "string" ? body.user : "";
+    const password = typeof body.password === "string" ? body.password : "";
+    const result = await syncApprovedTables({ user, password });
+    sendJson(response, 200, result);
     return;
   }
 

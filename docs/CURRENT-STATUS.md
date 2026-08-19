@@ -3,15 +3,15 @@
 Atualizado em: 2026-08-19  
 Branch: `main`  
 Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`  
-Último marco concluído: **Prompt 6.1 — navegação, edição rápida e linhas por cliente**
+Último marco concluído: **Prompt 6.2 — sincronização Oracle aprovada e primeira medida real no Layout**
 
 ## Onde paramos
 
 O MVP local está executável e os Prompts 1 a 6.1 foram realizados. O projeto está em repositório público com código, documentação, referências visuais e recursos extraídos usados durante a análise.
 
-O último trabalho realizado corrigiu a interação do Layout e substituiu as faixas inferiores genéricas por quatro linhas de clientes reconstruídas a partir da linhagem PBIP. O Layout atual possui 29 blocos, 47 linhas editáveis e linhas específicas para Volvo FH, Volvo VM, Scania e DAF.
+O Layout possui 29 blocos, 47 linhas editáveis e linhas específicas para Volvo FH, Volvo VM, Scania e DAF. A tela de Integrações agora consegue carregar, sob ação explícita do usuário, somente as consultas SQL aprovadas e manter os resultados na memória da API local.
 
-A aplicação ainda usa dados locais em vários módulos. Nenhuma leitura real do Oracle foi executada e nenhuma operação de escrita foi feita.
+Uma leitura real da consulta `base1` foi validada pelo proprietário na rede autorizada: 3.888 linhas, transação somente leitura e resposta HTTP 200. Nenhuma operação de escrita foi executada.
 
 ## Entregue
 
@@ -84,10 +84,24 @@ A aplicação ainda usa dados locais em vários módulos. Nenhuma leitura real d
 - testes unitários da matriz e da renomeação;
 - suíte Playwright para renomeação, pan com botão central, tela cheia e evidência visual.
 
+### Prompt 6.2 — tabelas aprovadas e T-RF3
+
+- botão único `Conectar tabelas aprovadas` na tela de Integrações;
+- usuário e senha efêmeros, apagados do formulário ao terminar;
+- execução sequencial apenas de SQL com fingerprint aprovada e uso já mapeado;
+- transação `READ ONLY`, sem commit, rollback e fechamento obrigatório;
+- linhas brutas mantidas somente na memória da API local e não enviadas ao navegador;
+- resumo de tabelas, linhas, colunas e duração exibido em Integrações;
+- filtros de FH, VM, Scania e DAF reproduzidos a partir dos TMDLs recebidos;
+- `P-SCA-F`, `P-DAF-S`, `P-FH-F`, `P-VM-F`, `P-T-D` e `D-P-RF3` calculados fora do Power BI;
+- `T-RF3` calculado com a regra PBIP `minutos disponíveis ÷ demanda em peças ÷ 1.440`;
+- valor de `T-RF3` exibido nas quatro faixas de cliente quando as tabelas estão conectadas;
+- parâmetro atual da RF3 vem do cadastro local de Capacidade (16,7 h / 1.002 min), com identificação explícita de fonte mista.
+
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 36 testes aprovados;
+- `npm test`: 39 testes aprovados;
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
 - `npm run test:e2e`: suíte criada; execução pendente porque o ambiente de trabalho não permitiu baixar o navegador Chromium do Playwright;
@@ -95,7 +109,7 @@ A aplicação ainda usa dados locais em vários módulos. Nenhuma leitura real d
 
 ## Parcial ou ainda não validado
 
-- Overview e Resultados funcionam como prévias com dados locais, não com dados atuais do Oracle;
+- Overview e Resultados ainda funcionam como prévias com dados locais; a primeira ligação Oracle está no Layout (`T-RF3`);
 - os formulários estão funcionais, mas a validação operacional final de todos os campos contra o Excel 2026 deve ser feita pelo usuário da área;
 - 309 medidas existem no modelo Power BI; nem todas foram migradas para o Calculation Engine;
 - as 62 medidas usadas nos cartões do Layout foram catalogadas, mas seus valores atuais dependem das fontes online;
@@ -103,7 +117,8 @@ A aplicação ainda usa dados locais em vários módulos. Nenhuma leitura real d
 - a suíte visual do Playwright está pronta, mas precisa da primeira execução em uma máquina com Chromium instalado (`npx playwright install chromium`);
 - a participação de Volvo VM na Mesa 3 requer confirmação operacional; até lá a linha permanece reta e sinalizada como pendente;
 - persistência atual é local no navegador; banco próprio da aplicação, autenticação e perfis ainda não foram implementados;
-- o código está no GitHub privado, mas a aplicação ainda não foi hospedada como site online.
+- o código está no GitHub público, mas a aplicação ainda não foi hospedada como site online.
+- o parâmetro de tempo disponível da RF3 ainda usa o cadastro local de Capacidade; a leitura direta da planilha de parâmetros da rede permanece como melhoria posterior.
 
 ## Pendências em ordem recomendada
 
