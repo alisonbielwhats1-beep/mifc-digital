@@ -175,14 +175,16 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - cards produtivos maiores, com quebra de linha, fonte responsiva ao tamanho do bloco e contenção de textos/medidas;
 - Beattys deixam a grade 2×2 e passam à cascata física `Beatty 3 → Beatty 4 → Beatty 2 → Beatty 1`, como no Power BI de referência;
 - faixas de clientes aumentadas para 330 px, com títulos, nomes de etapa, linhas, marcadores e valores maiores;
-- `Ctrl/Shift + clique` adiciona/remove blocos da seleção; arrastar qualquer bloco selecionado move o grupo em um único passo de histórico;
+- os picos das faixas deixam de usar uma posição Beatty agregada: FH acompanha Beatty 4, VM acompanha Beatty 1, Scania acompanha Beatty 3 e DAF acompanha Beatty 2;
+- toda etapa da faixa é posicionada a partir do respectivo bloco do Layout; ao mover uma máquina, somente seu pico acompanha a nova posição;
+- `Ctrl/Shift + clique` adiciona/remove blocos da seleção; arraste normal move somente o bloco clicado e o arraste de grupo exige manter `Ctrl/Shift` ao iniciá-lo;
 - exclusão com vários blocos selecionados remove também suas conexões, exige confirmação e pode ser desfeita;
 - migração de Layout schema 5 aplica a composição legível às revisões locais existentes sem apagar propriedades ou medidas.
 
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 60 testes aprovados (13 arquivos);
+- `npm test`: 65 testes aprovados (14 arquivos);
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
 - `npm run test:e2e`: não executado neste checkpoint porque o binário do Playwright/Chromium não está disponível no ambiente de trabalho;

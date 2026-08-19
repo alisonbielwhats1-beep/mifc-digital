@@ -44,7 +44,8 @@ Os arquivos de origem externos não devem ser alterados. O PBIP e os anexos orig
 - Recursos reutilizam os parâmetros de Capacidade e exibem medidas observadas somente quando disponíveis no cache aprovado;
 - ações podem ser ligadas a produto, processo, recurso e nó do Layout; cards do Layout exibem ações abertas/atrasadas.
 - Layout ampliado para apresentação, com textos responsivos, linhas de cliente legíveis e Beattys 3–4–2–1 em cascata conforme o arranjo físico do Power BI;
-- seleção múltipla por `Ctrl/Shift + clique`, arraste em grupo e exclusão conjunta preservam um único passo de desfazer.
+- cada pico das faixas de cliente acompanha horizontalmente a máquina física correspondente; FH usa Beatty 4, VM Beatty 1, Scania Beatty 3 e DAF Beatty 2;
+- arraste normal move apenas o bloco clicado; seleção e arraste em grupo exigem `Ctrl/Shift`, e a exclusão conjunta preserva um único passo de desfazer.
 
 ## Segurança Oracle
 

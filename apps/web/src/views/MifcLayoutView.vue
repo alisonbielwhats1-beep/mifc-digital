@@ -6,8 +6,9 @@ import type { MifcFlowType } from "@mifc/domain";
 import MifcNodeCard from "@/components/layout/MifcNodeCard.vue";
 import MifcPropertiesPanel from "@/components/layout/MifcPropertiesPanel.vue";
 import MifcSymbolPalette from "@/components/layout/MifcSymbolPalette.vue";
-import { buildClientProcessPath, clientProcessLanes, positionClientStages, type ClientProcessLane, type ClientStageMapping, type PositionedClientStage } from "@/domain/client-process-matrix";
+import { buildClientProcessPath, clientProcessLanes, mappingForClientStage, positionClientStages, type ClientProcessLane, type ClientStageMapping, type PositionedClientStage } from "@/domain/client-process-matrix";
 import { edgeGeometry } from "@/domain/layout-graph";
+import { beginNodePointerSelection, finishNodePointerSelection } from "@/domain/layout-selection";
 import { calculateLayoutProcessMeasures, formatProcessDays } from "@/domain/layout-process-measures";
 import { useMifcFormsStore } from "@/stores/mifc-forms";
 import { LAYOUT_WORLD_HEIGHT, LAYOUT_WORLD_WIDTH, useMifcLayoutStore, type LayoutEdge, type LayoutNode, type LayoutNodeProperties, type LayoutNodeType, type LayoutTool } from "@/stores/mifc-layout";
@@ -45,7 +46,7 @@ const todayKey = () => { const now = new Date(); return `${now.getFullYear()}-${
 const selectedDate = ref(todayKey());
 const oracleMeasures = ref<{ ready: boolean; values: Record<string, number> | null; diagnostics?: MeasureDiagnostics; updatedAt: string | null }>({ ready: false, values: null, updatedAt: null });
 let layoutMeasuresTimer: ReturnType<typeof setInterval> | undefined;
-const interaction = reactive({ mode: "" as ""|"drag"|"resize"|"curve"|"pan", id: "", pointerId: -1, startX: 0, startY: 0, originX: 0, originY: 0, originWidth: 0, originHeight: 0, originCurve: 0, horizontal: true, recorded: false, groupOrigins: {} as Record<string,{x:number;y:number}> });
+const interaction = reactive({ mode: "" as ""|"drag"|"resize"|"curve"|"pan", id: "", pointerId: -1, startX: 0, startY: 0, originX: 0, originY: 0, originWidth: 0, originHeight: 0, originCurve: 0, horizontal: true, recorded: false, toggleOffOnClick: false, groupOrigins: {} as Record<string,{x:number;y:number}> });
 
 const nodesById = computed(() => new Map(activeRevision.value.nodes.map((node) => [node.id,node])));
 const renderedEdges = computed(() => activeRevision.value.edges.map((edge) => {
@@ -120,13 +121,12 @@ function startNodeDrag(event: PointerEvent,node: LayoutNode) {
   if (activeTool.value === "connect") return;
   event.preventDefault();
   const additive=event.shiftKey||event.ctrlKey||event.metaKey;
-  if(additive){selectedNodeIds.value=selectedNodeIds.value.includes(node.id)?selectedNodeIds.value.filter((id)=>id!==node.id):[...selectedNodeIds.value,node.id];}
-  else if(!selectedNodeIds.value.includes(node.id)) selectedNodeIds.value=[node.id];
-  if(!selectedNodeIds.value.length) selectedNodeIds.value=[node.id];
+  const pointerSelection=beginNodePointerSelection(selectedNodeIds.value,node.id,additive);
+  selectedNodeIds.value=pointerSelection.selectedIds;
   layout.selectNode(node.id);panelOpen.value=true;suppressNextNodeClick.value=true;
   if(activeTool.value!=="select")return;
-  const groupOrigins=Object.fromEntries(activeRevision.value.nodes.filter((item)=>selectedNodeIds.value.includes(item.id)).map((item)=>[item.id,{x:item.x,y:item.y}]));
-  Object.assign(interaction,{mode:"drag",id:node.id,startX:event.clientX,startY:event.clientY,originX:node.x,originY:node.y,recorded:false,groupOrigins});
+  const groupOrigins=Object.fromEntries(activeRevision.value.nodes.filter((item)=>pointerSelection.movingIds.includes(item.id)).map((item)=>[item.id,{x:item.x,y:item.y}]));
+  Object.assign(interaction,{mode:"drag",id:node.id,startX:event.clientX,startY:event.clientY,originX:node.x,originY:node.y,recorded:false,toggleOffOnClick:pointerSelection.toggleOffOnClick,groupOrigins});
 }
 function startResize(event: PointerEvent,node: LayoutNode) { event.preventDefault(); selectedNodeIds.value=[node.id]; layout.selectNode(node.id); Object.assign(interaction,{mode:"resize",id:node.id,startX:event.clientX,startY:event.clientY,originWidth:node.width,originHeight:node.height,recorded:false}); }
 function startCurve(event: PointerEvent,edge: typeof renderedEdges.value[number]) { event.preventDefault(); event.stopPropagation(); selectedNodeIds.value=[]; layout.selectEdge(edge.id); panelOpen.value = true; Object.assign(interaction,{mode:"curve",id:edge.id,startX:event.clientX,startY:event.clientY,originCurve:edge.curveOffset,horizontal:edge.geometry.horizontal,recorded:false}); }
@@ -142,9 +142,14 @@ function onPointerMove(event: PointerEvent) {
   if (interaction.mode === "curve") layout.moveEdgeCurve(interaction.id,interaction.originCurve+(interaction.horizontal?dy:dx)/zoom.value);
 }
 function endInteraction() {
-  const focusAfterClick=interaction.mode==="drag"&&!interaction.recorded&&selectedNodeIds.value.length===1;
+  const wasDrag=interaction.mode==="drag";
+  const moved=interaction.recorded;
+  const interactedId=interaction.id;
+  if(wasDrag)selectedNodeIds.value=finishNodePointerSelection(selectedNodeIds.value,interactedId,interaction.toggleOffOnClick,moved);
+  if(wasDrag)layout.selectNode(selectedNodeIds.value.includes(interactedId)?interactedId:selectedNodeIds.value.at(-1)??null);
+  const focusAfterClick=wasDrag&&!moved&&selectedNodeIds.value.length===1;
   if (interaction.pointerId >= 0 && canvas.value?.hasPointerCapture?.(interaction.pointerId)) canvas.value.releasePointerCapture(interaction.pointerId);
-  interaction.mode=""; interaction.id=""; interaction.pointerId=-1; interaction.recorded=false; interaction.groupOrigins={};
+  interaction.mode=""; interaction.id=""; interaction.pointerId=-1; interaction.recorded=false; interaction.toggleOffOnClick=false; interaction.groupOrigins={};
   if(focusAfterClick)renameFocusRequest.value+=1;
   if(suppressNextNodeClick.value)setTimeout(()=>{suppressNextNodeClick.value=false;},0);
 }
@@ -153,7 +158,7 @@ function setZoom(value: number) { zoom.value=Math.min(1.5,Math.max(.35,value)); 
 function fitView(readable=false) { const rect=canvas.value?.getBoundingClientRect(); if (!rect) return; const fitted=Math.min(1,(rect.width-28)/WORLD_WIDTH,(rect.height-28)/WORLD_HEIGHT); zoom.value=readable?Math.max(.68,fitted):fitted; pan.x=readable&&zoom.value>fitted?18:(rect.width-WORLD_WIDTH*zoom.value)/2; pan.y=readable&&zoom.value>fitted?8:(rect.height-WORLD_HEIGHT*zoom.value)/2; }
 function selectNode(id: string,event?:MouseEvent|KeyboardEvent) { if(suppressNextNodeClick.value){suppressNextNodeClick.value=false;return;} if (activeTool.value === "connect") layout.connectNode(id,activeFlow.value); else { const additive=Boolean(event&&(event.shiftKey||event.ctrlKey||event.metaKey)); if(additive)selectedNodeIds.value=selectedNodeIds.value.includes(id)?selectedNodeIds.value.filter((item)=>item!==id):[...selectedNodeIds.value,id];else selectedNodeIds.value=[id]; layout.selectNode(selectedNodeIds.value.includes(id)?id:selectedNodeIds.value.at(-1)??null); panelOpen.value=true; if(selectedNodeIds.value.length===1)renameFocusRequest.value+=1; } }
 function selectEdge(id: string) { selectedNodeIds.value=[]; layout.selectEdge(id); panelOpen.value=true; }
-function mappingFor(lane: ClientProcessLane, stage: PositionedClientStage): ClientStageMapping | undefined { return lane.mappings.find((mapping) => mapping.stageId === stage.id); }
+function mappingFor(lane: ClientProcessLane, stage: PositionedClientStage): ClientStageMapping | undefined { return mappingForClientStage(lane,stage); }
 function mappingTitle(lane: ClientProcessLane, stage: PositionedClientStage) {
   const mapping = mappingFor(lane, stage);
   if (!mapping) return `${lane.label} · ${stage.label}`;
@@ -165,7 +170,7 @@ function mappingTitle(lane: ClientProcessLane, stage: PositionedClientStage) {
 function formatMeasureDetailed(value: number) { return value.toLocaleString("pt-BR", { minimumFractionDigits: 6, maximumFractionDigits: 8 }); }
 function stageMeasureLabel(lane: ClientProcessLane, stage: PositionedClientStage) {
   const mapping = mappingFor(lane, stage);
-  if (!mapping?.participates) return "—";
+  if (!mapping?.participates) return stage.id.startsWith("beatty-") ? "" : "—";
   return mapping.processMeasureKeys.map((key) => processMeasureValues.value[key] === undefined ? key : `${key} · ${formatProcessDays(processMeasureValues.value[key])} d`).join(" / ");
 }
 async function loadLayoutMeasures() {
@@ -223,7 +228,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
             <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Filtro ${selectedDate} · ${filteredRowSummary.toLocaleString('pt-BR')} linhas · Oracle + parâmetros por máquina · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
             <div class="client-stage-labels" aria-label="Etapas rastreadas no Power BI">
-              <button v-for="stage in positionedClientStages" :key="stage.id" type="button" :style="{ left: `${stage.centerX}px` }" :title="`Alinhado ao bloco ${stage.layoutNodeId}`" @click="selectNode(stage.layoutNodeId)">{{ stage.label }}</button>
+              <button v-for="stage in positionedClientStages" :key="stage.id" type="button" :class="{ 'beatty-stage': stage.id.startsWith('beatty-') }" :style="{ left: `${stage.centerX}px` }" :title="`Alinhado ao bloco ${stage.layoutNodeId}`" @click="selectNode(stage.layoutNodeId)">{{ stage.label }}</button>
             </div>
             <div v-for="lane in clientLanes" :key="lane.key" class="client-lane" :data-client="lane.key" :data-testid="`client-lane-${lane.key}`">
               <div class="client-lane-label"><strong>{{ lane.label }}</strong><small>{{ lane.totalMeasureKey }}</small></div>
@@ -240,7 +245,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
             </div>
           </div>
         </div>
-        <div class="canvas-status"><span v-if="connectSourceId">Agora selecione o bloco de destino</span><span v-else-if="selectedNodeIds.length>1">{{ selectedNodeIds.length }} blocos selecionados · arraste um deles para mover o grupo</span><span v-else>{{ activeRevision.nodes.length }} blocos · Ctrl/Shift + clique para seleção múltipla</span></div><div class="zoom-controls"><button aria-label="Diminuir zoom" @click="setZoom(zoom-.1)"><Minus :size="16"/></button><span>{{ Math.round(zoom*100) }}%</span><button aria-label="Aumentar zoom" @click="setZoom(zoom+.1)"><Plus :size="16"/></button><button aria-label="Ajustar à tela" @click="fitView()"><Maximize2 :size="16"/></button></div>
+        <div class="canvas-status"><span v-if="connectSourceId">Agora selecione o bloco de destino</span><span v-else-if="selectedNodeIds.length>1">{{ selectedNodeIds.length }} blocos selecionados · mantenha Ctrl/Shift ao iniciar o arraste para mover o grupo</span><span v-else>{{ activeRevision.nodes.length }} blocos · arraste normal move somente um bloco · Ctrl/Shift seleciona o grupo</span></div><div class="zoom-controls"><button aria-label="Diminuir zoom" @click="setZoom(zoom-.1)"><Minus :size="16"/></button><span>{{ Math.round(zoom*100) }}%</span><button aria-label="Aumentar zoom" @click="setZoom(zoom+.1)"><Plus :size="16"/></button><button aria-label="Ajustar à tela" @click="fitView()"><Maximize2 :size="16"/></button></div>
       </div>
       <MifcPropertiesPanel v-if="panelOpen" :node="selectedNode" :edge="selectedEdge" :nodes="activeRevision.nodes" :edges="activeRevision.edges" :capacity-rows="forms.capacityRows" :focus-request="renameFocusRequest" @close="panelOpen=false" @update="applyNode" @delete="removeSelected" @update-edge="layout.updateSelectedEdge" @preview-label="layout.previewNodeLabel" @commit-label="layout.commitNodeLabel" @cancel-label="layout.cancelNodeLabel"/>
     </section>
@@ -294,6 +299,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
 .client-board-title em.connected { color:#15803d; }
 .client-stage-labels { position:absolute; z-index:2; top:27px; right:0; left:0; height:23px; }
 .client-stage-labels button { position:absolute; width:180px; padding:0; border:0; background:transparent; color:#405066; font-size:13px; font-weight:700; line-height:1.1; transform:translateX(-50%); cursor:pointer; }
+.client-stage-labels button.beatty-stage { width:38px; font-size:12px; }
 .client-stage-labels button:hover { color:var(--brand-blue); text-decoration:underline; }
 .client-lane { position:relative; height:68px; border-top:1px solid #e4e9f0; }
 .client-lane-label { position:absolute; z-index:3; top:14px; left:20px; display:grid; width:150px; }

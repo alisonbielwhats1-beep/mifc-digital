@@ -35,11 +35,43 @@ export const clientProcessStages: ClientProcessStage[] = [
   { id: "lct-rf2", label: "LCT / RF2", layoutNodeId: "node-cut" },
   { id: "rf3", label: "Roll Former 3", layoutNodeId: "node-stamp" },
   { id: "mesa-3", label: "Mesa 3", layoutNodeId: "node-weld-1" },
-  { id: "beattys", label: "Beatty I–IV", layoutNodeId: "node-weld-2", relatedLayoutNodeIds: ["node-weld-2", "node-beatty-2", "node-beatty-3", "node-beatty-4"] },
+  { id: "beatty-3", label: "B3", layoutNodeId: "node-beatty-3" },
+  { id: "beatty-4", label: "B4", layoutNodeId: "node-beatty-4" },
+  { id: "beatty-2", label: "B2", layoutNodeId: "node-beatty-2" },
+  { id: "beatty-1", label: "B1", layoutNodeId: "node-weld-2" },
   { id: "pa-cnc", label: "P.A / CNC", layoutNodeId: "node-weld-3" },
   { id: "paint-rework", label: "Pintura / Rebitagem", layoutNodeId: "node-assembly" },
   { id: "shipping", label: "Stenhoj / Embalagem", layoutNodeId: "node-inspection" },
 ];
+
+const beattyMeasureByStage: Record<string, string> = {
+  "beatty-1": "T-B1",
+  "beatty-2": "T-B2",
+  "beatty-3": "T-B3",
+  "beatty-4": "T-B4",
+};
+
+/** Expande o vínculo agregado do PBIP para a Beatty física de cada cliente. */
+export function mappingForClientStage(
+  lane: ClientProcessLane,
+  stage: Pick<ClientProcessStage, "id">,
+): ClientStageMapping | undefined {
+  const direct = lane.mappings.find((mapping) => mapping.stageId === stage.id);
+  if (direct) return direct;
+
+  const expectedMeasure = beattyMeasureByStage[stage.id];
+  if (!expectedMeasure) return undefined;
+  const aggregate = lane.mappings.find((mapping) => mapping.stageId === "beattys");
+  if (!aggregate) return undefined;
+  const participates = aggregate.participates && aggregate.processMeasureKeys.includes(expectedMeasure);
+  return {
+    ...aggregate,
+    stageId: stage.id,
+    participates,
+    processMeasureKeys: participates ? [expectedMeasure] : [],
+    stockMeasureKeys: participates ? aggregate.stockMeasureKeys : [],
+  };
+}
 
 const mapped = (
   stageId: string,
@@ -145,7 +177,6 @@ export function buildClientProcessPath(
   raised = 7,
 ): string {
   if (!stages.length) return "";
-  const mappings = new Map(lane.mappings.map((mapping) => [mapping.stageId, mapping]));
   const start = Math.max(0, stages[0].centerX - stages[0].width / 2);
   let path = `M ${start} ${baseline}`;
   for (const stage of stages) {
@@ -153,7 +184,7 @@ export function buildClientProcessPath(
     const before = stage.centerX - halfPulse;
     const after = stage.centerX + halfPulse;
     path += ` L ${before} ${baseline}`;
-    if (mappings.get(stage.id)?.participates) {
+    if (mappingForClientStage(lane, stage)?.participates) {
       path += ` L ${before} ${raised} L ${after} ${raised} L ${after} ${baseline}`;
     } else {
       path += ` L ${after} ${baseline}`;
