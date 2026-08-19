@@ -12,12 +12,15 @@ import { calculateLayoutProcessMeasures, formatProcessDays } from "@/domain/layo
 import { useMifcFormsStore } from "@/stores/mifc-forms";
 import { LAYOUT_WORLD_HEIGHT, LAYOUT_WORLD_WIDTH, useMifcLayoutStore, type LayoutEdge, type LayoutNode, type LayoutNodeProperties, type LayoutNodeType, type LayoutTool } from "@/stores/mifc-layout";
 import { useUiStore } from "@/stores/ui";
+import { useOperationsStore } from "@/stores/operations";
+import { effectiveActionStatus } from "@/domain/operations";
 
 const WORLD_WIDTH = LAYOUT_WORLD_WIDTH;
 const WORLD_HEIGHT = LAYOUT_WORLD_HEIGHT;
 const layout = useMifcLayoutStore();
 const forms = useMifcFormsStore();
 const ui = useUiStore();
+const operations = useOperationsStore();
 const { activeRevision, selectedNode, selectedEdge, isDirty, undoStack, redoStack, activeTool, connectSourceId } = storeToRefs(layout);
 const layoutPage = ref<HTMLElement | null>(null);
 const canvas = ref<HTMLElement | null>(null);
@@ -81,6 +84,11 @@ function liveMetricsForNode(node: LayoutNode) {
     demand: sumMeasureKeys(keys.demand),
     stopMinutes: oracleMeasures.value.diagnostics.operationalReady.paradas ? sumMeasureKeys(keys.stops) : undefined,
   };
+}
+function actionSummaryForNode(node: LayoutNode) {
+  const process = operations.processes.find((item) => item.layoutNodeId === node.id || item.id === node.processId);
+  const actions = operations.actions.filter((item) => item.layoutNodeId === node.id || item.processId === process?.id);
+  return { open: actions.filter((item) => !["completed","cancelled"].includes(item.status)).length, overdue: actions.filter((item) => effectiveActionStatus(item) === "overdue").length };
 }
 const filteredRowSummary = computed(() => Object.values(oracleMeasures.value.diagnostics?.rows ?? {}).reduce((total, item) => total + item.filtered, 0));
 const worldStyle = computed(() => ({ width:`${WORLD_WIDTH}px`, height:`${WORLD_HEIGHT}px`, transform:`translate(${pan.x}px,${pan.y}px) scale(${zoom.value})` }));
@@ -173,7 +181,7 @@ async function saveLayout() { layout.save(); await ui.saveDemoRevision({revision
 async function createRevision() { layout.createRevision(); await ui.saveDemoRevision({revisionId:activeRevision.value.id,kind:"mifc-layout-new-revision"}); }
 function onKeydown(event: KeyboardEvent) { const target=event.target as HTMLElement; if (["INPUT","TEXTAREA","SELECT"].includes(target.tagName)) return; if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="z") { event.preventDefault(); event.shiftKey?layout.redo():layout.undo(); } else if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="y") { event.preventDefault(); layout.redo(); } else if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="d") { event.preventDefault(); duplicate(); } else if (["Delete","Backspace"].includes(event.key)) removeSelected(); }
 
-onMounted(async()=>{layout.hydrate();forms.hydrate();window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);await loadLayoutMeasures();layoutMeasuresTimer=setInterval(()=>void loadLayoutMeasures(),30_000);await nextTick();fitView();});
+onMounted(async()=>{layout.hydrate();forms.hydrate();operations.hydrate();window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);await loadLayoutMeasures();layoutMeasuresTimer=setInterval(()=>void loadLayoutMeasures(),30_000);await nextTick();fitView();});
 onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);window.removeEventListener("pointerup",endInteraction);window.removeEventListener("keydown",onKeydown);document.removeEventListener("fullscreenchange",onFullscreenChange);if(layoutMeasuresTimer)clearInterval(layoutMeasuresTimer);});
 </script>
 
@@ -195,7 +203,7 @@ onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);win
             <defs><marker id="arrow-material" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1f2c38"/></marker><marker id="arrow-info" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#526170"/></marker></defs>
             <g v-for="edge in renderedEdges" v-show="isInformationEdge(edge)?visibleLayers.information:visibleLayers.material" :key="edge.id" class="edge-group" :class="[edge.flowType,{selected:selectedEdge?.id===edge.id}]" @click.stop="selectEdge(edge.id)"><path class="edge-hit" :d="edge.geometry.path"/><path class="edge-line" :d="edge.geometry.path" :marker-end="`url(#${isInformationEdge(edge)?'arrow-info':'arrow-material'})`"/><circle v-if="selectedEdge?.id===edge.id" class="curve-handle" :cx="edge.geometry.control.x" :cy="edge.geometry.control.y" r="8" @pointerdown="startCurve($event,edge)"/></g>
           </svg>
-          <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="node" :zoom="zoom" :selected="selectedNode?.id===node.id" :connecting="activeTool==='connect'" :live-metrics="liveMetricsForNode(node)" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize"/>
+          <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="node" :zoom="zoom" :selected="selectedNode?.id===node.id" :connecting="activeTool==='connect'" :live-metrics="liveMetricsForNode(node)" :action-summary="actionSummaryForNode(node)" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize"/>
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
             <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Subida = processo na etapa · reta = sem processo mapeado</span><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Filtro ${selectedDate} · ${filteredRowSummary.toLocaleString('pt-BR')} linhas · Oracle + parâmetros por máquina · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
             <div class="client-stage-labels" aria-label="Etapas rastreadas no Power BI">

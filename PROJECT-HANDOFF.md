@@ -38,6 +38,11 @@ Os arquivos de origem externos não devem ser alterados. O PBIP e os anexos orig
 - linhas podem ser criadas, selecionadas, reconectadas, curvadas, ter o tipo alterado e ser excluídas;
 - quatro faixas inferiores de Lead Time/Dados são derivadas dos blocos do Layout;
 - revisões, desfazer/refazer, zoom, pan e camadas estão funcionais.
+- Produtos, Processos, Recursos, Dados mestre, Configurações e Plano de Ações são módulos funcionais com persistência local;
+- Produtos conciliam um catálogo sanitizado derivado do cache Oracle, mantendo overrides locais separados;
+- Processos seguem `docs/client-process-matrix.csv`, incluindo a participação VM × Mesa 3 como pendente;
+- Recursos reutilizam os parâmetros de Capacidade e exibem medidas observadas somente quando disponíveis no cache aprovado;
+- ações podem ser ligadas a produto, processo, recurso e nó do Layout; cards do Layout exibem ações abertas/atrasadas.
 
 ## Segurança Oracle
 
@@ -76,8 +81,9 @@ npm run build
 3. Na rede Metalsa, preencher `.env` e executar apenas o preflight Oracle.
 4. Validar a allowlist das consultas realmente usadas pelo PBIP.
 5. Liberar uma consulta por vez, somente leitura, e comparar resultados.
-6. Concluir Overview/Resultados com os valores validados.
-7. Executar validação ponta a ponta e preparar publicação do aplicativo.
+6. Validar os novos cadastros do Prompt 7 com os responsáveis da planta.
+7. Concluir Overview/Resultados com os valores validados.
+8. Executar validação ponta a ponta e preparar publicação do aplicativo.
 
 Para a ordem atualizada e detalhada, seguir `docs/CURRENT-STATUS.md`; em caso de divergência entre documentos antigos e esse checkpoint, o checkpoint mais recente prevalece.
 

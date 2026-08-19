@@ -8,6 +8,9 @@ import CalculationStatusView from "@/views/CalculationStatusView.vue";
 import IntegrationsView from "@/views/IntegrationsView.vue";
 import MifcLayoutView from "@/views/MifcLayoutView.vue";
 import ModulePlaceholderView from "@/views/ModulePlaceholderView.vue";
+import OperationalRegistryView from "@/views/OperationalRegistryView.vue";
+import ActionsView from "@/views/ActionsView.vue";
+import SettingsView from "@/views/SettingsView.vue";
 
 const routes: RouteRecordRaw[] = [
   { path: "/", redirect: "/overview" },
@@ -21,11 +24,12 @@ const routes: RouteRecordRaw[] = [
   { path: "/mifc/analysis", name: "analysis", component: CalculationStatusView, meta: { title: "Análises" } },
   { path: "/mifc/reports", name: "reports", component: ModulePlaceholderView, meta: { title: "Relatórios", description: "Exportações serão habilitadas após a validação dos cálculos." } },
   { path: "/integrations", name: "integrations", component: IntegrationsView, meta: { title: "Integrações" } },
-  { path: "/products", name: "products", component: ModulePlaceholderView, meta: { title: "Produtos", description: "Cadastros de clientes, produtos e veículos pertencem ao banco da aplicação." } },
-  { path: "/processes", name: "processes", component: ModulePlaceholderView, meta: { title: "Processos", description: "Cadastros de processos e máquinas serão mantidos por planta." } },
-  { path: "/resources", name: "resources", component: ModulePlaceholderView, meta: { title: "Recursos", description: "Recursos produtivos serão associados aos processos e revisões." } },
-  { path: "/master-data", name: "master-data", component: ModulePlaceholderView, meta: { title: "Dados mestre", description: "Parâmetros estáveis terão unidade, origem e histórico." } },
-  { path: "/settings", name: "settings", component: ModulePlaceholderView, meta: { title: "Configurações", description: "Permissões, auditoria e preferências ficarão nesta área." } },
+  { path: "/products", name: "products", component: OperationalRegistryView, props: { mode: "products" }, meta: { title: "Produtos" } },
+  { path: "/processes", name: "processes", component: OperationalRegistryView, props: { mode: "processes" }, meta: { title: "Processos" } },
+  { path: "/resources", name: "resources", component: OperationalRegistryView, props: { mode: "resources" }, meta: { title: "Recursos" } },
+  { path: "/actions", name: "actions", component: ActionsView, meta: { title: "Ações" } },
+  { path: "/master-data", name: "master-data", component: OperationalRegistryView, props: { mode: "master" }, meta: { title: "Dados mestre" } },
+  { path: "/settings", name: "settings", component: SettingsView, meta: { title: "Configurações" } },
   { path: "/:pathMatch(.*)*", redirect: "/overview" },
 ];
 

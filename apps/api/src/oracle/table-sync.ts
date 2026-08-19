@@ -80,6 +80,38 @@ export function getCachedTable(queryId: string): ReadOnlyQueryResult | undefined
   return tableCache.get(queryId)?.result;
 }
 
+export function getCachedProductCatalog() {
+  const sourceIds = ["base1", "base2", "daf-slitters", "scania"];
+  const products = new Map<string, Record<string, unknown>>();
+  for (const queryId of sourceIds) {
+    const cached = tableCache.get(queryId);
+    if (!cached) continue;
+    for (const row of cached.result.rows as Array<Record<string, unknown>>) {
+      const code = String(row.ITEM ?? row.item ?? "").trim();
+      if (!code) continue;
+      const customer = String(row.CUSTOMER_CODE ?? row.customer_code ?? "").trim();
+      const sourceKey = `${queryId}:${code}:${customer}`;
+      products.set(sourceKey, {
+        id: `oracle-${Buffer.from(sourceKey).toString("base64url")}`,
+        code,
+        description: String(row.DESCRIPTION ?? row.description ?? code).trim(),
+        customer,
+        family: "",
+        productClass: String(row.PRODUCT_CLASS ?? row.product_class ?? "").trim(),
+        hand: String(row.HAND ?? row.hand ?? "").trim(),
+        finishLength: Number(row.FINISH_LENGTH ?? row.finish_length) || undefined,
+        material: String(row.MP ?? row.mp ?? "").trim(),
+        status: "active",
+        origin: "ORACLE_MES",
+        sourceKey,
+        updatedAt: cached.summary.syncedAt,
+        routeProcessIds: [],
+      });
+    }
+  }
+  return { ready: products.size > 0, products: [...products.values()], updatedAt: getTableSyncStatus().lastSyncedAt };
+}
+
 export async function syncApprovedTables(credentials: OracleCredentials, queryIds?: string[]) {
   const catalog = await loadQueryCatalog();
   const requested = queryIds ? new Set(queryIds) : null;

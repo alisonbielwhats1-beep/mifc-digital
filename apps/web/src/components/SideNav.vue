@@ -8,6 +8,7 @@ import {
   Factory,
   House,
   LayoutDashboard,
+  ListChecks,
   Network,
   Package,
   PanelLeftClose,
@@ -45,6 +46,7 @@ const secondary = [
   { label: "Produtos", to: "/products", icon: Package },
   { label: "Processos", to: "/processes", icon: Factory },
   { label: "Recursos", to: "/resources", icon: UsersRound },
+  { label: "Ações", to: "/actions", icon: ListChecks },
   { label: "Dados mestre", to: "/master-data", icon: SlidersHorizontal },
   { label: "Configurações", to: "/settings", icon: Settings },
 ];

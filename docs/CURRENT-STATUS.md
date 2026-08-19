@@ -3,7 +3,7 @@
 Atualizado em: 2026-08-19  
 Branch: `main`  
 Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`  
-Último marco concluído: **Prompt 6.6 — materialização protegida das fontes operacionais**
+Último marco concluído: **Prompt 7 — Produtos, Processos, Recursos e Plano de Ações**
 
 ## Onde paramos
 
@@ -150,13 +150,30 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - uma carga parcial válida inicia a atualização automática e preserva as tabelas que responderam, permitindo que uma fonte com falha seja tentada novamente sem derrubar as demais;
 - nenhuma operação DML/DDL, procedure, múltipla instrução ou consulta enviada pelo navegador foi liberada.
 
+### Prompt 7 — cadastros operacionais e Plano de Ações
+
+- rotas Produtos, Processos, Recursos, Dados mestre e Configurações deixaram de usar placeholders;
+- nova entrada Ações adicionada ao menu lateral com visualizações Tabela e Kanban;
+- Produtos possui pesquisa, filtro, inclusão, edição, duplicação, ativação/inativação, detalhes e rota de processos;
+- endpoint `GET /api/master-data/products` publica somente um catálogo sanitizado, derivado do cache das consultas já aprovadas; linhas brutas e SQL não são enviados ao navegador;
+- atualização Oracle de produto preserva `overrides` locais em camada separada e nunca escreve no MES;
+- Processos possui os 15 processos solicitados, vínculos com produtos, recursos, nós e medidas; participação dos clientes deriva de `docs/client-process-matrix.csv`;
+- VM × Mesa 3 permanece pendente e ausente da rota até confirmação operacional;
+- Recursos reutiliza horas, turnos, ciclo, capacidade e disponibilidade da tela Capacidade;
+- produção, demanda, restante, paradas e downtime aparecem somente quando a respectiva medida está disponível no cache aprovado; ausência aparece como `—`;
+- Plano de Ações inclui CRUD, duplicação, conclusão, reabertura, exclusão confirmada, progresso, evidência e cálculo automático de atraso;
+- ações podem ser ligadas a produto, processo, recurso e nó; o painel do Layout abre processos, cria ações relacionadas e mostra contagem aberta/atrasada;
+- Dados mestre administra parâmetros, unidades, origem e status; Configurações administra preferências e restauração controlada dos dados locais;
+- filtros, preferências e cadastros são persistidos em `localStorage` sob uma chave versionada, preparados para migração a banco próprio;
+- testes cobrem CRUD, status/atraso, vínculos, separação Oracle/override e persistência após nova instância do store.
+
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 51 testes aprovados;
+- `npm test`: 56 testes aprovados (12 arquivos);
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
-- `npm run test:e2e`: suíte criada; execução pendente porque o ambiente de trabalho não permitiu baixar o navegador Chromium do Playwright;
+- `npm run test:e2e`: não executado neste checkpoint porque o binário do Playwright/Chromium não está disponível no ambiente de trabalho;
 - branch local contém as alterações até o Prompt 6.6 e ainda não foi enviada ao `origin/main`.
 
 ## Parcial ou ainda não validado

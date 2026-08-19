@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { assertSafeOracleConfig, getOracleConfig } from "./config.js";
 import { executeAllowlistedSelect, testOracleConnection } from "./oracle/read-only-client.js";
 import { loadQueryCatalog } from "./oracle/query-catalog.js";
-import { getTableSyncStatus, startAutomaticRefresh, syncApprovedTables } from "./oracle/table-sync.js";
+import { getCachedProductCatalog, getTableSyncStatus, startAutomaticRefresh, syncApprovedTables } from "./oracle/table-sync.js";
 import { getCachedLayoutMeasures } from "./oracle/layout-measures.js";
 
 const MAX_BODY_BYTES = 16 * 1024;
@@ -88,6 +88,11 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
     const contextDate = url.searchParams.get("date") ?? undefined;
     if (contextDate && !/^\d{4}-\d{2}-\d{2}$/.test(contextDate)) throw new Error("Data de contexto inválida; use AAAA-MM-DD.");
     sendJson(response, 200, getCachedLayoutMeasures(contextDate));
+    return;
+  }
+
+  if (method === "GET" && url.pathname === "/api/master-data/products") {
+    sendJson(response, 200, getCachedProductCatalog());
     return;
   }
 
