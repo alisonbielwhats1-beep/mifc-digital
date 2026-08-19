@@ -19,7 +19,7 @@ export interface LayoutEdge {
 }
 export interface LayoutRevision { id: string; number: number; label: string; createdAt: string; savedAt?: string; nodes: LayoutNode[]; edges: LayoutEdge[] }
 interface GraphSnapshot { nodes: LayoutNode[]; edges: LayoutEdge[] }
-interface PersistedLayout { schemaVersion: 2; activeRevisionId: string; revisions: LayoutRevision[] }
+interface PersistedLayout { schemaVersion: 3; activeRevisionId: string; revisions: LayoutRevision[] }
 
 const storageKey = "mifc-digital:layout-reference-v2";
 const now = "2026-08-19T12:00:00.000Z";
@@ -51,13 +51,13 @@ function initialRevision(): LayoutRevision {
     node(r,"node-csn","customer_supplier","CSN",18,390,82,54,properties("EXT-002")),
     node(r,"node-gerdau","customer_supplier","GERDAU",18,462,82,54,properties("EXT-003")),
     node(r,"node-raw","storage","Almox.\nMatéria-prima",130,365,104,78,properties("BUF-001",0,250,100,2,95,"Estoque de matéria-prima.","D-E-MP")),
-    node(r,"node-cut","process","Corte",278,365,108,74,properties("P-001",48,1,1440,2,92,"","T-C-CORTE"),"cap-rf3"),
-    node(r,"node-stamp","process","Estamparia",430,365,108,74,properties("P-002",75,1,960,2,90,"","T-C-ESTAMP")),
-    node(r,"node-weld-1","process","Solda 1",582,365,108,74,properties("P-003",120,1,720,2,88,"","T-C-S1")),
-    node(r,"node-weld-2","process","Solda 2",734,365,108,74,properties("P-005",110,1,720,2,90,"Solda robotizada.\nTempo inclui setup.","T-C-S2")),
-    node(r,"node-weld-3","process","Solda 3",886,365,108,74,properties("P-006",110,1,720,2,90,"","T-C-S3")),
-    node(r,"node-assembly","process","Montagem",1038,365,108,74,properties("P-007",85,1,840,2,92,"","T-C-MONT")),
-    node(r,"node-inspection","process","Inspeção",1190,365,108,74,properties("P-008",60,1,1200,2,95,"","T-C-INSP")),
+    node(r,"node-cut","process","LCT / RF2",278,365,108,74,properties("P-001",0,0,0,2,90,"Etapa identificada no PBIP.","T-LCT/RF2")),
+    node(r,"node-stamp","process","Roll Former 3",430,365,108,74,properties("P-001",48,68,1200,2,85,"Etapa identificada no PBIP.","T-RF3"),"cap-rf3"),
+    node(r,"node-weld-1","process","Mesa 3",582,365,108,74,properties("P-003",0,0,0,2,90,"T-M3 é placeholder zero no PBIP; validar operacionalmente.","T-M3")),
+    node(r,"node-weld-2","process","Beattys",734,365,108,74,properties("P-002",62,132,928,2,82,"Família Beatty 1/3/4 conforme o cliente.","T-B1/T-B3/T-B4"),"cap-beatty"),
+    node(r,"node-weld-3","process","P.A / CNC",886,365,108,74,properties("P-006",0,0,0,2,90,"P.A para FH/Scania; CNC para VM/DAF.","T-P.A/T-CNC")),
+    node(r,"node-assembly","process","Pintura / Rebitagem",1038,365,108,74,properties("P-003",110,150,528,2,60,"Pintura comum; rebitagem adicional para Scania e DAF.","T-LPP2"),"cap-paint"),
+    node(r,"node-inspection","process","Stenhoj / Embalagem",1190,365,108,74,properties("P-004",60,110,960,2,90,"VM termina em embalagem; demais clientes usam Stenhoj e embalagem.","T-STJ/T-EMB-VM"),"cap-stenhoj"),
     node(r,"node-finished","storage","Armazém\nProduto acabado",1332,365,106,78,properties("BUF-002",0,100,720,2,95,"","D-E-PA")),
     node(r,"node-shipping","truck","Expedição",1460,370,86,68,properties("LOG-001")),
     node(r,"node-volvo","customer_supplier","VOLVO",1580,305,82,54,properties("CLI-001")),
@@ -86,6 +86,33 @@ function initialRevision(): LayoutRevision {
 
 function graphSnapshot(revision: LayoutRevision): GraphSnapshot { return { nodes: clone(revision.nodes), edges: clone(revision.edges) }; }
 
+const legacyProcessLabels: Record<string, string> = {
+  "node-cut": "Corte",
+  "node-stamp": "Estamparia",
+  "node-weld-1": "Solda 1",
+  "node-weld-2": "Solda 2",
+  "node-weld-3": "Solda 3",
+  "node-assembly": "Montagem",
+  "node-inspection": "Inspeção",
+};
+
+function migrateLegacyProcessLabels(revisions: LayoutRevision[]): LayoutRevision[] {
+  const baseline = new Map(initialRevision().nodes.map((item) => [item.id, item]));
+  for (const revision of revisions) {
+    for (const item of revision.nodes) {
+      const baselineId = Object.keys(legacyProcessLabels).find((id) => item.id === id || item.id.endsWith(`-${id}`));
+      if (!baselineId || item.label !== legacyProcessLabels[baselineId]) continue;
+      const replacement = baseline.get(baselineId);
+      if (!replacement) continue;
+      item.label = replacement.label;
+      item.processId = replacement.processId;
+      item.properties = clone(replacement.properties);
+      item.validationStatus = replacement.validationStatus;
+    }
+  }
+  return revisions;
+}
+
 export const useMifcLayoutStore = defineStore("mifc-layout", {
   state: () => ({ revisions: [initialRevision()] as LayoutRevision[], activeRevisionId: "layout-rev-04", selectedNodeId: "node-weld-2" as string | null, selectedEdgeId: null as string | null, connectSourceId: null as string | null, activeTool: "select" as LayoutTool, undoStack: [] as GraphSnapshot[], redoStack: [] as GraphSnapshot[], hydrated: false, persistedGraph: "" }),
   getters: {
@@ -97,7 +124,14 @@ export const useMifcLayoutStore = defineStore("mifc-layout", {
   actions: {
     hydrate() {
       if (this.hydrated) return;
-      try { const raw = localStorage.getItem(storageKey); const parsed = raw ? JSON.parse(raw) as Partial<PersistedLayout> : null; if (parsed?.schemaVersion === 2 && Array.isArray(parsed.revisions) && parsed.revisions.length && typeof parsed.activeRevisionId === "string") { this.revisions = parsed.revisions; this.activeRevisionId = parsed.activeRevisionId; } } catch { /* baseline local */ }
+      try {
+        const raw = localStorage.getItem(storageKey);
+        const parsed = raw ? JSON.parse(raw) as { schemaVersion?: number; activeRevisionId?: string; revisions?: LayoutRevision[] } : null;
+        if ([2,3].includes(parsed?.schemaVersion ?? 0) && Array.isArray(parsed?.revisions) && parsed.revisions.length && typeof parsed.activeRevisionId === "string") {
+          this.revisions = parsed.schemaVersion === 2 ? migrateLegacyProcessLabels(parsed.revisions) : parsed.revisions;
+          this.activeRevisionId = parsed.activeRevisionId;
+        }
+      } catch { /* baseline local */ }
       if (!this.activeRevision.nodes.some((item) => item.id === this.selectedNodeId)) this.selectedNodeId = this.activeRevision.nodes[0]?.id ?? null;
       this.persistedGraph = JSON.stringify(graphSnapshot(this.activeRevision)); this.hydrated = true;
     },
@@ -111,6 +145,17 @@ export const useMifcLayoutStore = defineStore("mifc-layout", {
     moveNode(id: string, x: number, y: number) { const item = this.activeRevision.nodes.find((entry) => entry.id === id); if (item) { item.x = clamp(x, 0, 1680 - item.width); item.y = clamp(y, 0, 610 - item.height); } },
     resizeNode(id: string, width: number, height: number) { const item = this.activeRevision.nodes.find((entry) => entry.id === id); if (item) { item.width = clamp(width, 62, 280); item.height = clamp(height, 38, 180); } },
     moveEdgeCurve(id: string, curveOffset: number) { const item = this.activeRevision.edges.find((entry) => entry.id === id); if (item) item.curveOffset = clamp(curveOffset, -320, 320); },
+    previewNodeLabel(id: string, label: string) { const item = this.activeRevision.nodes.find((entry) => entry.id === id); if (item) item.label = label; },
+    commitNodeLabel(id: string, previousLabel: string, label: string) {
+      const item = this.activeRevision.nodes.find((entry) => entry.id === id);
+      const nextLabel = label.trim();
+      if (!item || !nextLabel) { if (item) item.label = previousLabel; return; }
+      if (previousLabel === nextLabel) { item.label = nextLabel; return; }
+      item.label = previousLabel;
+      this.beginMutation();
+      item.label = nextLabel;
+    },
+    cancelNodeLabel(id: string, previousLabel: string) { const item = this.activeRevision.nodes.find((entry) => entry.id === id); if (item) item.label = previousLabel; },
     updateNode(id: string, patch: Partial<Omit<LayoutNode, "id" | "revisionId">>) { const item = this.activeRevision.nodes.find((entry) => entry.id === id); if (!item) return; this.beginMutation(); Object.assign(item, clone(patch)); },
     applyNode(id: string, label: string, nodeProperties: LayoutNodeProperties, processId?: string) { const item = this.activeRevision.nodes.find((entry) => entry.id === id); if (!item) return; this.beginMutation(); item.label = label; item.properties = clone(nodeProperties); item.processId = processId; item.validationStatus = processId ? "mapped" : item.validationStatus; },
     addNode(type: LayoutNodeType, x = 720, y = 330) { this.beginMutation(); const id = makeId("node"); const count = this.activeRevision.nodes.filter((item) => item.type === type).length + 1; const labels: Record<LayoutNodeType,string> = { process:"Novo processo", storage:"Armazenamento", stagnation:"Estagnação", database:"Base de dados", customer_supplier:"Cliente / fornecedor", truck:"Caminhão", kanban:"Kanban", information:"Informação", text:"Texto" }; this.activeRevision.nodes.push(node(this.activeRevision.id,id,type,labels[type],x,y,type === "process" ? 108 : 96,type === "process" ? 74 : 58,properties(`${type.slice(0,3).toUpperCase()}-${String(count).padStart(3,"0")}`))); this.selectNode(id); this.activeTool = "select"; },
@@ -118,7 +163,7 @@ export const useMifcLayoutStore = defineStore("mifc-layout", {
     deleteSelected() { if (!this.selectedNodeId && !this.selectedEdgeId) return; this.beginMutation(); if (this.selectedNodeId) { const id = this.selectedNodeId; this.activeRevision.nodes = this.activeRevision.nodes.filter((item) => item.id !== id); this.activeRevision.edges = this.activeRevision.edges.filter((item) => item.sourceNodeId !== id && item.targetNodeId !== id); } else this.activeRevision.edges = this.activeRevision.edges.filter((item) => item.id !== this.selectedEdgeId); this.selectedNodeId = null; this.selectedEdgeId = null; },
     connectNode(id: string, flowType: MifcFlowType = "material_push") { if (!this.connectSourceId) { this.connectSourceId = id; return; } if (canConnect(this.activeRevision.edges,this.connectSourceId,id,flowType)) { this.beginMutation(); this.activeRevision.edges.push(edge(this.activeRevision.id,makeId("edge"),this.connectSourceId,id,flowType,0)); } this.connectSourceId = null; this.activeTool = "select"; },
     updateSelectedEdge(patch: Partial<Pick<LayoutEdge,"flowType"|"sourceNodeId"|"targetNodeId"|"curveOffset">>) { const item = this.selectedEdge; if (!item) return; this.beginMutation(); Object.assign(item,clone(patch)); },
-    save() { this.activeRevision.savedAt = new Date().toISOString(); const payload: PersistedLayout = { schemaVersion: 2, activeRevisionId: this.activeRevisionId, revisions: this.revisions }; localStorage.setItem(storageKey,JSON.stringify(payload)); this.persistedGraph = JSON.stringify(graphSnapshot(this.activeRevision)); },
+    save() { this.activeRevision.savedAt = new Date().toISOString(); const payload: PersistedLayout = { schemaVersion: 3, activeRevisionId: this.activeRevisionId, revisions: this.revisions }; localStorage.setItem(storageKey,JSON.stringify(payload)); this.persistedGraph = JSON.stringify(graphSnapshot(this.activeRevision)); },
     switchRevision(id: string) { const revision = this.revisions.find((item) => item.id === id); if (!revision || id === this.activeRevisionId) return; if (this.isDirty) this.save(); this.activeRevisionId = id; this.selectedNodeId = revision.nodes[0]?.id ?? null; this.selectedEdgeId = null; this.undoStack = []; this.redoStack = []; this.persistedGraph = JSON.stringify(graphSnapshot(revision)); this.save(); },
     createRevision() { this.save(); const number = Math.max(...this.revisions.map((item) => item.number)) + 1; const revisionId = makeId("layout-rev"); const source = this.activeRevision; const nodeIds = new Map(source.nodes.map((item) => [item.id,`${revisionId}-${item.id}`])); const revision: LayoutRevision = { id:revisionId, number, label:`Rev. ${String(number).padStart(2,"0")} (Rascunho)`, createdAt:new Date().toISOString(), nodes:source.nodes.map((item) => ({...clone(item),id:nodeIds.get(item.id)!,revisionId})), edges:source.edges.map((item) => ({...clone(item),id:makeId("edge"),revisionId,sourceNodeId:nodeIds.get(item.sourceNodeId)!,targetNodeId:nodeIds.get(item.targetNodeId)!})) }; this.revisions.push(revision); this.activeRevisionId = revisionId; this.undoStack = []; this.redoStack = []; this.selectedNodeId = revision.nodes[0]?.id ?? null; this.selectedEdgeId = null; this.persistedGraph = JSON.stringify(graphSnapshot(revision)); this.save(); },
   },

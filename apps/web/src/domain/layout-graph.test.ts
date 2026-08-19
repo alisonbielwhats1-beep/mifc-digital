@@ -50,7 +50,7 @@ describe("histórico e revisões do Layout", () => {
     expect(store.revisions).toHaveLength(2);
     expect(store.activeRevision.number).toBe(5);
     expect(store.activeRevision.nodes.every((node) => node.revisionId === store.activeRevision.id)).toBe(true);
-    expect(localStorage.getItem("mifc-digital:layout-reference-v2")).toContain('"schemaVersion":2');
+    expect(localStorage.getItem("mifc-digital:layout-reference-v2")).toContain('"schemaVersion":3');
   });
 
   it("move, redimensiona e conecta elementos com limites do canvas", () => {
@@ -71,5 +71,43 @@ describe("histórico e revisões do Layout", () => {
     expect(store.selectedEdge).toMatchObject({ curveOffset: 120, targetNodeId: "node-logistics" });
     store.undo(); expect(store.selectedEdge).toBeUndefined();
     expect(store.activeRevision.edges.find((edge) => edge.id === "inf-01")).toMatchObject({ curveOffset: -18, targetNodeId: "node-mrp" });
+  });
+
+  it("pré-visualiza, cancela e confirma renomeação com desfazer/refazer e persistência", () => {
+    const store = useMifcLayoutStore(); store.hydrate();
+    const original = store.activeRevision.nodes.find((node) => node.id === "node-stamp")!.label;
+
+    store.previewNodeLabel("node-stamp", "RF3 Principal");
+    expect(store.activeRevision.nodes.find((node) => node.id === "node-stamp")!.label).toBe("RF3 Principal");
+    expect(store.undoStack).toHaveLength(0);
+
+    store.cancelNodeLabel("node-stamp", original);
+    expect(store.activeRevision.nodes.find((node) => node.id === "node-stamp")!.label).toBe(original);
+
+    store.previewNodeLabel("node-stamp", "RF3 Principal");
+    store.commitNodeLabel("node-stamp", original, "RF3 Principal");
+    expect(store.undoStack).toHaveLength(1);
+    store.undo();
+    expect(store.activeRevision.nodes.find((node) => node.id === "node-stamp")!.label).toBe(original);
+    store.redo();
+    expect(store.activeRevision.nodes.find((node) => node.id === "node-stamp")!.label).toBe("RF3 Principal");
+
+    store.save();
+    setActivePinia(createPinia());
+    const reloaded = useMifcLayoutStore(); reloaded.hydrate();
+    expect(reloaded.activeRevision.nodes.find((node) => node.id === "node-stamp")!.label).toBe("RF3 Principal");
+  });
+
+  it("migra somente nomes genéricos da versão 2 e preserva nomes personalizados", () => {
+    const store = useMifcLayoutStore(); store.hydrate();
+    const revisions = JSON.parse(JSON.stringify(store.revisions)) as typeof store.revisions;
+    revisions[0].nodes.find((node) => node.id === "node-cut")!.label = "Corte";
+    revisions[0].nodes.find((node) => node.id === "node-stamp")!.label = "RF3 Personalizado";
+    localStorage.setItem("mifc-digital:layout-reference-v2", JSON.stringify({ schemaVersion: 2, activeRevisionId: store.activeRevisionId, revisions }));
+
+    setActivePinia(createPinia());
+    const migrated = useMifcLayoutStore(); migrated.hydrate();
+    expect(migrated.activeRevision.nodes.find((node) => node.id === "node-cut")!.label).toBe("LCT / RF2");
+    expect(migrated.activeRevision.nodes.find((node) => node.id === "node-stamp")!.label).toBe("RF3 Personalizado");
   });
 });

@@ -1,14 +1,34 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from "vue";
+import { computed, nextTick, reactive, ref, watch } from "vue";
 import { ArrowDownToLine, ArrowUpFromLine, Link2Off, Save, Trash2, X } from "@lucide/vue";
 import type { CapacityFormRow } from "@/stores/mifc-forms";
 import type { LayoutEdge, LayoutNode, LayoutNodeProperties } from "@/stores/mifc-layout";
 
-const props = defineProps<{ node?: LayoutNode; edge?: LayoutEdge; nodes: LayoutNode[]; edges: LayoutEdge[]; capacityRows: CapacityFormRow[] }>();
-const emit = defineEmits<{ close: []; update: [id: string, label: string, properties: LayoutNodeProperties, processId?: string]; delete: []; updateEdge: [patch: Partial<Pick<LayoutEdge,"flowType"|"sourceNodeId"|"targetNodeId"|"curveOffset">>] }>();
+const props = defineProps<{ node?: LayoutNode; edge?: LayoutEdge; nodes: LayoutNode[]; edges: LayoutEdge[]; capacityRows: CapacityFormRow[]; focusRequest: number }>();
+const emit = defineEmits<{
+  close: [];
+  update: [id: string, label: string, properties: LayoutNodeProperties, processId?: string];
+  delete: [];
+  updateEdge: [patch: Partial<Pick<LayoutEdge,"flowType"|"sourceNodeId"|"targetNodeId"|"curveOffset">>];
+  previewLabel: [id: string, label: string];
+  commitLabel: [id: string, previousLabel: string, label: string];
+  cancelLabel: [id: string, previousLabel: string];
+}>();
 
 const draft = reactive({ label: "", processId: "", code: "", cycleTimeSeconds: 0, wipPieces: 0, capacityPerDay: 0, shifts: 2, availabilityPercent: 90, notes: "", calculationKey: "" });
-watch(() => props.node, (node) => { if (!node) return; Object.assign(draft, { label: node.label, processId: node.processId ?? "", ...node.properties }); }, { immediate: true });
+const nameInput = ref<HTMLInputElement | null>(null);
+let originalLabel = "";
+watch(() => [props.node?.id, props.focusRequest] as const, async ([nodeId], previous) => {
+  const node = props.node;
+  if (!node) return;
+  if (nodeId !== previous?.[0]) {
+    originalLabel = node.label;
+    Object.assign(draft, { label: node.label, processId: node.processId ?? "", ...node.properties });
+  }
+  await nextTick();
+  nameInput.value?.focus();
+  nameInput.value?.select();
+}, { immediate: true });
 
 const nodeMap = computed(() => new Map(props.nodes.map((node) => [node.id, node.label])));
 const entries = computed(() => props.node ? props.edges.filter((edge) => edge.targetNodeId === props.node!.id).map((edge) => nodeMap.value.get(edge.sourceNodeId) ?? "Bloco") : []);
@@ -21,7 +41,26 @@ function applyCapacityLink() {
   if (!capacity) return;
   Object.assign(draft, { label: capacity.process, code: capacity.processCode, cycleTimeSeconds: capacity.cycleTimeSeconds, wipPieces: capacity.targetWipPieces, capacityPerDay: capacity.referenceCapacityPerDay ?? 0, shifts: capacity.shifts, availabilityPercent: capacity.efficiencyPercent });
 }
+function previewLabel() {
+  if (!props.node) return;
+  emit("previewLabel", props.node.id, draft.label);
+}
+function commitLabel() {
+  if (!props.node) return;
+  const nextLabel = draft.label.trim();
+  if (!nextLabel) { cancelLabel(); return; }
+  emit("commitLabel", props.node.id, originalLabel, nextLabel);
+  originalLabel = nextLabel;
+  draft.label = nextLabel;
+}
+function cancelLabel() {
+  if (!props.node) return;
+  draft.label = originalLabel;
+  emit("cancelLabel", props.node.id, originalLabel);
+  nameInput.value?.select();
+}
 function save() {
+  commitLabel();
   emit("update", props.node!.id, draft.label, { code: draft.code, cycleTimeSeconds: Number(draft.cycleTimeSeconds), wipPieces: Number(draft.wipPieces), capacityPerDay: Number(draft.capacityPerDay), shifts: Number(draft.shifts), availabilityPercent: Number(draft.availabilityPercent), notes: draft.notes, calculationKey: draft.calculationKey }, draft.processId || undefined);
 }
 </script>
@@ -33,7 +72,7 @@ function save() {
       <div class="selected-summary"><span class="health"></span><div><small>Elemento selecionado</small><strong>{{ node.label }}</strong></div></div>
       <form class="property-form" @submit.prevent="save">
         <label v-if="node.type === 'process'"><span>Processo de Capacidade</span><select v-model="draft.processId" @change="applyCapacityLink"><option value="">Sem vínculo</option><option v-for="process in capacityRows" :key="process.id" :value="process.id">{{ process.processCode }} · {{ process.process }}</option></select></label>
-        <label><span>Nome do bloco</span><input v-model.trim="draft.label" required maxlength="80" /></label>
+        <label><span>Nome do bloco</span><input ref="nameInput" v-model="draft.label" data-testid="node-name-input" required maxlength="80" @input="previewLabel" @blur="commitLabel" @keydown.enter.stop.prevent="commitLabel" @keydown.esc.stop.prevent="cancelLabel" /></label>
         <label><span>Código</span><input v-model.trim="draft.code" maxlength="30" /></label>
         <div class="two-columns"><label><span>CT <small>(segundos)</small></span><input v-model.number="draft.cycleTimeSeconds" type="number" min="0" step="0.1" /></label><label><span>WIP <small>(peças)</small></span><input v-model.number="draft.wipPieces" type="number" min="0" step="1" /></label></div>
         <label><span>Capacidade / dia <small>(pç/dia)</small></span><input v-model.number="draft.capacityPerDay" type="number" min="0" step="1" /></label>

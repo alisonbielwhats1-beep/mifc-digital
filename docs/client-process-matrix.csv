@@ -1,0 +1,29 @@
+cliente,medida_total,etapa,no_layout,participa,medidas_processo,medidas_estoque_logistica,status,evidencia
+Volvo FH,T-T-FH,LCT / RF2,node-cut,sim,T-LCT/RF2,E-D-P-LCT | E-D-P-RF2,mapped,cartões e catálogo PBIP
+Volvo FH,T-T-FH,Roll Former 3,node-stamp,sim,T-RF3,E-P-D-FH-RF3,mapped,cartões e catálogo PBIP
+Volvo FH,T-T-FH,Mesa 3,node-weld-1,sim,T-M3,E-P-D-FH-M3,mapped,cartão T-M3 e total T-T-FH
+Volvo FH,T-T-FH,Beattys,node-weld-2,sim,T-B4,D-E-FH-B,mapped,cartões e catálogo PBIP
+Volvo FH,T-T-FH,P.A / CNC,node-weld-3,sim,T-P.A,D-E-FH-P.A | D-E-FH-CL,mapped,cartões e catálogo PBIP
+Volvo FH,T-T-FH,Pintura / Rebitagem,node-assembly,sim,T-LPP2,D-E-FH-P.I,mapped,cartões e catálogo PBIP
+Volvo FH,T-T-FH,Stenhoj / Embalagem,node-inspection,sim,T-STJ,E-P-D-FH-STJ | E-P-D-FH-EMB,mapped,cartões e catálogo PBIP
+Volvo VM,T-T-VM,LCT / RF2,node-cut,não,,,validated,sem medida de processo VM para LCT/RF2 no catálogo PBIP
+Volvo VM,T-T-VM,Roll Former 3,node-stamp,sim,T-RF3,E-P-D-VM-RF3,mapped,cartões e catálogo PBIP
+Volvo VM,T-T-VM,Mesa 3,node-weld-1,não,T-M3,,pending,T-M3 aparece como cartão mas não compõe T-T-VM; confirmar operacionalmente
+Volvo VM,T-T-VM,Beattys,node-weld-2,sim,T-B1,D-E-VM-B,mapped,cartões e catálogo PBIP
+Volvo VM,T-T-VM,P.A / CNC,node-weld-3,sim,T-CNC,D-E-VM-CL,mapped,cartões e catálogo PBIP
+Volvo VM,T-T-VM,Pintura / Rebitagem,node-assembly,sim,T-LPP2,D-E-VM-P.I,mapped,cartões e catálogo PBIP
+Volvo VM,T-T-VM,Stenhoj / Embalagem,node-inspection,sim,T-EMB-VM,E-P-D-VM-EMB,mapped,cartões e catálogo PBIP
+Scania,T-T-SCA,LCT / RF2,node-cut,não,,,validated,sem medida de processo Scania para LCT/RF2 no catálogo PBIP
+Scania,T-T-SCA,Roll Former 3,node-stamp,sim,T-RF3,E-P-D-SCA-RF3,mapped,cartões e catálogo PBIP
+Scania,T-T-SCA,Mesa 3,node-weld-1,sim,T-M3,E-P-D-SCA-M3,mapped,cartão T-M3 e total T-T-SCA
+Scania,T-T-SCA,Beattys,node-weld-2,sim,T-B3,D-E-SCA-B,mapped,cartões e catálogo PBIP
+Scania,T-T-SCA,P.A / CNC,node-weld-3,sim,T-P.A,D-E-SCA-P.A | D-E-SCA-CL,mapped,cartões e catálogo PBIP
+Scania,T-T-SCA,Pintura / Rebitagem,node-assembly,sim,T-LPP2 | T-SCA-REB,D-E-SCA-P.I | D-E-SCA-REB,mapped,cartões e catálogo PBIP
+Scania,T-T-SCA,Stenhoj / Embalagem,node-inspection,sim,T-STJ,E-P-D-SCA-STJ | E-P-D-SCA-EMB,mapped,cartões e catálogo PBIP
+DAF,T-T-DAF,LCT / RF2,node-cut,não,,,validated,sem medida de processo DAF para LCT/RF2 no catálogo PBIP
+DAF,T-T-DAF,Roll Former 3,node-stamp,sim,T-RF3,E-P-D-DAF-RF3,mapped,cartões e catálogo PBIP
+DAF,T-T-DAF,Mesa 3,node-weld-1,sim,T-M3,E-P-D-DAF-M3,mapped,cartão T-M3 e total T-T-DAF
+DAF,T-T-DAF,Beattys,node-weld-2,sim,T-B1,D-E-DAF-B,mapped,cartões e catálogo PBIP
+DAF,T-T-DAF,P.A / CNC,node-weld-3,sim,T-CNC,D-E-DAF-CL,mapped,cartões e catálogo PBIP
+DAF,T-T-DAF,Pintura / Rebitagem,node-assembly,sim,T-LPP2 | T-DAF-REB,D-E-DAF-P.I | D-E-DAF-REB,mapped,cartões e catálogo PBIP
+DAF,T-T-DAF,Stenhoj / Embalagem,node-inspection,sim,T-STJ,E-P-D-DAF-STJ | E-P-D-DAF-EMB,mapped,cartões e catálogo PBIP

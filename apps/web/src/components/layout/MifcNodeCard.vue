@@ -11,6 +11,7 @@ const emit = defineEmits<{ select: [id: string]; dragstart: [event: PointerEvent
     class="mifc-node"
     :class="[`type-${node.type}`, { selected, 'connect-mode': connecting }]"
     :style="{ left: `${node.x}px`, top: `${node.y}px`, width: `${node.width}px`, height: `${node.height}px`, zIndex: node.layer }"
+    :data-node-id="node.id" :data-testid="`layout-node-${node.id}`"
     role="button" tabindex="0" :aria-label="`${node.label}. ${selected ? 'Selecionado' : 'Selecionar bloco'}`"
     @click.stop="emit('select', node.id)" @keydown.enter.prevent.stop="emit('select', node.id)" @pointerdown.left.stop="emit('dragstart', $event, node)"
   >

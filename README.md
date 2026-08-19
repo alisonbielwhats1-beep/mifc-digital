@@ -12,7 +12,7 @@ A fundação executável inclui:
 - contexto de Planta, Ano, Cenário e Revisão;
 - navegação principal e MIFC expandido;
 - prévias locais de Visão geral, Volume, Capacidade e Integrações;
-- Layout MIFC reconstruído como grafo editável a partir da referência aprovada, com 29 blocos, 47 linhas e quatro faixas de Lead Time/Dados;
+- Layout MIFC reconstruído como grafo editável a partir da referência aprovada, com 29 blocos, 47 linhas e quatro linhas cliente × processo;
 - indicação visual de `INPUT`, `CALCULATED`, `ORACLE/MES`, `IMPORT` e `MIXED`;
 - modelo de domínio para cenários, volumes, logística, capacidade, buffers, Layout, cálculos, integrações e auditoria;
 - contrato separado do Calculation Engine;
@@ -51,11 +51,11 @@ npm run dev
 
 Acesse `http://127.0.0.1:5173/`.
 
-No Layout, blocos e linhas podem ser selecionados. As linhas permitem alterar origem, destino, tipo de fluxo e curvatura; o ponto azul da conexão selecionada ajusta a curva diretamente no canvas.
+No Layout, blocos e linhas podem ser selecionados. Arraste com o botão central do mouse para mover a tela a partir de qualquer ponto. Ao clicar em um bloco, o campo de nome recebe foco e atualiza o card durante a digitação. As linhas de Volvo FH, Volvo VM, Scania e DAF seguem a matriz documentada em [`docs/client-process-matrix.csv`](docs/client-process-matrix.csv).
 
 ## Usar em outro computador
 
-1. Clonar o repositório privado informado na entrega.
+1. Clonar o repositório público informado na entrega.
 2. Executar `npm install`.
 3. Copiar `.env.example` para `.env` e preencher os dados Oracle apenas localmente.
 4. Executar `npm run dev`.
@@ -67,4 +67,6 @@ Validação completa:
 npm run typecheck
 npm test
 npm run build
+npx playwright install chromium
+npm run test:e2e
 ```
