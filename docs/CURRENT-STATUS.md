@@ -3,7 +3,7 @@
 Atualizado em: 2026-08-19  
 Branch: `main`  
 Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`  
-Último marco concluído: **Prompt 7 — Produtos, Processos, Recursos e Plano de Ações**
+Último marco concluído: **Integração da Programação de Embarque — rede + anexo**
 
 ## Onde paramos
 
@@ -12,6 +12,27 @@ O MVP local está executável e os Prompts 1 a 6.1 foram realizados. O projeto e
 O Layout possui 32 blocos, 56 linhas editáveis e linhas específicas para Volvo FH, Volvo VM, Scania e DAF. A tela de Integrações agora consegue carregar, sob ação explícita do usuário, somente as consultas SQL aprovadas e manter os resultados na memória da API local.
 
 Uma leitura real da consulta `base1` foi validada pelo proprietário na rede autorizada: 3.888 linhas, transação somente leitura e resposta HTTP 200. Nenhuma operação de escrita foi executada.
+
+### Atualização de paridade do Layout — 2026-08-19
+
+- camada `layout-stock-measures.ts` adicionada para materializar estoque por cliente/local, pós-processo, segregação, RF2 e LCT;
+- transformações derivadas do PBIP para FH, VM, Scania e DAF reproduzidas no cálculo, incluindo a combinação DAF Base2 + DAF SIMPLES/REFORÇADA;
+- valores de estoque passaram a aparecer na linhagem/tooltip de cada etapa do Layout, mantendo a faixa visual somente numérica;
+- `npm run typecheck`, `npm test` e `npm run build` aprovados no checkpoint anterior;
+- a paridade continua parcial até comparar uma carga Oracle real com a mesma data/revisão do Power BI e receber `Máquinas`/`Parâmetros.xlsx`; `Programacao_embarque.xlsx` já foi validado e integrado.
+
+### Integração da Programação de Embarque — 2026-08-19
+
+- caminho principal configurado como `\\metbrosawfse01\Publico\PowerBI\Logística\Programacao_embarque.xlsx`, sempre em leitura;
+- a API tenta carregar a programação automaticamente ao iniciar e limita a espera da rede a 12 segundos;
+- a tela Integrações permite atualizar da rede ou selecionar manualmente um `.xlsx` quando o compartilhamento estiver indisponível;
+- o importador valida a aba `Data Embarque` e os cabeçalhos `Flatbed`, `Data` e `Horário`, limita o arquivo a 10 MB e não executa fórmulas ou macros;
+- as transformações da consulta M foram preservadas, incluindo remoção da última linha útil e recomposição de `Data__horario` quando vazia;
+- o arquivo real foi lido diretamente da rede: 35 linhas válidas, 19 SCANIA, 12 VM e 4 DAF, entre 19/08/2026 e 27/08/2026;
+- foram reproduzidas as chaves `FH Flatbed_2`, `VM.Flatbed_2`, `SCANIA.Flatbed_2`, `DAF.Flatbed` e `DAF SLITTERS.Data` para `Dados de embarque.Flatbed`;
+- os cartões de embalagem respeitam `Calendar[Date]`, `Dados de embarque[Data] >= TODAY()` e os filtros visuais de `Operações[Dados ]`, incluindo `Ag. Emb1` + `Estoque FG` para o bloco SCANIA;
+- sem programação válida em memória, as medidas de embalagem dependentes do arquivo permanecem ausentes (`—`) em vez de exibir zero como dado observado;
+- testes adicionados para estrutura do Excel, datas seriais, geração das cinco chaves e contexto de filtro dos blocos.
 
 ## Entregue
 
@@ -192,7 +213,7 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 66 testes aprovados (14 arquivos);
+- `npm test`: 71 testes aprovados (15 arquivos);
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
 - `npm run test:e2e`: não executado neste checkpoint porque o binário do Playwright/Chromium não está disponível no ambiente de trabalho;
@@ -202,8 +223,8 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 
 - Overview e Resultados ainda funcionam como prévias com dados locais; o Layout já recebe RF3, quatro Beattys, LCT/RF2, P.A, CNC, Pintura, Stenhoj, embalagem VM e Rebitagens por fonte mista;
 - os formulários estão funcionais, mas a validação operacional final de todos os campos contra o Excel 2026 deve ser feita pelo usuário da área;
-- 309 medidas existem no modelo Power BI; nem todas foram migradas para o Calculation Engine;
-- as 62 medidas usadas nos cartões do Layout foram catalogadas, mas seus valores atuais dependem das fontes online;
+- 309 medidas existem no modelo Power BI; as 62 medidas usadas nos cartões do Layout foram catalogadas, e as famílias de demanda, operação, estoque e segregação agora têm cálculo local/Oracle para o Layout;
+- os valores atuais ainda dependem das fontes Oracle online e da validação dos parâmetros de máquina; a programação de embarque já possui rede direta e fallback por anexo;
 - as 47 conexões iniciais do novo Layout seguem a referência visual e ainda precisam de validação operacional da planta;
 - a suíte visual do Playwright está pronta, mas precisa da primeira execução em uma máquina com Chromium instalado (`npx playwright install chromium`);
 - a participação de Volvo VM na Mesa 3 requer confirmação operacional; até lá a linha permanece reta e sinalizada como pendente;

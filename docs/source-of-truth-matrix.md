@@ -53,7 +53,7 @@ Atualização: o workbook foi recebido e auditado. O detalhamento por célula es
 |---|---|---|---|---|---|---|
 | Flatbed | `Dados de embarque[Flatbed]` e campos derivados em SCANIA/FH/VM/DAF | `IMPORT/ORACLE` | identificador | Logística | programação de embarque e vínculo com material | `PBIP ✓`; origem atual inclui Excel de rede |
 | Data de embarque | `Dados de embarque[Data]` / `SHIP_DATE` | `IMPORT/ORACLE` | data | Logística | programação importada e data MES | `PBIP ✓` |
-| Horário de embarque | `Dados de embarque[Horário]` | `IMPORT/INPUT` | hora | Logística | planilha de programação de embarque | `PBIP ✓`, `EXCEL ?` |
+| Horário de embarque | `Dados de embarque[Horário]` | `IMPORT/INPUT` | hora | Logística | planilha de programação de embarque | `PBIP ✓`, `EXCEL ✓`, rede + anexo |
 | Data e horário combinados | `Dados de embarque[Data__horario]` | `CALCULATED/IMPORT` | data-hora | Logística | transformação da fonte de embarque | `PBIP ✓` |
 | Cliente de embarque | `Dados de embarque[Cliente]` | `IMPORT` | cadastro | Logística | planilha de programação | `PBIP ✓` |
 | Ship date MES | SCANIA/FH/VM/DAF/SHIPDATE `[SHIP_DATE]` | `ORACLE` | data | Logística | consultas Oracle do PBIP | `PBIP ✓` |

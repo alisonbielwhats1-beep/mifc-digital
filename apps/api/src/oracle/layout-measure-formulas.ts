@@ -36,7 +36,13 @@ export interface LayoutDemandResult {
 
 const asRows = (rows: unknown[]): OracleRow[] => rows.filter((row): row is OracleRow => Boolean(row) && typeof row === "object" && !Array.isArray(row));
 const hasValue = (value: unknown): boolean => value !== null && value !== undefined && String(value).trim() !== "";
-const text = (row: OracleRow, key: string): string => String(row[key] ?? "").trim();
+const text = (row: OracleRow, ...keys: string[]): string => {
+  for (const key of keys) {
+    const value = String(row[key] ?? "").trim();
+    if (value) return value;
+  }
+  return "";
+};
 const number = (row: OracleRow, key: string): number => {
   const value = Number(row[key]);
   return Number.isFinite(value) ? value : 0;
@@ -47,6 +53,27 @@ const months: Record<string, string> = {
   JUN: "06", JUL: "07", AUG: "08", AGO: "08", SEP: "09", SET: "09", OCT: "10",
   OUT: "10", NOV: "11", DEC: "12", DEZ: "12",
 };
+
+// DAF.tmdl combina Base2 com DAF SIMPLES e DAF REFORÇADA. Estes itens
+// aparecem nas duas consultas derivadas por divergência do próprio PBIP.
+const dafRowsInBothDerivedQueries = new Set([
+  "1-2407324-00", "1-2407324-01", "1-2407325-00", "1-2407325-01",
+  "1-2407330-00", "1-2407330-01", "1-2407331-00", "1-2407331-01",
+  "1-2422369-00", "1-2422370-00",
+]);
+
+function normalizedItem(value: unknown): string {
+  return String(value ?? "").replace(/#\(tab\)/g, "").trim();
+}
+
+function dafPowerBiRows(rowsToCount: OracleRow[]): number {
+  return rowsToCount
+    .filter((row) => text(row, "CUSTOMER_CODE") === "DAF" && hasValue(row.ITEM))
+    .filter((row) => text(row, "DESCRIPTION") !== "BEATTY 2")
+    .filter((row) => text(row, "Local", "local") !== "Slitter")
+    .filter((row) => text(row, "LOCATION") !== "Roll Former 3 Input")
+    .reduce((total, row) => total + (dafRowsInBothDerivedQueries.has(normalizedItem(row.ITEM)) ? 3 : 2), 0);
+}
 
 export function localDateKey(date = new Date()): string {
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -116,7 +143,7 @@ export function deriveLayoutDemandForDate(
       && (item.includes("1-") || item.includes("2-"))
       && hasValue(row.COMPONENT);
   }).length;
-  const dafItems = base2.filter((row) => text(row, "CUSTOMER_CODE") === "DAF" && hasValue(row.ITEM)).length;
+  const dafItems = dafPowerBiRows(base2);
 
   const distinctSlitters = new Map<string, OracleRow>();
   for (const row of dafSlitters) {

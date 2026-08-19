@@ -165,7 +165,8 @@ function mappingTitle(lane: ClientProcessLane, stage: PositionedClientStage) {
   const process = mapping.processMeasureKeys.length ? mapping.processMeasureKeys.join(" + ") : "sem medida de processo";
   const stock = mapping.stockMeasureKeys.length ? mapping.stockMeasureKeys.join(" + ") : "sem medida de estoque";
   const observed = mapping.processMeasureKeys.map((key) => processMeasureValues.value[key] === undefined ? null : `${key}: ${formatProcessDays(processMeasureValues.value[key])} dia (valor calculado ${formatMeasureDetailed(processMeasureValues.value[key])})`).filter(Boolean).join(" · ");
-  return `${lane.label} · ${stage.label}\nProcesso: ${process}${observed ? `\nValor: ${observed}` : ""}\nFiltro Calendar[Date]: ${selectedDate.value}\nEstoque/logística: ${stock}\n${mapping.evidence}`;
+  const stockObserved = mapping.stockMeasureKeys.map((key) => oracleMeasures.value.values?.[key] === undefined ? null : `${key}: ${formatProcessDays(Number(oracleMeasures.value.values[key]))} dia`).filter(Boolean).join(" · ");
+  return `${lane.label} · ${stage.label}\nProcesso: ${process}${observed ? `\nValor: ${observed}` : ""}\nFiltro Calendar[Date]: ${selectedDate.value}\nEstoque/logística: ${stock}${stockObserved ? `\nValor: ${stockObserved}` : ""}\n${mapping.evidence}`;
 }
 function formatMeasureDetailed(value: number) { return value.toLocaleString("pt-BR", { minimumFractionDigits: 6, maximumFractionDigits: 8 }); }
 function stageMeasureLabel(lane: ClientProcessLane, stage: PositionedClientStage) {
