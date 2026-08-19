@@ -43,6 +43,8 @@ Os arquivos de origem externos não devem ser alterados. O PBIP e os anexos orig
 - Processos seguem `docs/client-process-matrix.csv`, incluindo a participação VM × Mesa 3 como pendente;
 - Recursos reutilizam os parâmetros de Capacidade e exibem medidas observadas somente quando disponíveis no cache aprovado;
 - ações podem ser ligadas a produto, processo, recurso e nó do Layout; cards do Layout exibem ações abertas/atrasadas.
+- Layout ampliado para apresentação, com textos responsivos, linhas de cliente legíveis e Beattys 3–4–2–1 em cascata conforme o arranjo físico do Power BI;
+- seleção múltipla por `Ctrl/Shift + clique`, arraste em grupo e exclusão conjunta preservam um único passo de desfazer.
 
 ## Segurança Oracle
 

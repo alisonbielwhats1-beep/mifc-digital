@@ -50,7 +50,7 @@ describe("histórico e revisões do Layout", () => {
     expect(store.revisions).toHaveLength(2);
     expect(store.activeRevision.number).toBe(5);
     expect(store.activeRevision.nodes.every((node) => node.revisionId === store.activeRevision.id)).toBe(true);
-    expect(localStorage.getItem("mifc-digital:layout-reference-v2")).toContain('"schemaVersion":4');
+    expect(localStorage.getItem("mifc-digital:layout-reference-v2")).toContain('"schemaVersion":5');
   });
 
   it("move, redimensiona e conecta elementos com limites do canvas", () => {
@@ -59,7 +59,7 @@ describe("histórico e revisões do Layout", () => {
     store.addNode("process"); const secondId = store.selectedNodeId!;
     store.beginMutation(); store.moveNode(firstId, -500, 3000); store.resizeNode(firstId, 20, 900);
     const moved = store.activeRevision.nodes.find((node) => node.id === firstId)!;
-    expect({ x: moved.x, y: moved.y, width: moved.width, height: moved.height }).toEqual({ x: 0, y: 536, width: 62, height: 180 });
+    expect({ x: moved.x, y: moved.y, width: moved.width, height: moved.height }).toEqual({ x: 0, y: 716, width: 62, height: 180 });
     store.connectNode(firstId, "electronic_information"); store.connectNode(secondId, "electronic_information");
     expect(store.activeRevision.edges).toHaveLength(57);
     store.undo(); expect(store.activeRevision.edges).toHaveLength(56);

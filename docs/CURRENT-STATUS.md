@@ -168,10 +168,21 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - filtros, preferências e cadastros são persistidos em `localStorage` sob uma chave versionada, preparados para migração a banco próprio;
 - testes cobrem CRUD, status/atraso, vínculos, separação Oracle/override e persistência após nova instância do store.
 
+### Ajuste de apresentação e edição do Layout
+
+- canvas ampliado para `2260 × 1160`, mantendo pan, zoom, ajuste à tela e tela cheia;
+- zoom inicial prioriza legibilidade; o mapa pode ultrapassar a janela e ser navegado com o botão central ou `Mover tela`;
+- cards produtivos maiores, com quebra de linha, fonte responsiva ao tamanho do bloco e contenção de textos/medidas;
+- Beattys deixam a grade 2×2 e passam à cascata física `Beatty 3 → Beatty 4 → Beatty 2 → Beatty 1`, como no Power BI de referência;
+- faixas de clientes aumentadas para 330 px, com títulos, nomes de etapa, linhas, marcadores e valores maiores;
+- `Ctrl/Shift + clique` adiciona/remove blocos da seleção; arrastar qualquer bloco selecionado move o grupo em um único passo de histórico;
+- exclusão com vários blocos selecionados remove também suas conexões, exige confirmação e pode ser desfeita;
+- migração de Layout schema 5 aplica a composição legível às revisões locais existentes sem apagar propriedades ou medidas.
+
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 57 testes aprovados (12 arquivos);
+- `npm test`: 60 testes aprovados (13 arquivos);
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
 - `npm run test:e2e`: não executado neste checkpoint porque o binário do Playwright/Chromium não está disponível no ambiente de trabalho;
