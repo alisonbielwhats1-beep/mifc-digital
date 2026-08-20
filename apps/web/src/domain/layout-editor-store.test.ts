@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
-import { LAYOUT_WORLD_HEIGHT, LAYOUT_WORLD_WIDTH, useMifcLayoutStore } from "@/stores/mifc-layout";
+import { LAYOUT_WORLD_HEIGHT, LAYOUT_WORLD_WIDTH, useMifcLayoutStore, type LayoutRevision } from "@/stores/mifc-layout";
 
 class MemoryStorage implements Storage {
   private values=new Map<string,string>();
@@ -63,7 +63,7 @@ describe("editor legível e seleção em grupo",()=>{
 
   it("migra o schema 6 para o layout expandido sem perder a personalização",()=>{
     const legacy=useMifcLayoutStore();
-    const revision=JSON.parse(JSON.stringify(legacy.activeRevision));
+    const revision=JSON.parse(JSON.stringify(legacy.activeRevision)) as LayoutRevision;
     const beatty3=revision.nodes.find((item)=>item.id==="node-beatty-3")!;
     beatty3.x=1;beatty3.y=1;beatty3.label="Beatty 3 Especial";
     localStorage.setItem("mifc-digital:layout-reference-v2",JSON.stringify({schemaVersion:6,activeRevisionId:revision.id,revisions:[revision]}));

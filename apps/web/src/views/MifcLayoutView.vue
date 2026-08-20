@@ -279,21 +279,28 @@ function totalTrace(lane: ClientProcessLane): LayoutValueTrace {
   };
 }
 function measureBufferTrace(buffer: PositionedLayoutMeasureBuffer, entry: LayoutMeasureBufferValue): LayoutValueTrace {
-  const isSlitter = entry.measureKey.startsWith("Q-D-");
+  const isSlitter = ["Q-D-FH", "Q-D-VM", "Q-D-SCA", "Q-D-DAF"].includes(entry.measureKey);
+  const isSegregation = entry.measureKey.startsWith("Q-D-S-");
   const piecesKey = `E-M-P-S-${entry.clientKey}`;
   const rateKey = `P-M-${entry.clientKey}`;
   const value = entry.value;
   return {
-    id: `measure-buffer-${buffer.id}-${entry.clientKey}`,
+    id: `measure-buffer-${buffer.id}-${entry.measureKey}`,
     title: `${buffer.label} · ${entry.clientLabel}`,
     displayValue: value === undefined ? "—" : formatProcessDays(value),
     unit: "dias",
     formula: isSlitter
       ? `${entry.measureKey} = [${piecesKey}] ÷ [${rateKey}]; ${piecesKey} = ROUNDDOWN([C-T-E do grupo] ÷ [C-P-M-TOTAL], 0)`
-      : `${entry.measureKey} = estoque/WIP do ponto ÷ cadência diária do cliente, conforme a medida catalogada no Power BI`,
+      : isSegregation
+        ? entry.measureKey === "Q-D-S-T"
+          ? "Q-D-S-T = Q-D-S-EMB + Q-D-S-LPP2 + Q-D-S-RF2 + Q-D-S-RF3 + Q-D-S-STJ"
+          : `${entry.measureKey} = peças segregadas no processo ÷ demanda diária aplicável`
+        : `${entry.measureKey} = estoque/WIP do ponto ÷ cadência diária do cliente, conforme a medida catalogada no Power BI`,
     simpleExplanation: isSlitter
       ? "O Slitter converte o peso dos lotes em metros com densidade 7.850 kg/m³, divide pelo comprimento médio ponderado das peças nas quatro fontes de Slitter, arredonda as peças para baixo e divide pela cadência diária do cliente. A tabela Produção não participa."
-      : "Este valor automático permanece no símbolo de buffer da máquina correspondente e não é misturado ao tempo de processamento do card da máquina.",
+      : isSegregation
+        ? "Estoque segregado do processo convertido em dias pela mesma demanda usada no Power BI. O total soma os cinco pontos segregados sem misturá-los aos estoques por cliente."
+        : "Este valor automático permanece no símbolo de buffer da máquina correspondente e não é misturado ao tempo de processamento do card da máquina.",
     inputs: isSlitter ? [
       { key: "C-T-E", label: "Comprimento total dos lotes", value: oracleMeasures.value.values?.["C-T-E"], unit: "m", origin: "ORACLE_MES + DAX MP(m)" },
       { key: "C-P-M-TOTAL", label: "Comprimento médio no Slitter", value: oracleMeasures.value.values?.["C-P-M-TOTAL"], unit: "m/peça", origin: "ORACLE_MES + Power BI" },
@@ -307,8 +314,8 @@ function measureBufferTrace(buffer: PositionedLayoutMeasureBuffer, entry: Layout
     ] : [],
     origin: "Oracle/MES somente leitura + medida Power BI reproduzida",
     measureKeys: isSlitter ? [entry.measureKey, piecesKey, "C-T-E", "C-P-M-TOTAL", rateKey] : [entry.measureKey],
-    filters: [`Calendar[Date] = ${selectedDate.value}`, `Cliente = ${entry.clientLabel}`, `Buffer = ${buffer.label}`],
-    client: entry.clientLabel,
+    filters: [`Calendar[Date] = ${selectedDate.value}`, ...(entry.clientKey === "ALL" ? ["Contexto = compartilhado / processo"] : [`Cliente = ${entry.clientLabel}`]), `Buffer = ${buffer.label}`],
+    client: entry.clientKey === "ALL" ? undefined : entry.clientLabel,
     process: buffer.label,
     date: selectedDate.value,
     updatedAt: oracleMeasures.value.updatedAt,
@@ -496,7 +503,7 @@ function endInteraction() {
 }
 function onWheel(event: WheelEvent) { event.preventDefault(); setZoom(zoom.value+(event.deltaY<0 ? .06 : -.06)); }
 function setZoom(value: number) { zoom.value=Math.min(1.5,Math.max(.35,value)); }
-function fitView(readable=false) { const rect=canvas.value?.getBoundingClientRect(); if (!rect) return; const fitted=Math.min(1,(rect.width-28)/WORLD_WIDTH,(rect.height-28)/WORLD_HEIGHT); zoom.value=readable?Math.max(.68,fitted):fitted; pan.x=readable&&zoom.value>fitted?18:(rect.width-WORLD_WIDTH*zoom.value)/2; pan.y=readable&&zoom.value>fitted?8:(rect.height-WORLD_HEIGHT*zoom.value)/2; }
+function fitView(readable=false) { const rect=canvas.value?.getBoundingClientRect(); if (!rect) return; const fitted=Math.min(1,(rect.width-28)/WORLD_WIDTH,(rect.height-28)/WORLD_HEIGHT); zoom.value=readable?Math.max(.48,fitted):fitted; pan.x=readable&&zoom.value>fitted?18:(rect.width-WORLD_WIDTH*zoom.value)/2; pan.y=readable&&zoom.value>fitted?8:(rect.height-WORLD_HEIGHT*zoom.value)/2; }
 function selectNode(id: string,event?:MouseEvent|KeyboardEvent) { if(suppressNextNodeClick.value){suppressNextNodeClick.value=false;return;} selectedTrace.value=null;selectedBufferId.value=null;if (activeTool.value === "connect") layout.connectNode(id,activeFlow.value); else { const additive=Boolean(event&&(event.shiftKey||event.ctrlKey||event.metaKey)); if(additive)selectedNodeIds.value=selectedNodeIds.value.includes(id)?selectedNodeIds.value.filter((item)=>item!==id):[...selectedNodeIds.value,id];else selectedNodeIds.value=[id]; layout.selectNode(selectedNodeIds.value.includes(id)?id:selectedNodeIds.value.at(-1)??null); panelOpen.value=true; if(selectedNodeIds.value.length===1)renameFocusRequest.value+=1; } }
 function selectEdge(id: string) { selectedTrace.value=null;selectedBufferId.value=null;selectedNodeIds.value=[]; layout.selectEdge(id); panelOpen.value=true; }
 function mappingFor(lane: ClientProcessLane, stage: PositionedClientStage): ClientStageMapping | undefined { return mappingForClientStage(lane,stage); }
@@ -564,6 +571,7 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
     <section class="editor-shell">
       <div ref="canvas" class="canvas-viewport" :class="[`tool-${activeTool}`, { 'is-panning': interaction.mode === 'pan' }]" data-testid="layout-canvas" @pointerdown.capture="onViewportPointerDown" @pointerdown.self="onCanvasPointerDown" @auxclick.prevent @wheel="onWheel">
         <MifcSymbolPalette @add="addSymbol" @flow="chooseConnect"/>
+        <div class="buffer-legend" data-testid="buffer-legend"><span class="automatic"><i></i>Power BI / OMES · dias</span><span class="manual"><i></i>Manual · peças</span></div>
         <div class="canvas-world" :style="worldStyle" @pointerdown.self="onCanvasPointerDown">
           <svg class="edge-layer" :width="WORLD_WIDTH" :height="WORLD_HEIGHT" @pointerdown.self="onCanvasPointerDown">
             <defs><marker id="arrow-material" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1f2c38"/></marker><marker id="arrow-info" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#526170"/></marker></defs>
@@ -633,6 +641,10 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
 .canvas-viewport.is-panning { cursor:grabbing; }
 .canvas-viewport.tool-connect,.canvas-viewport.tool-text { cursor:crosshair; }
 .canvas-world { position:absolute; top:0; left:0; transform-origin:0 0; }
+.buffer-legend { position:absolute; z-index:42; top:14px; right:18px; display:flex; gap:7px; padding:7px 9px; border:1px solid var(--border-subtle); border-radius:7px; background:rgba(255,255,255,.96); color:#44556b; font-size:8px; font-weight:700; box-shadow:var(--shadow-card); }
+.buffer-legend span { display:flex; align-items:center; gap:5px; white-space:nowrap; }
+.buffer-legend i { width:8px; height:8px; border:1px solid #6f8298; border-radius:2px; background:#fff; }
+.buffer-legend .manual i { border-color:#b47b24; background:#fff7e8; }
 .edge-layer { position:absolute; z-index:1; inset:0; overflow:visible; }
 .edge-line { fill:none; stroke:#1f2c38; stroke-width:1.6; }
 .edge-hit { fill:none; stroke:transparent; stroke-width:15; cursor:pointer; }

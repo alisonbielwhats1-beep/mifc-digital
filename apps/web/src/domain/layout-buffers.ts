@@ -53,16 +53,20 @@ export function positionLayoutBuffers(
   buffers: LayoutBufferInput[],
   nodes: LayoutNode[],
 ): PositionedLayoutBuffer[] {
+  const occupied: Array<{ x: number; y: number }> = [];
   return buffers.filter((buffer) => buffer.status === "active").map((buffer, index) => {
     const input = nodeByReference(buffer.inputProcess, nodes);
     const output = nodeByReference(buffer.outputProcess, nodes);
     const anchor = output ?? input;
     let x = anchor ? anchor.x - 54 : 280 + index * 108;
-    let y = anchor ? anchor.y - 82 : 330;
+    let y = anchor ? Math.max(8, anchor.y - 96) : 330;
     if (input && output && input.id !== output.id) {
       x = (input.x + input.width + output.x) / 2 - 45;
-      y = (input.y + input.height / 2 + output.y + output.height / 2) / 2 - 38;
+      y = Math.max(8, Math.min(input.y, output.y) - 96);
     }
+    x = Math.max(8, x);
+    while (occupied.some((item) => x < item.x + 108 && x + 108 > item.x && y < item.y + 84 && y + 84 > item.y)) x += 108;
+    occupied.push({ x, y });
     const quantity = buffer.quantityPieces;
     const wipDays = quantity !== null && Number.isFinite(quantity) && buffer.pairsPerDay > 0
       ? quantity / 2 / buffer.pairsPerDay
