@@ -37,10 +37,10 @@ describe("medidas operacionais materializadas do Power BI", () => {
       contextDate: "2026-08-19",
       demand: { "D-P-RF3": 10, "D-P-B1": 4 },
       producao: [
-        { DATA: "2026-08-19", RAIL_ID: 1, DESCRIPTION: "Roll Former 3" },
-        { DATA: "2026-08-19", RAIL_ID: 1, DESCRIPTION: "Roll Former 3" },
-        { DATA: "2026-08-19", RAIL_ID: 2, DESCRIPTION: "Beatty Alma Output 1" },
-        { DATA: "2026-08-18", RAIL_ID: 3, DESCRIPTION: "Roll Former 3" },
+        { LOCATION_DATE: "2026-08-19", RAIL_ID: 1, DESCRIPTION: "Roll Former 3" },
+        { LOCATION_DATE: "2026-08-19", RAIL_ID: 1, DESCRIPTION: "Roll Former 3" },
+        { LOCATION_DATE: "2026-08-19", RAIL_ID: 2, DESCRIPTION: "Beatty Alma Output 1" },
+        { LOCATION_DATE: "2026-08-18", RAIL_ID: 3, DESCRIPTION: "Roll Former 3" },
       ],
       paradas: [
         { ID_PARADA: 1, PARADA: "2026-08-19T08:00:00", RETORNO: "2026-08-19T08:30:00", CODIGO: "L9", OPERAÇÃO: "ROLLFORMER 3" },

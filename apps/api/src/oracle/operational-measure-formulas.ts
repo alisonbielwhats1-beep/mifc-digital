@@ -24,6 +24,17 @@ function rowsForDate(rows: OracleRow[], contextDate: string, keys: string[]): Or
   });
 }
 
+function productionRowsForDate(rows: OracleRow[], contextDate: string): OracleRow[] {
+  const powerBiDateKeys = ["LOCATION_DATE", "Data_Processada", "DATA_PROCESSADA"];
+  return rows.filter((row) => powerBiDateKeys.some((key) => {
+    const value = row[key];
+    return value !== null
+      && value !== undefined
+      && String(value).trim() !== ""
+      && oracleDateKey(value) === contextDate;
+  }));
+}
+
 function distinctCount(rows: OracleRow[], key: string): number {
   return new Set(rows.map((row) => text(row, key)).filter(Boolean)).size;
 }
@@ -80,7 +91,7 @@ export function deriveOperationalMeasures(input: {
   contextDate: string;
   demand: Record<string, number>;
 }): OperationalMeasureResult {
-  const producao = rowsForDate(asRows(input.producao), input.contextDate, ["DATA", "DATE", "DATA_PRODUCAO", "CREATION_DATE"]);
+  const producao = productionRowsForDate(asRows(input.producao), input.contextDate);
   const paradas = rowsForDate(asRows(input.paradas), input.contextDate, ["PARADA", "DATA", "DATE"]);
   const lotes = asRows(input.lotes);
   const punchScania = rowsForDate(asRows(input.punchScania), input.contextDate, ["DATA", "DATA_EMBARQUE"]);
