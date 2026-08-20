@@ -2,7 +2,7 @@
 import { calculationRuleCatalog } from "@mifc/calculation-engine";
 import { Bell, ChevronDown, CircleHelp, Menu, Search, X } from "@lucide/vue";
 import { storeToRefs } from "pinia";
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { clientProcessLanes } from "@/domain/client-process-matrix";
 import { searchGlobal, type GlobalSearchDocument } from "@/domain/global-search";
@@ -25,7 +25,8 @@ const layout = useMifcLayoutStore();
 const operations = useOperationsStore();
 const route = useRoute();
 const router = useRouter();
-const { selectedPlantId, selectedScenarioId, selectedRevisionId } = storeToRefs(context);
+const { selectedPlantId, selectedScenarioId, selectedYear } = storeToRefs(context);
+const { activeRevisionId, isDirty: layoutDirty } = storeToRefs(layout);
 const query = ref("");
 const searchOpen = ref(false);
 const helpOpen = ref(false);
@@ -80,9 +81,19 @@ async function openSearch() { searchOpen.value=true;helpOpen.value=false;notific
 function closeSearch() { searchOpen.value=false;query.value=""; }
 async function chooseResult(result: GlobalSearchDocument) { closeSearch();await router.push({path:result.route,query:result.focus?{focus:result.focus}:{}}); }
 async function chooseNotification(item: {route:string}) { notificationsOpen.value=false;await router.push(item.route); }
+function switchGlobalRevision(event: Event) {
+  const revisionId = (event.target as HTMLSelectElement).value;
+  if (!revisionId || revisionId === layout.activeRevisionId) return;
+  forms.switchRevision(revisionId);
+  layout.switchRevision(revisionId);
+  context.selectedRevisionId = revisionId;
+  context.persist();
+}
 function onGlobalKeydown(event: KeyboardEvent) { if((event.ctrlKey||event.metaKey)&&event.key.toLocaleLowerCase()==="k"){event.preventDefault();void openSearch();}else if(event.key==="Escape"){closeSearch();helpOpen.value=false;notificationsOpen.value=false;} }
 async function loadSyncStatus(){try{const response=await fetch("/api/oracle/sync-status",{cache:"no-store"});if(!response.ok)throw new Error();syncStatus.value=await response.json() as SyncStatus;apiOffline.value=false;}catch{apiOffline.value=true;}}
-onMounted(()=>{forms.hydrate();layout.hydrate();operations.hydrate();window.addEventListener("keydown",onGlobalKeydown);void loadSyncStatus();statusTimer=setInterval(()=>void loadSyncStatus(),30_000);});
+watch([selectedPlantId, selectedScenarioId, selectedYear], () => context.persist());
+watch(activeRevisionId, (revisionId) => { context.selectedRevisionId=revisionId;context.persist(); });
+onMounted(()=>{context.hydrate();layout.hydrate();forms.hydrate(layout.activeRevisionId);operations.hydrate();context.selectedRevisionId=layout.activeRevisionId;context.persist();window.addEventListener("keydown",onGlobalKeydown);void loadSyncStatus();statusTimer=setInterval(()=>void loadSyncStatus(),30_000);});
 onBeforeUnmount(()=>{window.removeEventListener("keydown",onGlobalKeydown);if(statusTimer)clearInterval(statusTimer);});
 </script>
 
@@ -111,8 +122,8 @@ onBeforeUnmount(()=>{window.removeEventListener("keydown",onGlobalKeydown);if(st
       <label class="context-field compact-field">
         <span>Ano</span>
         <span class="select-wrap">
-          <select aria-label="Ano" :value="context.selectedScenario?.year">
-            <option :value="context.selectedScenario?.year">{{ context.selectedScenario?.year }}</option>
+          <select v-model.number="selectedYear" aria-label="Ano">
+            <option v-for="year in context.availableYears" :key="year" :value="year">{{ year }}</option>
           </select>
           <ChevronDown :size="14" aria-hidden="true" />
         </span>
@@ -122,7 +133,7 @@ onBeforeUnmount(()=>{window.removeEventListener("keydown",onGlobalKeydown);if(st
         <span>Cenário</span>
         <span class="select-wrap">
           <select v-model="selectedScenarioId" aria-label="Cenário">
-            <option v-for="scenario in context.scenarios" :key="scenario.id" :value="scenario.id">{{ scenario.name }}</option>
+            <option v-for="scenario in context.scenariosForYear" :key="scenario.id" :value="scenario.id">{{ scenario.name }}</option>
           </select>
           <ChevronDown :size="14" aria-hidden="true" />
         </span>
@@ -131,10 +142,10 @@ onBeforeUnmount(()=>{window.removeEventListener("keydown",onGlobalKeydown);if(st
       <label class="context-field revision-field">
         <span>Revisão</span>
         <span class="select-wrap">
-          <select v-model="selectedRevisionId" aria-label="Revisão">
-            <option v-for="revision in context.revisions" :key="revision.id" :value="revision.id">{{ revision.label }} (Rascunho)</option>
+          <select :value="layout.activeRevisionId" aria-label="Revisão" @change="switchGlobalRevision">
+            <option v-for="revision in layout.revisions" :key="revision.id" :value="revision.id">{{ revision.label }}</option>
           </select>
-          <i aria-label="Revisão em rascunho"></i>
+          <i :class="{ dirty: layoutDirty || forms.isDirty }" :aria-label="layoutDirty || forms.isDirty ? 'Alterações não salvas' : 'Revisão salva'"></i>
           <ChevronDown :size="14" aria-hidden="true" />
         </span>
       </label>
@@ -280,6 +291,8 @@ onBeforeUnmount(()=>{window.removeEventListener("keydown",onGlobalKeydown);if(st
   background: #fbfcfe;
   color: var(--text-tertiary);
 }
+
+.select-wrap i.dirty { background: var(--warning); box-shadow: 0 0 0 3px var(--warning-soft); }
 
 .search-trigger {
   grid-template-columns: auto 1fr auto;

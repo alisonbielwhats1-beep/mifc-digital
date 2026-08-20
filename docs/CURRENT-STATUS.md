@@ -3,9 +3,25 @@
 Atualizado em: 2026-08-20
 Branch: `main`
 Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`
-Último marco concluído: **Correção funcional — Beneficiador, Slitter e total por cliente**
+Último marco concluído: **Prompt 2 — reorganização funcional e experiência de uso**
 
 ## Onde paramos
+
+### Prompt 2 — reorganização funcional e experiência de uso — 2026-08-20
+
+- menu reorganizado em OPERAR, ALIMENTAR e ADMINISTRAR, com MIFC, Cadastros e Configurações recolhíveis;
+- Visão Geral substituiu a duplicidade com Dashboard; `/dashboard` redireciona e Relatórios foi apenas ocultado enquanto continuar placeholder;
+- Visão Geral agora usa o mesmo estado, linhagem e cálculo do Layout para Lead Time, VA, NVA, WIP, gargalo, produção × demanda, atrasos e conexão MES, falhando fechado quando a fonte não está pronta;
+- contadores técnicos foram movidos para a nova tela Diagnóstico;
+- painel do Layout inicia recolhido e abre por contexto; cliente permite editar Volume e Logística e recalcular imediatamente Beneficiador/Lead Time;
+- biblioteca de símbolos preserva o estado recolhido/expandido;
+- formulários passaram a ser isolados por revisão, e uma nova revisão clona explicitamente sua origem;
+- Produtos resume a rota em `N processos` com diálogo; Processos distingue Validado/Divergente/Pendente; Máquinas & Recursos exibe observado e encaminha planejamento para Capacidade;
+- Integrações recebeu diagnóstico Power BI / Semantic Model explicitamente offline, baseado no inventário documental;
+- tabelas receberam rolagem controlada em larguras menores;
+- nenhuma fórmula de Slitter, buffer, tempo de máquina ou `LT-TOTAL-*` foi alterada;
+- relatório completo: `docs/prompt-2-ux-reorganization.md`;
+- validação: typecheck, 88 testes unitários, build, 18 testes Chromium e auditoria de dependências aprovados.
 
 ### Beneficiador, Slitter e reconciliação do Lead Time — 2026-08-20
 
@@ -265,15 +281,16 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 78 testes aprovados (18 arquivos);
+- `npm test`: 88 testes aprovados (20 arquivos);
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
-- `npm run test:e2e`: 10 cenários aprovados no Chromium;
-- branch local contém as alterações até o Prompt 6.6 e ainda não foi enviada ao `origin/main`.
+- `npm run test:e2e`: 18 cenários aprovados no Chromium;
+- `npm audit --audit-level=high`: 0 vulnerabilidades;
+- branch local contém as alterações até este checkpoint e ainda não foi enviada ao `origin/main`.
 
 ## Parcial ou ainda não validado
 
-- Overview e Resultados ainda funcionam como prévias com dados locais; o Layout já recebe RF3, quatro Beattys, LCT/RF2, P.A, CNC, Pintura, Stenhoj, embalagem VM e Rebitagens por fonte mista;
+- Visão Geral agora é funcional e falha fechada, mas seus valores observados ainda dependem do cache MES autorizado; Relatórios permanece oculto até existir exportação real;
 - os formulários estão funcionais, mas a validação operacional final de todos os campos contra o Excel 2026 deve ser feita pelo usuário da área;
 - 309 medidas existem no modelo Power BI; as 62 medidas usadas nos cartões do Layout foram catalogadas, e as famílias de demanda, operação, estoque e segregação agora têm cálculo local/Oracle para o Layout;
 - os valores atuais ainda dependem das fontes Oracle online e da validação dos parâmetros de máquina; a programação de embarque já possui rede direta e fallback por anexo;

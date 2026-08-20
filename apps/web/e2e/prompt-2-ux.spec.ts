@@ -9,13 +9,14 @@ test.beforeEach(async ({ page }) => {
 test("organiza e recolhe os níveis Operar, Alimentar e Administrar", async ({ page }) => {
   const navigation = page.getByRole("navigation", { name: "Navegação principal" });
   await expect(navigation.getByRole("link", { name: "Visão Geral" })).toBeVisible();
+  await expect(navigation.getByRole("link", { name: "Layout" })).toBeVisible();
   await expect(navigation.getByRole("link", { name: "Dashboard" })).toHaveCount(0);
 
   const mifc = navigation.getByRole("button", { name: "MIFC" });
   await mifc.click();
-  await expect(navigation.getByRole("link", { name: "Layout" })).toHaveCount(0);
+  await expect(navigation.getByRole("link", { name: "Volume" })).toHaveCount(0);
   await mifc.click();
-  await expect(navigation.getByRole("link", { name: "Layout" })).toBeVisible();
+  await expect(navigation.getByRole("link", { name: "Volume" })).toBeVisible();
 
   const cadastros = navigation.getByRole("button", { name: "Cadastros" });
   await cadastros.click();

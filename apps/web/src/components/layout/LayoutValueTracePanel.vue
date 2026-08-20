@@ -2,12 +2,13 @@
 import { computed, reactive, watch } from "vue";
 import { AlertTriangle, Calculator, Database, X } from "@lucide/vue";
 import type { LayoutValueTrace } from "@/domain/layout-value-lineage";
-import type { BufferFormRow, VolumeFormRow } from "@/stores/mifc-forms";
+import type { BufferFormRow, LogisticsFormRow, VolumeFormRow } from "@/stores/mifc-forms";
 
-const props = defineProps<{ trace: LayoutValueTrace; editableBuffer?: BufferFormRow; editableVolume?: VolumeFormRow }>();
-const emit = defineEmits<{ close: []; updateBuffer: [id: string, patch: Partial<BufferFormRow>]; updateVolume: [id: string, patch: Partial<VolumeFormRow>] }>();
+const props = defineProps<{ trace: LayoutValueTrace; editableBuffer?: BufferFormRow; editableVolume?: VolumeFormRow; editableLogistics?: LogisticsFormRow }>();
+const emit = defineEmits<{ close: []; updateBuffer: [id: string, patch: Partial<BufferFormRow>]; updateVolume: [id: string, patch: Partial<VolumeFormRow>]; updateLogistics: [id: string, patch: Partial<LogisticsFormRow>] }>();
 const draft = reactive({ quantityPieces: 0, capacityPieces: 0, pairsPerDay: 0, inputProcess: "", outputProcess: "" });
 const volumeDraft = reactive({ vehiclesPerDay: 0, reinforcementPercent: 0, workingDays: 0, shifts: 0 });
+const logisticsDraft = reactive({ transportHours: 0, beneficiatorDays: 0, movementMinutes: 0 });
 
 watch(() => props.editableBuffer, (buffer) => {
   if (!buffer) return;
@@ -28,6 +29,14 @@ watch(() => props.editableVolume, (volume) => {
     shifts: volume.shifts,
   });
 }, { immediate: true, deep: true });
+watch(() => props.editableLogistics, (logistics) => {
+  if (!logistics) return;
+  Object.assign(logisticsDraft, {
+    transportHours: logistics.transportHours,
+    beneficiatorDays: logistics.beneficiatorDays,
+    movementMinutes: logistics.movementMinutes,
+  });
+}, { immediate: true, deep: true });
 
 const canEdit = computed(() => props.editableBuffer?.origin === "INPUT");
 function updateBuffer() {
@@ -37,6 +46,10 @@ function updateBuffer() {
 function updateVolume() {
   if (!props.editableVolume) return;
   emit("updateVolume", props.editableVolume.id, { ...volumeDraft });
+}
+function updateLogistics() {
+  if (!props.editableLogistics) return;
+  emit("updateLogistics", props.editableLogistics.id, { ...logisticsDraft });
 }
 </script>
 
@@ -53,6 +66,7 @@ function updateVolume() {
 
       <section v-if="editableBuffer" class="trace-section edit-section"><h3>Parâmetros do buffer</h3><p v-if="!canEdit">Valor observado bloqueado para edição. Altere apenas na fonte autorizada.</p><div class="edit-grid"><label>WIP (peças)<input v-model.number="draft.quantityPieces" type="number" min="0" :disabled="!canEdit" @input="updateBuffer" /></label><label>Capacidade (peças)<input v-model.number="draft.capacityPieces" type="number" min="0" :disabled="!canEdit" @input="updateBuffer" /></label><label>Pares/dia<input v-model.number="draft.pairsPerDay" type="number" min="0" step=".1" :disabled="!canEdit" @input="updateBuffer" /></label><label>Processo anterior<input v-model.trim="draft.inputProcess" :disabled="!canEdit" @input="updateBuffer" /></label><label>Processo posterior<input v-model.trim="draft.outputProcess" :disabled="!canEdit" @input="updateBuffer" /></label></div></section>
       <section v-if="editableVolume" class="trace-section edit-section"><h3>Parâmetros do cliente</h3><p>Alterações manuais recalculam imediatamente o ritmo dos buffers deste cliente.</p><div class="edit-grid volume-grid"><label>Veículos por dia<input v-model.number.lazy="volumeDraft.vehiclesPerDay" type="number" min="0" step="1" @change="updateVolume" /></label><label>Reforço (%)<input v-model.number.lazy="volumeDraft.reinforcementPercent" type="number" min="0" max="100" step=".1" @change="updateVolume" /></label><label>Dias úteis/ano<input v-model.number.lazy="volumeDraft.workingDays" type="number" min="1" step="1" @change="updateVolume" /></label><label>Turnos<input v-model.number.lazy="volumeDraft.shifts" type="number" min="1" max="4" step="1" @change="updateVolume" /></label></div></section>
+      <section v-if="editableLogistics" class="trace-section edit-section"><h3>Parâmetros logísticos</h3><p>Entradas manuais utilizadas diretamente no Lead Time funcional deste cliente.</p><div class="edit-grid volume-grid"><label>Transporte (h)<input v-model.number.lazy="logisticsDraft.transportHours" type="number" min="0" step=".1" @change="updateLogistics" /></label><label>Beneficiador (dias)<input v-model.number.lazy="logisticsDraft.beneficiatorDays" type="number" min="0" step=".1" @change="updateLogistics" /></label><label>Movimentação (min)<input v-model.number.lazy="logisticsDraft.movementMinutes" type="number" min="0" step=".1" @change="updateLogistics" /></label></div></section>
 
       <section class="trace-section metadata"><h3><Database :size="15" /> Origem e contexto</h3><dl><div><dt>Origem</dt><dd>{{ trace.origin }}</dd></div><div><dt>Medida / regra</dt><dd>{{ trace.measureKeys.join(', ') || 'Sem medida vinculada' }}</dd></div><div><dt>Cliente</dt><dd>{{ trace.client || 'Contexto geral' }}</dd></div><div><dt>Máquina/processo</dt><dd>{{ trace.process || '—' }}</dd></div><div><dt>Data/período</dt><dd>{{ trace.date }}</dd></div><div><dt>Filtros aplicados</dt><dd>{{ trace.filters.join(' · ') }}</dd></div><div><dt>Última atualização</dt><dd>{{ trace.updatedAt ? new Date(trace.updatedAt).toLocaleString('pt-BR') : 'Sem atualização confiável' }}</dd></div><div><dt>Referência</dt><dd>{{ trace.sourceReference }}</dd></div></dl></section>
     </div>

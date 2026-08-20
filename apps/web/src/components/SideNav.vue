@@ -2,12 +2,10 @@
 import {
   Boxes,
   ChevronDown,
-  ChevronLeft,
   CircleGauge,
   Database,
   Factory,
   House,
-  LayoutDashboard,
   ListChecks,
   Network,
   Package,
@@ -19,6 +17,7 @@ import {
   X,
 } from "@lucide/vue";
 import { storeToRefs } from "pinia";
+import { ref } from "vue";
 import { useRoute } from "vue-router";
 import { useUiStore } from "@/stores/ui";
 
@@ -27,32 +26,48 @@ const route = useRoute();
 const { sidebarCollapsed, mobileNavigationOpen } = storeToRefs(ui);
 
 const primary = [
-  { label: "Início", to: "/overview", icon: House },
-  { label: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+  { label: "Visão Geral", to: "/overview", icon: House },
+  { label: "Layout", to: "/mifc/layout", icon: Network },
 ];
 
 const mifc = [
-  { label: "Layout", to: "/mifc/layout" },
   { label: "Volume", to: "/mifc/volume" },
   { label: "Logística", to: "/mifc/logistics" },
   { label: "Buffer e Estoque", to: "/mifc/buffers" },
   { label: "Capacidade", to: "/mifc/capacity" },
   { label: "Análises", to: "/mifc/analysis" },
-  { label: "Relatórios", to: "/mifc/reports" },
 ];
 
-const secondary = [
-  { label: "Integrações", to: "/integrations", icon: Database },
+const registrations = [
   { label: "Produtos", to: "/products", icon: Package },
   { label: "Processos", to: "/processes", icon: Factory },
-  { label: "Recursos", to: "/resources", icon: UsersRound },
-  { label: "Ações", to: "/actions", icon: ListChecks },
-  { label: "Dados mestre", to: "/master-data", icon: SlidersHorizontal },
-  { label: "Configurações", to: "/settings", icon: Settings },
+  { label: "Máquinas & Recursos", to: "/resources", icon: UsersRound },
 ];
+
+const administration = [
+  { label: "Dados mestre", to: "/master-data", icon: SlidersHorizontal },
+  { label: "Sistema", to: "/settings", icon: Settings },
+  { label: "Diagnóstico", to: "/diagnostics", icon: CircleGauge },
+];
+
+const direct = [
+  { label: "Integrações", to: "/integrations", icon: Database },
+  { label: "Plano de Ações", to: "/actions", icon: ListChecks },
+];
+
+const expanded = ref({ mifc: true, registrations: false, administration: false });
+
+function toggleSection(section: keyof typeof expanded.value) {
+  if (sidebarCollapsed.value) ui.toggleSidebar();
+  expanded.value[section] = !expanded.value[section];
+}
 
 function active(to: string) {
   return route.path === to;
+}
+
+function sectionActive(items: Array<{ to: string }>) {
+  return items.some((item) => active(item.to));
 }
 </script>
 
@@ -64,36 +79,57 @@ function active(to: string) {
       <button type="button" aria-label="Fechar navegação" @click="ui.closeMobileNavigation"><X :size="20" /></button>
     </div>
 
-    <nav class="nav-content" @click="ui.closeMobileNavigation">
-      <RouterLink v-for="item in primary" :key="item.to" class="nav-link" :class="{ active: active(item.to) }" :to="item.to" :title="sidebarCollapsed ? item.label : undefined">
+    <nav class="nav-content" aria-label="Navegação principal">
+      <p class="nav-purpose">OPERAR</p>
+      <RouterLink v-for="item in primary" :key="item.to" class="nav-link" :class="{ active: active(item.to) }" :to="item.to" :title="sidebarCollapsed ? item.label : undefined" @click="ui.closeMobileNavigation">
         <component :is="item.icon" :size="19" :stroke-width="1.8" aria-hidden="true" />
         <span>{{ item.label }}</span>
       </RouterLink>
 
+      <p class="nav-purpose">ALIMENTAR</p>
       <div class="nav-section">
-        <div class="nav-section-title" :class="{ active: route.path.startsWith('/mifc/') }">
+        <button type="button" class="nav-section-title" :class="{ active: mifc.some(item => active(item.to)) }" :aria-expanded="expanded.mifc" aria-label="MIFC" @click="toggleSection('mifc')">
           <Network :size="19" :stroke-width="1.8" aria-hidden="true" />
           <span>MIFC</span>
-          <ChevronDown v-if="!sidebarCollapsed" class="nav-chevron" :size="15" aria-hidden="true" />
-        </div>
-        <div v-if="!sidebarCollapsed" class="subnav">
-          <RouterLink v-for="item in mifc" :key="item.to" class="subnav-link" :class="{ active: active(item.to) }" :to="item.to">
+          <ChevronDown v-if="!sidebarCollapsed" class="nav-chevron" :class="{ expanded: expanded.mifc }" :size="15" aria-hidden="true" />
+        </button>
+        <div v-if="!sidebarCollapsed && expanded.mifc" class="subnav">
+          <RouterLink v-for="item in mifc" :key="item.to" class="subnav-link" :class="{ active: active(item.to) }" :to="item.to" @click="ui.closeMobileNavigation">
             {{ item.label }}
           </RouterLink>
         </div>
       </div>
 
-      <RouterLink v-for="item in secondary" :key="item.to" class="nav-link" :class="{ active: active(item.to) }" :to="item.to" :title="sidebarCollapsed ? item.label : undefined">
+      <p class="nav-purpose">ADMINISTRAR</p>
+      <div class="nav-section">
+        <button type="button" class="nav-section-title" :class="{ active: sectionActive(registrations) }" :aria-expanded="expanded.registrations" aria-label="Cadastros" @click="toggleSection('registrations')">
+          <Boxes :size="19" :stroke-width="1.8" aria-hidden="true" /><span>Cadastros</span><ChevronDown v-if="!sidebarCollapsed" class="nav-chevron" :class="{ expanded: expanded.registrations }" :size="15" aria-hidden="true" />
+        </button>
+        <div v-if="!sidebarCollapsed && expanded.registrations" class="subnav">
+          <RouterLink v-for="item in registrations" :key="item.to" class="subnav-link" :class="{ active: active(item.to) }" :to="item.to" @click="ui.closeMobileNavigation">{{ item.label }}</RouterLink>
+        </div>
+      </div>
+
+      <RouterLink v-for="item in direct" :key="item.to" class="nav-link" :class="{ active: active(item.to) }" :to="item.to" :title="sidebarCollapsed ? item.label : undefined" @click="ui.closeMobileNavigation">
         <component :is="item.icon" :size="19" :stroke-width="1.8" aria-hidden="true" />
         <span>{{ item.label }}</span>
       </RouterLink>
+
+      <div class="nav-section">
+        <button type="button" class="nav-section-title" :class="{ active: sectionActive(administration) }" :aria-expanded="expanded.administration" aria-label="Configurações" @click="toggleSection('administration')">
+          <Settings :size="19" :stroke-width="1.8" aria-hidden="true" /><span>Configurações</span><ChevronDown v-if="!sidebarCollapsed" class="nav-chevron" :class="{ expanded: expanded.administration }" :size="15" aria-hidden="true" />
+        </button>
+        <div v-if="!sidebarCollapsed && expanded.administration" class="subnav">
+          <RouterLink v-for="item in administration" :key="item.to" class="subnav-link" :class="{ active: active(item.to) }" :to="item.to" @click="ui.closeMobileNavigation">{{ item.label }}</RouterLink>
+        </div>
+      </div>
     </nav>
 
     <button class="collapse-button" type="button" :aria-label="sidebarCollapsed ? 'Expandir navegação' : 'Recolher navegação'" @click="ui.toggleSidebar">
       <PanelLeftOpen v-if="sidebarCollapsed" :size="18" aria-hidden="true" />
       <PanelLeftClose v-else :size="18" aria-hidden="true" />
       <span>{{ sidebarCollapsed ? "Expandir" : "Recolher" }}</span>
-      <ChevronLeft v-if="!sidebarCollapsed" class="collapse-chevron" :size="15" aria-hidden="true" />
+      <ChevronDown v-if="!sidebarCollapsed" class="collapse-chevron" :size="15" aria-hidden="true" />
     </button>
   </aside>
 </template>
@@ -124,6 +160,8 @@ function active(to: string) {
   padding: 12px 10px;
 }
 
+.nav-purpose { margin: 9px 11px 2px; color: var(--text-tertiary); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.09em; }
+
 .nav-link,
 .nav-section-title {
   position: relative;
@@ -139,6 +177,8 @@ function active(to: string) {
   font-weight: 500;
   transition: background var(--transition-fast), color var(--transition-fast);
 }
+
+.nav-section-title { width: 100%; border: 0; background: transparent; text-align: left; cursor: pointer; }
 
 .nav-link:hover,
 .nav-section-title:hover {
@@ -167,7 +207,10 @@ function active(to: string) {
 
 .nav-chevron {
   margin-left: auto;
+  transition: transform var(--transition-fast);
 }
+
+.nav-chevron.expanded { transform: rotate(180deg); }
 
 .subnav {
   display: grid;
@@ -224,7 +267,8 @@ function active(to: string) {
 }
 
 .sidebar.collapsed span,
-.sidebar.collapsed .collapse-chevron {
+.sidebar.collapsed .collapse-chevron,
+.sidebar.collapsed .nav-purpose {
   display: none;
 }
 

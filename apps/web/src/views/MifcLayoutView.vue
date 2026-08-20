@@ -17,7 +17,7 @@ import { edgeGeometry } from "@/domain/layout-graph";
 import { beginNodePointerSelection, finishNodePointerSelection } from "@/domain/layout-selection";
 import { calculateLayoutProcessMeasures, formatMeasureValues, formatProcessDays } from "@/domain/layout-process-measures";
 import { calculateClientTotal, type LayoutValueTrace } from "@/domain/layout-value-lineage";
-import { useMifcFormsStore, type BufferFormRow, type VolumeFormRow } from "@/stores/mifc-forms";
+import { useMifcFormsStore, type BufferFormRow, type LogisticsFormRow, type VolumeFormRow } from "@/stores/mifc-forms";
 import { LAYOUT_WORLD_HEIGHT, LAYOUT_WORLD_WIDTH, useMifcLayoutStore, type LayoutEdge, type LayoutNode, type LayoutNodeProperties, type LayoutNodeType, type LayoutTool } from "@/stores/mifc-layout";
 import { useUiStore } from "@/stores/ui";
 import { useOperationsStore } from "@/stores/operations";
@@ -37,7 +37,7 @@ const zoom = ref(.72);
 const pan = reactive({ x: 0, y: 0 });
 const isFullscreen = ref(false);
 const fullscreenOrigin = reactive({ zoom: .72, x: 0, y: 0 });
-const panelOpen = ref(true);
+const panelOpen = ref(false);
 const renameFocusRequest = ref(0);
 const showLayers = ref(false);
 const visibleLayers = reactive({ information: true, material: true, metrics: true });
@@ -46,6 +46,7 @@ const selectedNodeIds = ref<string[]>([]);
 const selectedTrace = ref<LayoutValueTrace | null>(null);
 const selectedBufferId = ref<string | null>(null);
 const selectedVolumeId = ref<string | null>(null);
+const selectedLogisticsId = ref<string | null>(null);
 const suppressNextNodeClick = ref(false);
 type MeasureDiagnostics = {
   contextDate: string;
@@ -174,8 +175,9 @@ function chooseConnect(flow: MifcFlowType) { activeFlow.value = flow; layout.set
 function worldCenter() { const rect = canvas.value?.getBoundingClientRect(); return { x:((rect?.width ?? 1000)/2-pan.x)/zoom.value, y:((rect?.height ?? 700)/2-pan.y)/zoom.value }; }
 function worldPoint(event: PointerEvent) { const rect = canvas.value!.getBoundingClientRect(); return { x:(event.clientX-rect.left-pan.x)/zoom.value, y:(event.clientY-rect.top-pan.y)/zoom.value }; }
 function addSymbol(type: LayoutNodeType, label?: string) { const point = worldCenter(); layout.addNode(type,point.x-55,point.y-35,label); selectedTrace.value=null; panelOpen.value = true; }
-function clearSelection() { selectedNodeIds.value=[]; selectedTrace.value=null; selectedBufferId.value=null; selectedVolumeId.value=null; layout.selectNode(null); layout.selectEdge(null); }
-function openTrace(trace: LayoutValueTrace, bufferId?: string) { selectedTrace.value=trace;selectedBufferId.value=bufferId??null;selectedVolumeId.value=null;panelOpen.value=true; }
+function clearSelection() { selectedNodeIds.value=[]; selectedTrace.value=null; selectedBufferId.value=null; selectedVolumeId.value=null; selectedLogisticsId.value=null; layout.selectNode(null); layout.selectEdge(null); panelOpen.value=false; }
+function closePanel() { clearSelection(); }
+function openTrace(trace: LayoutValueTrace, bufferId?: string) { selectedTrace.value=trace;selectedBufferId.value=bufferId??null;selectedVolumeId.value=null;selectedLogisticsId.value=null;panelOpen.value=true; }
 function stageTrace(lane: ClientProcessLane, stage: PositionedClientStage): LayoutValueTrace {
   const mapping = mappingFor(lane, stage);
   const processKeys = mapping?.processMeasureKeys ?? [];
@@ -274,6 +276,7 @@ function clientVolumeRow(lane: ClientProcessLane) {
 }
 function clientParameterTrace(lane: ClientProcessLane): LayoutValueTrace {
   const volume = clientVolumeRow(lane);
+  const logistics = forms.logisticsRows.find((row) => row.customer === lane.label && row.status === "active");
   const pairsPerDay = volume ? volume.vehiclesPerDay * (1 + volume.reinforcementPercent / 100) : undefined;
   return {
     id: `client-${lane.key}`,
@@ -282,27 +285,32 @@ function clientParameterTrace(lane: ClientProcessLane): LayoutValueTrace {
     unit: "pares/dia",
     formula: "Pares/dia = veículos/dia × (1 + reforço % ÷ 100)",
     simpleExplanation: volume ? `${volume.vehiclesPerDay.toLocaleString("pt-BR")} veículos por dia, acrescidos de ${volume.reinforcementPercent.toLocaleString("pt-BR")}% de reforços, resultam em ${pairsPerDay?.toLocaleString("pt-BR", { maximumFractionDigits: 3 })} pares por dia. Esse ritmo alimenta os buffers do cliente.` : "O cliente não possui uma linha de Volume vinculada; nenhum ritmo foi presumido.",
-    inputs: volume ? [
+    inputs: [...(volume ? [
       { key: "vehiclesPerDay", label: "Veículos por dia", value: volume.vehiclesPerDay, unit: "veículos/dia", origin: "INPUT" },
       { key: "reinforcementPercent", label: "Reforço", value: volume.reinforcementPercent, unit: "%", origin: "INPUT" },
       { key: "workingDays", label: "Dias úteis", value: volume.workingDays, unit: "dias/ano", origin: "INPUT" },
       { key: "shifts", label: "Turnos", value: volume.shifts, unit: "turnos/dia", origin: "INPUT" },
-    ] : [],
+    ] : []), ...(logistics ? [
+      { key: "transportHours", label: "Transporte", value: logistics.transportHours, unit: "h", origin: "INPUT" },
+      { key: "beneficiatorDays", label: "Beneficiador", value: logistics.beneficiatorDays, unit: "dias", origin: "INPUT" },
+      { key: "movementMinutes", label: "Movimentação", value: logistics.movementMinutes, unit: "min", origin: "INPUT" },
+    ] : [])],
     intermediateResults: volume && pairsPerDay !== undefined ? [`1 + ${volume.reinforcementPercent} ÷ 100 = ${(1 + volume.reinforcementPercent / 100).toLocaleString("pt-BR", { maximumFractionDigits: 3 })}`, `${volume.vehiclesPerDay} × ${(1 + volume.reinforcementPercent / 100).toLocaleString("pt-BR", { maximumFractionDigits: 3 })} = ${pairsPerDay.toLocaleString("pt-BR", { maximumFractionDigits: 3 })} pares/dia`] : [],
-    origin: "Valor manual — cadastro Volume",
+    origin: "Valores manuais — Volume e Logística",
     measureKeys: [],
     filters: [`Cliente = ${lane.label}`, `Revisão = ${activeRevision.value.label}`],
     client: lane.label,
     date: selectedDate.value,
     updatedAt: forms.savedAt,
-    sourceReference: "Cadastro Volume; regra MIFC de pares por veículo + percentual de reforço",
-    missingKeys: volume ? [] : ["Cadastro Volume"],
+    sourceReference: "Cadastros Volume e Logística; regra funcional LT-TOTAL-*",
+    missingKeys: [...(volume ? [] : ["Cadastro Volume"]), ...(logistics ? [] : ["Cadastro Logística"])],
   };
 }
 function openClient(lane: ClientProcessLane) {
   const row = clientVolumeRow(lane);
   selectedBufferId.value = null;
   selectedVolumeId.value = row?.id ?? null;
+  selectedLogisticsId.value = forms.logisticsRows.find((item) => item.customer === lane.label && item.status === "active")?.id ?? null;
   selectedTrace.value = clientParameterTrace(lane);
   panelOpen.value = true;
 }
@@ -342,6 +350,7 @@ function nodeMetricTrace(node: LayoutNode, metric: "cycle"|"capacity"|"productio
 }
 function updateBuffer(id: string, patch: Partial<BufferFormRow>) { const row=forms.bufferRows.find((item)=>item.id===id);if(row)Object.assign(row,patch);const positioned=positionedBuffers.value.find((item)=>item.id===id);if(positioned)selectedTrace.value=bufferTrace(positioned); }
 function updateVolume(id: string, patch: Partial<VolumeFormRow>) { const row=forms.volumeRows.find((item)=>item.id===id);if(!row)return;Object.assign(row,patch);const pairsPerDay=row.vehiclesPerDay*(1+row.reinforcementPercent/100);for(const buffer of forms.bufferRows.filter((item)=>item.customer===row.customer))buffer.pairsPerDay=pairsPerDay;const lane=clientProcessLanes.find((item)=>item.label===row.customer);if(lane)selectedTrace.value=clientParameterTrace(lane); }
+function updateLogistics(id: string, patch: Partial<LogisticsFormRow>) { const row=forms.logisticsRows.find((item)=>item.id===id);if(!row)return;Object.assign(row,patch);const lane=clientProcessLanes.find((item)=>item.label===row.customer);if(lane)selectedTrace.value=clientParameterTrace(lane); }
 function focusNode(id: string) { const normalized=id.toLocaleLowerCase("pt-BR");const node=activeRevision.value.nodes.find((item)=>item.id===id||item.id.endsWith(`-${id}`)||item.label.replace(/\n/g," ").toLocaleLowerCase("pt-BR").includes(normalized));const rect=canvas.value?.getBoundingClientRect();if(!node||!rect)return;selectedTrace.value=null;selectedNodeIds.value=[node.id];layout.selectNode(node.id);panelOpen.value=true;pan.x=rect.width/2-(node.x+node.width/2)*zoom.value;pan.y=Math.max(8,rect.height*.35-(node.y+node.height/2)*zoom.value);renameFocusRequest.value+=1; }
 function startPan(event: PointerEvent) {
   event.preventDefault();
@@ -441,23 +450,24 @@ function removeSelected() { if (!selectedNode.value&&!selectedEdge.value&&!selec
 function duplicate() { layout.duplicateSelected(); panelOpen.value=true; }
 function applyNode(id: string,label: string,properties: LayoutNodeProperties,processId?: string) { layout.applyNode(id,label,properties,processId);const capacity=processId?forms.capacityRows.find((row)=>row.id===processId):undefined;if(capacity)Object.assign(capacity,{process:label,cycleTimeSeconds:properties.cycleTimeSeconds,targetWipPieces:properties.wipPieces,referenceCapacityPerDay:properties.capacityPerDay,shifts:properties.shifts,efficiencyPercent:properties.availabilityPercent}); }
 async function saveLayout() { layout.save(); forms.save(); await ui.saveDemoRevision({revisionId:activeRevision.value.id,kind:"mifc-layout",savedAt:activeRevision.value.savedAt,parametersSavedAt:forms.savedAt}); }
-async function createRevision() { layout.createRevision(); await ui.saveDemoRevision({revisionId:activeRevision.value.id,kind:"mifc-layout-new-revision"}); }
+function switchRevision(id: string) { forms.switchRevision(id);layout.switchRevision(id);clearSelection(); }
+async function createRevision() { const sourceRevisionId=layout.activeRevisionId;layout.createRevision();forms.cloneRevision(sourceRevisionId,layout.activeRevisionId);clearSelection();await ui.saveDemoRevision({revisionId:activeRevision.value.id,kind:"mifc-layout-new-revision"}); }
 function onKeydown(event: KeyboardEvent) { if(event.key==="Escape"&&isFullscreen.value){event.preventDefault();void document.exitFullscreen();return;}const target=event.target as HTMLElement; if (["INPUT","TEXTAREA","SELECT"].includes(target.tagName)) return; if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="z") { event.preventDefault(); event.shiftKey?layout.redo():layout.undo(); } else if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="y") { event.preventDefault(); layout.redo(); } else if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="d") { event.preventDefault(); duplicate(); } else if (["Delete","Backspace"].includes(event.key)) removeSelected(); }
 
-onMounted(async()=>{layout.hydrate();forms.hydrate();operations.hydrate();selectedNodeIds.value=selectedNode.value?[selectedNode.value.id]:[];window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);await loadLayoutMeasures();layoutMeasuresTimer=setInterval(()=>void loadLayoutMeasures(),30_000);await nextTick();fitView(true);if(typeof route.query.focus==="string")focusNode(route.query.focus);});
+onMounted(async()=>{layout.hydrate();forms.hydrate(layout.activeRevisionId);operations.hydrate();clearSelection();window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);await loadLayoutMeasures();layoutMeasuresTimer=setInterval(()=>void loadLayoutMeasures(),30_000);await nextTick();fitView(true);if(typeof route.query.focus==="string")focusNode(route.query.focus);});
 onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);window.removeEventListener("pointerup",endInteraction);window.removeEventListener("keydown",onKeydown);document.removeEventListener("fullscreenchange",onFullscreenChange);if(layoutMeasuresTimer)clearInterval(layoutMeasuresTimer);});
 watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;await nextTick();focusNode(focus);});
 </script>
 
 <template>
   <div ref="layoutPage" class="layout-page" :class="{ 'is-fullscreen': isFullscreen }">
-    <section class="layout-heading"><div class="breadcrumb"><strong>MIFC</strong><span>›</span><b>Layout</b><select class="revision-select" :value="activeRevision.id" @change="layout.switchRevision(($event.target as HTMLSelectElement).value)"><option v-for="revision in layout.revisions" :key="revision.id" :value="revision.id">{{ revision.label }}</option></select><span v-if="isDirty" class="dirty-dot">Alterações não salvas</span></div><div class="heading-actions"><label class="date-context"><span>Calendar[Date]</span><input v-model="selectedDate" type="date" @change="loadLayoutMeasures"/></label><button class="button button-secondary" type="button" @click="createRevision"><Plus :size="16"/>Nova revisão</button><button class="button button-primary" type="button" @click="saveLayout"><Save :size="16"/>Salvar layout<ChevronDown :size="14"/></button></div></section>
+    <section class="layout-heading"><div class="breadcrumb"><strong>MIFC</strong><span>›</span><b>Layout</b><select class="revision-select" :value="activeRevision.id" @change="switchRevision(($event.target as HTMLSelectElement).value)"><option v-for="revision in layout.revisions" :key="revision.id" :value="revision.id">{{ revision.label }}</option></select><span v-if="isDirty || forms.isDirty" class="dirty-dot">Alterações não salvas</span></div><div class="heading-actions"><label class="date-context"><span>Calendar[Date]</span><input v-model="selectedDate" type="date" @change="loadLayoutMeasures"/></label><button class="button button-secondary" type="button" @click="createRevision"><Plus :size="16"/>Nova revisão</button><button class="button button-primary" type="button" @click="saveLayout"><Save :size="16"/>Salvar layout<ChevronDown :size="14"/></button></div></section>
     <nav class="layout-toolbar" aria-label="Ferramentas do layout">
       <button :class="{active:activeTool==='select'}" @click="setTool('select')"><MousePointer2 :size="16"/>Selecionar</button><button :class="{active:activeTool==='connect'}" @click="chooseConnect('material_push')"><Waypoints :size="16"/>Conectar</button>
       <select v-model="activeFlow" aria-label="Tipo da conexão" @change="setTool('connect')"><option value="material_push">Material</option><option value="material_pull">Material puxado</option><option value="information">Informação</option><option value="electronic_information">Eletrônica</option></select>
       <button :class="{active:activeTool==='text'}" @click="setTool('text')"><TypeIcon :size="16"/>Texto</button><button @click="chooseConnect(activeFlow)"><Minus :size="16"/>Linha</button><button :class="{active:activeTool==='pan'}" @click="setTool('pan')"><Hand :size="16"/>Mover tela</button><span class="toolbar-separator"></span>
       <button :disabled="!undoStack.length" @click="layout.undo"><Undo2 :size="17"/>Desfazer</button><button :disabled="!redoStack.length" @click="layout.redo"><Redo2 :size="17"/>Refazer</button><span class="toolbar-separator"></span><button :disabled="!selectedNode" @click="duplicate"><Copy :size="16"/>Duplicar</button><button class="danger-tool" :disabled="!selectedNode&&!selectedEdge" @click="removeSelected"><Trash2 :size="16"/>Excluir</button>
-      <div class="toolbar-spacer"></div><div class="layers-control"><button @click="showLayers=!showLayers"><Layers3 :size="16"/>Camadas</button><div v-if="showLayers" class="layers-popover"><label><input v-model="visibleLayers.information" type="checkbox"/>Fluxos de informação</label><label><input v-model="visibleLayers.material" type="checkbox"/>Fluxos de material</label><label><input v-model="visibleLayers.metrics" type="checkbox"/>Clientes / Lead Time</label></div></div><button @click="panelOpen=!panelOpen"><Eye :size="16"/>Exibir</button><button data-testid="fullscreen-toggle" @click="toggleFullscreen"><Minimize2 v-if="isFullscreen" :size="16"/><Maximize2 v-else :size="16"/>{{ isFullscreen ? 'Sair da tela cheia' : 'Tela cheia' }}</button>
+      <div class="toolbar-spacer"></div><div class="layers-control"><button @click="showLayers=!showLayers"><Layers3 :size="16"/>Camadas</button><div v-if="showLayers" class="layers-popover"><label><input v-model="visibleLayers.information" type="checkbox"/>Fluxos de informação</label><label><input v-model="visibleLayers.material" type="checkbox"/>Fluxos de material</label><label><input v-model="visibleLayers.metrics" type="checkbox"/>Clientes / Lead Time</label></div></div><button :disabled="!selectedNode&&!selectedEdge&&!selectedTrace" @click="panelOpen=!panelOpen"><Eye :size="16"/>Exibir painel</button><button data-testid="fullscreen-toggle" @click="toggleFullscreen"><Minimize2 v-if="isFullscreen" :size="16"/><Maximize2 v-else :size="16"/>{{ isFullscreen ? 'Sair da tela cheia' : 'Tela cheia' }}</button>
     </nav>
     <section class="editor-shell">
       <div ref="canvas" class="canvas-viewport" :class="[`tool-${activeTool}`, { 'is-panning': interaction.mode === 'pan' }]" data-testid="layout-canvas" @pointerdown.capture="onViewportPointerDown" @pointerdown.self="onCanvasPointerDown" @auxclick.prevent @wheel="onWheel">
@@ -490,8 +500,8 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
         </div>
         <div class="canvas-status"><span v-if="connectSourceId">Agora selecione o bloco de destino</span><span v-else-if="selectedNodeIds.length>1">{{ selectedNodeIds.length }} blocos selecionados · mantenha Ctrl/Shift ao iniciar o arraste para mover o grupo</span><span v-else>{{ activeRevision.nodes.length }} blocos · arraste normal move somente um bloco · Ctrl/Shift seleciona o grupo</span></div><div class="zoom-controls"><button aria-label="Diminuir zoom" @click="setZoom(zoom-.1)"><Minus :size="16"/></button><span>{{ Math.round(zoom*100) }}%</span><button aria-label="Aumentar zoom" @click="setZoom(zoom+.1)"><Plus :size="16"/></button><button aria-label="Ajustar à tela" @click="fitView()"><Maximize2 :size="16"/></button></div>
       </div>
-      <LayoutValueTracePanel v-if="panelOpen&&selectedTrace" :trace="selectedTrace" :editable-buffer="selectedBufferId ? forms.bufferRows.find((item) => item.id === selectedBufferId) : undefined" :editable-volume="selectedVolumeId ? forms.volumeRows.find((item) => item.id === selectedVolumeId) : undefined" @close="selectedTrace=null;selectedBufferId=null;selectedVolumeId=null" @update-buffer="updateBuffer" @update-volume="updateVolume" />
-      <MifcPropertiesPanel v-else-if="panelOpen" :node="selectedNode" :edge="selectedEdge" :nodes="activeRevision.nodes" :edges="activeRevision.edges" :capacity-rows="forms.capacityRows" :focus-request="renameFocusRequest" @close="panelOpen=false" @update="applyNode" @delete="removeSelected" @update-edge="layout.updateSelectedEdge" @preview-label="layout.previewNodeLabel" @commit-label="layout.commitNodeLabel" @cancel-label="layout.cancelNodeLabel"/>
+      <LayoutValueTracePanel v-if="panelOpen&&selectedTrace" :trace="selectedTrace" :editable-buffer="selectedBufferId ? forms.bufferRows.find((item) => item.id === selectedBufferId) : undefined" :editable-volume="selectedVolumeId ? forms.volumeRows.find((item) => item.id === selectedVolumeId) : undefined" :editable-logistics="selectedLogisticsId ? forms.logisticsRows.find((item) => item.id === selectedLogisticsId) : undefined" @close="closePanel" @update-buffer="updateBuffer" @update-volume="updateVolume" @update-logistics="updateLogistics" />
+      <MifcPropertiesPanel v-else-if="panelOpen&&(selectedNode||selectedEdge)" :node="selectedNode" :edge="selectedEdge" :nodes="activeRevision.nodes" :edges="activeRevision.edges" :capacity-rows="forms.capacityRows" :focus-request="renameFocusRequest" @close="closePanel" @update="applyNode" @delete="removeSelected" @update-edge="layout.updateSelectedEdge" @preview-label="layout.previewNodeLabel" @commit-label="layout.commitNodeLabel" @cancel-label="layout.cancelNodeLabel"/>
     </section>
   </div>
 </template>

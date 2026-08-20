@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { Building2, ChevronDown, ChevronUp, Database, FileText, KanbanSquare, PackageOpen, Pause, Square, Truck } from "@lucide/vue";
 import type { MifcFlowType } from "@mifc/domain";
 import type { LayoutNodeType } from "@/stores/mifc-layout";
 
 defineEmits<{ add: [type: LayoutNodeType, label?: string]; flow: [type: MifcFlowType] }>();
 const collapsed = ref(false);
+const storageKey = "mifc-digital:layout:symbol-palette-collapsed";
 const symbols: Array<{ type: LayoutNodeType; label: string; purpose: string; icon: unknown }> = [
   { type: "process", label: "Processo", purpose: "Máquina ou etapa de transformação", icon: Square },
   { type: "storage", label: "Buffer", purpose: "WIP entre processos — símbolo PBIP", icon: PackageOpen },
@@ -17,6 +18,8 @@ const symbols: Array<{ type: LayoutNodeType; label: string; purpose: string; ico
   { type: "kanban", label: "Kanban", purpose: "Sinal de reposição documentado", icon: KanbanSquare },
   { type: "information", label: "Informação", purpose: "Documento, regra ou instrução", icon: FileText },
 ];
+onMounted(() => { collapsed.value = localStorage.getItem(storageKey) === "true"; });
+watch(collapsed, (value) => localStorage.setItem(storageKey, String(value)));
 </script>
 
 <template>

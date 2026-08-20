@@ -11,11 +11,12 @@ import ModulePlaceholderView from "@/views/ModulePlaceholderView.vue";
 import OperationalRegistryView from "@/views/OperationalRegistryView.vue";
 import ActionsView from "@/views/ActionsView.vue";
 import SettingsView from "@/views/SettingsView.vue";
+import DiagnosticsView from "@/views/DiagnosticsView.vue";
 
 const routes: RouteRecordRaw[] = [
   { path: "/", redirect: "/overview" },
   { path: "/overview", name: "overview", component: OverviewView, meta: { title: "Visão geral" } },
-  { path: "/dashboard", name: "dashboard", component: ModulePlaceholderView, meta: { title: "Dashboard", description: "Indicadores consolidados serão ativados após a validação das regras." } },
+  { path: "/dashboard", redirect: "/overview" },
   { path: "/mifc/layout", name: "layout", component: MifcLayoutView, meta: { title: "Layout" } },
   { path: "/mifc/volume", name: "volume", component: VolumePreviewView, meta: { title: "Volume" } },
   { path: "/mifc/logistics", name: "logistics", component: LogisticsView, meta: { title: "Logística" } },
@@ -26,10 +27,11 @@ const routes: RouteRecordRaw[] = [
   { path: "/integrations", name: "integrations", component: IntegrationsView, meta: { title: "Integrações" } },
   { path: "/products", name: "products", component: OperationalRegistryView, props: { mode: "products" }, meta: { title: "Produtos" } },
   { path: "/processes", name: "processes", component: OperationalRegistryView, props: { mode: "processes" }, meta: { title: "Processos" } },
-  { path: "/resources", name: "resources", component: OperationalRegistryView, props: { mode: "resources" }, meta: { title: "Recursos" } },
+  { path: "/resources", name: "resources", component: OperationalRegistryView, props: { mode: "resources" }, meta: { title: "Máquinas & Recursos" } },
   { path: "/actions", name: "actions", component: ActionsView, meta: { title: "Ações" } },
   { path: "/master-data", name: "master-data", component: OperationalRegistryView, props: { mode: "master" }, meta: { title: "Dados mestre" } },
   { path: "/settings", name: "settings", component: SettingsView, meta: { title: "Configurações" } },
+  { path: "/diagnostics", name: "diagnostics", component: DiagnosticsView, meta: { title: "Diagnóstico" } },
   { path: "/:pathMatch(.*)*", redirect: "/overview" },
 ];
 

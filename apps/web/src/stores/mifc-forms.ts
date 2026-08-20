@@ -96,7 +96,8 @@ interface FormsSnapshot {
   savedAt?: string;
 }
 
-const storageKey = "mifc-digital:prompt-3:revision-04";
+const legacyStorageKey = "mifc-digital:prompt-3:revision-04";
+const revisionStorageKey = (revisionId: string) => `mifc-digital:prompt-3:${revisionId}`;
 
 const defaults: FormsSnapshot = {
   schemaVersion: 3,
@@ -186,6 +187,7 @@ function migrateSnapshot(snapshot: StoredFormsSnapshot): FormsSnapshot {
 export const useMifcFormsStore = defineStore("mifc-forms", {
   state: () => ({
     ...cloneDefaults(),
+    activeRevisionId: "layout-rev-04",
     hydrated: false,
     persistedState: "" as string,
   }),
@@ -202,10 +204,15 @@ export const useMifcFormsStore = defineStore("mifc-forms", {
     },
   },
   actions: {
-    hydrate() {
-      if (this.hydrated) return;
+    hydrate(revisionId?: string) {
+      const targetRevisionId = revisionId ?? this.activeRevisionId;
+      if (this.hydrated && targetRevisionId === this.activeRevisionId) return;
+      const fallback = cloneDefaults();
+      Object.assign(this, fallback);
+      this.activeRevisionId = targetRevisionId;
       try {
-        const raw = localStorage.getItem(storageKey);
+        const raw = localStorage.getItem(revisionStorageKey(targetRevisionId))
+          ?? (targetRevisionId === "layout-rev-04" ? localStorage.getItem(legacyStorageKey) : null);
         const parsed: unknown = raw ? JSON.parse(raw) : null;
         if (isSnapshot(parsed)) {
           const migrated = migrateSnapshot(parsed);
@@ -243,8 +250,35 @@ export const useMifcFormsStore = defineStore("mifc-forms", {
         capacityRows: this.capacityRows,
         savedAt: this.savedAt,
       };
-      localStorage.setItem(storageKey, JSON.stringify(snapshot));
+      localStorage.setItem(revisionStorageKey(this.activeRevisionId), JSON.stringify(snapshot));
       this.persistedState = this.serializedRows();
+    },
+    cloneRevision(sourceRevisionId: string, targetRevisionId: string) {
+      if (this.activeRevisionId === sourceRevisionId && this.hydrated) this.save();
+      const source = localStorage.getItem(revisionStorageKey(sourceRevisionId))
+        ?? (sourceRevisionId === "layout-rev-04" ? localStorage.getItem(legacyStorageKey) : null)
+        ?? JSON.stringify({
+          schemaVersion: 3,
+          shiftRows: this.shiftRows,
+          volumeRows: this.volumeRows,
+          logisticsRows: this.logisticsRows,
+          bufferRows: this.bufferRows,
+          capacityRows: this.capacityRows,
+          savedAt: this.savedAt,
+        });
+      localStorage.setItem(revisionStorageKey(targetRevisionId), source);
+      this.hydrated = false;
+      this.hydrate(targetRevisionId);
+    },
+    switchRevision(revisionId: string) {
+      if (revisionId === this.activeRevisionId) return;
+      if (this.hydrated && this.isDirty) this.save();
+      if (!localStorage.getItem(revisionStorageKey(revisionId))) {
+        this.cloneRevision(this.activeRevisionId, revisionId);
+        return;
+      }
+      this.hydrated = false;
+      this.hydrate(revisionId);
     },
     addVolume() {
       this.volumeRows.push({ id: createId("vol"), customer: "Novo cliente", model: "Novo modelo", vehiclesPerDay: 0, reinforcementPercent: 0, workingDays: 250, shifts: 2, averageLengthMm: 0, widthMm: 0, thicknessMm: 0, densityKgDm3: 7.85, coilCount: 0, coilWeightKg: 7000, status: "active" });
