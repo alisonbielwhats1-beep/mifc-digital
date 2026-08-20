@@ -54,4 +54,22 @@ describe("migração dos parâmetros de capacidade", () => {
     expect(store.schemaVersion).toBe(3);
     expect(store.logisticsRows[0].beneficiatorDays).toBe(0);
   });
+
+  it("isola os parâmetros por revisão e clona explicitamente a revisão escolhida", () => {
+    const store = useMifcFormsStore();
+    store.hydrate("layout-rev-04");
+    store.volumeRows[0].vehiclesPerDay = 91;
+    store.save();
+
+    store.cloneRevision("layout-rev-04", "layout-rev-05");
+    expect(store.activeRevisionId).toBe("layout-rev-05");
+    expect(store.volumeRows[0].vehiclesPerDay).toBe(91);
+    store.volumeRows[0].vehiclesPerDay = 110;
+    store.save();
+
+    store.switchRevision("layout-rev-04");
+    expect(store.volumeRows[0].vehiclesPerDay).toBe(91);
+    store.switchRevision("layout-rev-05");
+    expect(store.volumeRows[0].vehiclesPerDay).toBe(110);
+  });
 });
