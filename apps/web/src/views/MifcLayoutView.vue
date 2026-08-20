@@ -15,7 +15,7 @@ import { edgeGeometry } from "@/domain/layout-graph";
 import { beginNodePointerSelection, finishNodePointerSelection } from "@/domain/layout-selection";
 import { calculateLayoutProcessMeasures, formatMeasureValues, formatProcessDays } from "@/domain/layout-process-measures";
 import { calculateClientTotal, type LayoutValueTrace } from "@/domain/layout-value-lineage";
-import { useMifcFormsStore, type BufferFormRow } from "@/stores/mifc-forms";
+import { useMifcFormsStore, type BufferFormRow, type VolumeFormRow } from "@/stores/mifc-forms";
 import { LAYOUT_WORLD_HEIGHT, LAYOUT_WORLD_WIDTH, useMifcLayoutStore, type LayoutEdge, type LayoutNode, type LayoutNodeProperties, type LayoutNodeType, type LayoutTool } from "@/stores/mifc-layout";
 import { useUiStore } from "@/stores/ui";
 import { useOperationsStore } from "@/stores/operations";
@@ -43,6 +43,7 @@ const activeFlow = ref<MifcFlowType>("material_push");
 const selectedNodeIds = ref<string[]>([]);
 const selectedTrace = ref<LayoutValueTrace | null>(null);
 const selectedBufferId = ref<string | null>(null);
+const selectedVolumeId = ref<string | null>(null);
 const suppressNextNodeClick = ref(false);
 type MeasureDiagnostics = {
   contextDate: string;
@@ -145,8 +146,8 @@ function chooseConnect(flow: MifcFlowType) { activeFlow.value = flow; layout.set
 function worldCenter() { const rect = canvas.value?.getBoundingClientRect(); return { x:((rect?.width ?? 1000)/2-pan.x)/zoom.value, y:((rect?.height ?? 700)/2-pan.y)/zoom.value }; }
 function worldPoint(event: PointerEvent) { const rect = canvas.value!.getBoundingClientRect(); return { x:(event.clientX-rect.left-pan.x)/zoom.value, y:(event.clientY-rect.top-pan.y)/zoom.value }; }
 function addSymbol(type: LayoutNodeType, label?: string) { const point = worldCenter(); layout.addNode(type,point.x-55,point.y-35,label); selectedTrace.value=null; panelOpen.value = true; }
-function clearSelection() { selectedNodeIds.value=[]; selectedTrace.value=null; selectedBufferId.value=null; layout.selectNode(null); layout.selectEdge(null); }
-function openTrace(trace: LayoutValueTrace, bufferId?: string) { selectedTrace.value=trace;selectedBufferId.value=bufferId??null;panelOpen.value=true; }
+function clearSelection() { selectedNodeIds.value=[]; selectedTrace.value=null; selectedBufferId.value=null; selectedVolumeId.value=null; layout.selectNode(null); layout.selectEdge(null); }
+function openTrace(trace: LayoutValueTrace, bufferId?: string) { selectedTrace.value=trace;selectedBufferId.value=bufferId??null;selectedVolumeId.value=null;panelOpen.value=true; }
 function stageTrace(lane: ClientProcessLane, stage: PositionedClientStage): LayoutValueTrace {
   const mapping = mappingFor(lane, stage);
   const processKeys = mapping?.processMeasureKeys ?? [];
@@ -202,6 +203,43 @@ function totalTrace(lane: ClientProcessLane): LayoutValueTrace {
     missingKeys: total.missingKeys,
   };
 }
+function clientVolumeRow(lane: ClientProcessLane) {
+  return forms.volumeRows.find((row) => row.customer === lane.label);
+}
+function clientParameterTrace(lane: ClientProcessLane): LayoutValueTrace {
+  const volume = clientVolumeRow(lane);
+  const pairsPerDay = volume ? volume.vehiclesPerDay * (1 + volume.reinforcementPercent / 100) : undefined;
+  return {
+    id: `client-${lane.key}`,
+    title: `Parâmetros do cliente · ${lane.label}`,
+    displayValue: pairsPerDay === undefined ? "—" : pairsPerDay.toLocaleString("pt-BR", { maximumFractionDigits: 3 }),
+    unit: "pares/dia",
+    formula: "Pares/dia = veículos/dia × (1 + reforço % ÷ 100)",
+    simpleExplanation: volume ? `${volume.vehiclesPerDay.toLocaleString("pt-BR")} veículos por dia, acrescidos de ${volume.reinforcementPercent.toLocaleString("pt-BR")}% de reforços, resultam em ${pairsPerDay?.toLocaleString("pt-BR", { maximumFractionDigits: 3 })} pares por dia. Esse ritmo alimenta os buffers do cliente.` : "O cliente não possui uma linha de Volume vinculada; nenhum ritmo foi presumido.",
+    inputs: volume ? [
+      { key: "vehiclesPerDay", label: "Veículos por dia", value: volume.vehiclesPerDay, unit: "veículos/dia", origin: "INPUT" },
+      { key: "reinforcementPercent", label: "Reforço", value: volume.reinforcementPercent, unit: "%", origin: "INPUT" },
+      { key: "workingDays", label: "Dias úteis", value: volume.workingDays, unit: "dias/ano", origin: "INPUT" },
+      { key: "shifts", label: "Turnos", value: volume.shifts, unit: "turnos/dia", origin: "INPUT" },
+    ] : [],
+    intermediateResults: volume && pairsPerDay !== undefined ? [`1 + ${volume.reinforcementPercent} ÷ 100 = ${(1 + volume.reinforcementPercent / 100).toLocaleString("pt-BR", { maximumFractionDigits: 3 })}`, `${volume.vehiclesPerDay} × ${(1 + volume.reinforcementPercent / 100).toLocaleString("pt-BR", { maximumFractionDigits: 3 })} = ${pairsPerDay.toLocaleString("pt-BR", { maximumFractionDigits: 3 })} pares/dia`] : [],
+    origin: "Valor manual — cadastro Volume",
+    measureKeys: [],
+    filters: [`Cliente = ${lane.label}`, `Revisão = ${activeRevision.value.label}`],
+    client: lane.label,
+    date: selectedDate.value,
+    updatedAt: forms.savedAt,
+    sourceReference: "Cadastro Volume; regra MIFC de pares por veículo + percentual de reforço",
+    missingKeys: volume ? [] : ["Cadastro Volume"],
+  };
+}
+function openClient(lane: ClientProcessLane) {
+  const row = clientVolumeRow(lane);
+  selectedBufferId.value = null;
+  selectedVolumeId.value = row?.id ?? null;
+  selectedTrace.value = clientParameterTrace(lane);
+  panelOpen.value = true;
+}
 function bufferTrace(buffer: PositionedLayoutBuffer): LayoutValueTrace {
   const missingKeys = [buffer.quantityPieces === null ? "WIP observado" : "", buffer.pairsPerDay <= 0 ? "Pares/dia" : "", !buffer.inputProcess ? "Processo anterior" : "", !buffer.outputProcess ? "Processo posterior" : ""].filter(Boolean);
   return {
@@ -236,6 +274,7 @@ function nodeMetricTrace(node: LayoutNode, metric: "cycle"|"capacity"|"productio
   else openTrace({ id:`${node.id}-production`,title:`${node.label} · Produção e demanda`,displayValue:metrics ? `${metrics.production.toLocaleString("pt-BR")} / ${metrics.demand.toLocaleString("pt-BR")}` : "—",unit:"peças",formula:"Produção observada / demanda filtrada conforme as medidas vinculadas ao processo.",simpleExplanation:"Os dois números usam a mesma data e o mesmo processo. Se o cache de Produção não estiver disponível, a tela mostra ausência em vez de zero.",inputs:[{key:"production",label:"Produção observada",value:metrics?.production,unit:"peças",origin:"ORACLE_MES"},{key:"demand",label:"Demanda",value:metrics?.demand,unit:"peças",origin:"ORACLE_MES"}],intermediateResults:[],origin:"Oracle/MES somente leitura",measureKeys:productionKeys[node.properties.calculationKey] ? [...productionKeys[node.properties.calculationKey].production,...productionKeys[node.properties.calculationKey].demand] : [],filters:[`Calendar[Date] = ${selectedDate.value}`,`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:oracleMeasures.value.updatedAt,sourceReference:"MIFC.SemanticModel/definition/tables/1-Measure.tmdl",missingKeys:metrics ? [] : ["Cache Produção"] });
 }
 function updateBuffer(id: string, patch: Partial<BufferFormRow>) { const row=forms.bufferRows.find((item)=>item.id===id);if(row)Object.assign(row,patch);const positioned=positionedBuffers.value.find((item)=>item.id===id);if(positioned)selectedTrace.value=bufferTrace(positioned); }
+function updateVolume(id: string, patch: Partial<VolumeFormRow>) { const row=forms.volumeRows.find((item)=>item.id===id);if(!row)return;Object.assign(row,patch);const pairsPerDay=row.vehiclesPerDay*(1+row.reinforcementPercent/100);for(const buffer of forms.bufferRows.filter((item)=>item.customer===row.customer))buffer.pairsPerDay=pairsPerDay;const lane=clientProcessLanes.find((item)=>item.label===row.customer);if(lane)selectedTrace.value=clientParameterTrace(lane); }
 function focusNode(id: string) { const normalized=id.toLocaleLowerCase("pt-BR");const node=activeRevision.value.nodes.find((item)=>item.id===id||item.id.endsWith(`-${id}`)||item.label.replace(/\n/g," ").toLocaleLowerCase("pt-BR").includes(normalized));const rect=canvas.value?.getBoundingClientRect();if(!node||!rect)return;selectedTrace.value=null;selectedNodeIds.value=[node.id];layout.selectNode(node.id);panelOpen.value=true;pan.x=rect.width/2-(node.x+node.width/2)*zoom.value;pan.y=Math.max(8,rect.height*.35-(node.y+node.height/2)*zoom.value);renameFocusRequest.value+=1; }
 function startPan(event: PointerEvent) {
   event.preventDefault();
@@ -366,7 +405,7 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
             <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Somente valores em dias · subida = processo · reta = sem processo</span><em class="parity-warning">Paridade Power BI parcial</em><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Filtro ${selectedDate} · ${filteredRowSummary.toLocaleString('pt-BR')} linhas · Oracle + parâmetros locais · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
             <div v-for="lane in clientLanes" :key="lane.key" class="client-lane" :data-client="lane.key" :data-testid="`client-lane-${lane.key}`">
-              <div class="client-lane-label"><strong>{{ lane.label }}</strong></div>
+              <div class="client-lane-label"><button type="button" :aria-label="`Editar parâmetros do cliente ${lane.label}`" @click.stop="openClient(lane)"><strong>{{ lane.label }}</strong><small>Editar parâmetros</small></button></div>
               <svg :viewBox="`0 0 ${WORLD_WIDTH} 56`" :width="WORLD_WIDTH" height="56" role="img" :aria-label="`Linha de processos do cliente ${lane.label}`">
                 <path class="client-process-line" :d="lane.path"/>
                 <g v-for="stage in positionedClientStages" :key="stage.id" :class="['client-stage-marker', { active: mappingFor(lane,stage)?.participates, pending: mappingFor(lane,stage)?.validationStatus === 'pending' }]" :transform="`translate(${stage.centerX} 0)`">
@@ -383,7 +422,7 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
         </div>
         <div class="canvas-status"><span v-if="connectSourceId">Agora selecione o bloco de destino</span><span v-else-if="selectedNodeIds.length>1">{{ selectedNodeIds.length }} blocos selecionados · mantenha Ctrl/Shift ao iniciar o arraste para mover o grupo</span><span v-else>{{ activeRevision.nodes.length }} blocos · arraste normal move somente um bloco · Ctrl/Shift seleciona o grupo</span></div><div class="zoom-controls"><button aria-label="Diminuir zoom" @click="setZoom(zoom-.1)"><Minus :size="16"/></button><span>{{ Math.round(zoom*100) }}%</span><button aria-label="Aumentar zoom" @click="setZoom(zoom+.1)"><Plus :size="16"/></button><button aria-label="Ajustar à tela" @click="fitView()"><Maximize2 :size="16"/></button></div>
       </div>
-      <LayoutValueTracePanel v-if="panelOpen&&selectedTrace" :trace="selectedTrace" :editable-buffer="selectedBufferId ? forms.bufferRows.find((item) => item.id === selectedBufferId) : undefined" @close="selectedTrace=null;selectedBufferId=null" @update-buffer="updateBuffer" />
+      <LayoutValueTracePanel v-if="panelOpen&&selectedTrace" :trace="selectedTrace" :editable-buffer="selectedBufferId ? forms.bufferRows.find((item) => item.id === selectedBufferId) : undefined" :editable-volume="selectedVolumeId ? forms.volumeRows.find((item) => item.id === selectedVolumeId) : undefined" @close="selectedTrace=null;selectedBufferId=null;selectedVolumeId=null" @update-buffer="updateBuffer" @update-volume="updateVolume" />
       <MifcPropertiesPanel v-else-if="panelOpen" :node="selectedNode" :edge="selectedEdge" :nodes="activeRevision.nodes" :edges="activeRevision.edges" :capacity-rows="forms.capacityRows" :focus-request="renameFocusRequest" @close="panelOpen=false" @update="applyNode" @delete="removeSelected" @update-edge="layout.updateSelectedEdge" @preview-label="layout.previewNodeLabel" @commit-label="layout.commitNodeLabel" @cancel-label="layout.cancelNodeLabel"/>
     </section>
   </div>
@@ -437,6 +476,8 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
 .client-board-title em.parity-warning { padding:2px 6px; border:1px solid #f1c76d; border-radius:999px; background:#fff8e7; color:#9a6500; font-weight:700; }
 .client-lane { position:relative; height:68px; border-top:1px solid #e4e9f0; }
 .client-lane-label { position:absolute; z-index:3; top:14px; left:20px; display:grid; width:150px; }
+.client-lane-label button { display:grid; justify-items:start; padding:3px 5px; border:0; border-radius:5px; background:transparent; text-align:left; cursor:pointer; }
+.client-lane-label button:hover,.client-lane-label button:focus-visible { outline:0; background:var(--surface-selected); box-shadow:0 0 0 2px var(--focus-ring); }
 .client-lane-label strong { color:#263746; font-size:16px; }
 .client-lane-label small { color:var(--text-tertiary); font-size:12px; }
 .client-lane svg { position:absolute; z-index:1; top:1px; left:0; overflow:visible; }
