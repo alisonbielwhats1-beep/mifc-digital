@@ -172,11 +172,13 @@ function scaniaPieceUnit(row: OracleRow): number {
   }
   const local = canonicalLocal(sourceLocal(row));
   const tipo = key(text(row, "TIPO", "Tipo"));
-  if (tipo.includes("reforço") && key(local) === key("Ag. Stenhøj")) return 0;
+  const item = text(row, "ITEM");
+  const reinforcement = tipo.includes("reforço") || item.includes("2-");
+  if (reinforcement && key(local) === key("Ag. Stenhøj")) return 0;
   return 1;
 }
 
-const dafReinforcedItems = new Set([
+const dafReinforcedYesItems = new Set([
   "1-2159711-00", "1-2159712-00", "1-2193601-01", "1-2193602-01", "1-2193603-01", "1-2193604-01",
   "1-2193611-02", "1-2193612-02", "1-2193613-02", "1-2193614-02", "1-2295253-00", "1-2295253-01",
   "1-2295254-00", "1-2295254-01", "1-2295255-00", "1-2295256-00", "1-2307051-00", "1-2307052-00",
@@ -187,13 +189,21 @@ const dafReinforcedItems = new Set([
   "1-2414598-00", "1-2414599-00", "1-2422369-00", "1-2422370-00", "1-2440060-00", "1-2440061-00",
 ]);
 
-const dafSimpleItems = new Set([
-  "1-2184071-02", "1-2184071-06", "1-2184072-02", "1-2184072-06", "1-2340888-02", "1-2340889-02",
-  "1-2340892-02", "1-2340893-02", "1-2340898-02", "1-2340899-02", "1-2341030-03", "1-2341030-04", "1-2341031-03",
-  "1-2341031-04", "1-2342621-02", "1-2342622-02", "1-2342631-02", "1-2342632-02", "1-2407324-00",
-  "1-2407324-01", "1-2407325-00", "1-2407325-01", "1-2407330-00", "1-2407330-01", "1-2407331-00",
-  "1-2407331-01", "1-2414609-00", "1-2414610-00", "1-2418272-00", "1-2418273-00", "1-2422369-00",
-  "1-2422370-00", "1-2422375-00", "1-2422376-00", "1-2440318-00", "1-2440319-00",
+const dafSimpleNoItems = new Set([
+  "1-2184071-02", "1-2184072-02", "1-2341030-04", "1-2341031-04", "1-2342631-02", "1-2342632-02",
+  "1-2422369-00", "1-2422370-00", "1-2422375-00", "1-2422376-00", "1-2340892-02", "1-2340893-02",
+  "1-2340899-02", "1-2418272-00", "1-2418273-00", "1-2342621-02", "1-2342622-02", "1-2184071-06",
+  "1-2184072-06", "1-2407324-00", "1-2407325-00", "1-2407330-00", "1-2407331-00",
+]);
+
+const dafReinforcedNoItems = new Set([
+  "1-2184071-02", "1-2184072-02", "1-2341030-03", "1-2341031-03", "1-2422375-00", "1-2422376-00",
+  "1-2407330-00", "1-2407331-00", "1-2414609-00", "1-2414610-00", "1-2418272-00", "1-2418273-00",
+  "1-2340888-02", "1-2340889-02", "1-2407330-01", "1-2407331-01", "1-2440318-00", "1-2440319-00",
+]);
+
+const dafReinforcedExcludedItems = new Set([
+  "1-2342621-02", "1-2342622-02", "1-2342631-02", "1-2342632-02",
 ]);
 
 function normalizedDafItem(item: string): string {
@@ -215,8 +225,13 @@ function derivedDafRows(input: OracleRow[]): OracleRow[] {
     const derived: OracleRow[] = text(row, "DESCRIPTION") === "BEATTY 2"
       ? []
       : [{ ...row, localName: dafLocal(row, "original") }];
-    if (dafSimpleItems.has(item)) derived.push({ ...row, localName: dafLocal(row, "simple") });
-    if (!dafSimpleItems.has(item) || dafReinforcedItems.has(item)) derived.push({ ...row, localName: dafLocal(row, "reinforced") });
+    if (dafSimpleNoItems.has(item)) {
+      derived.push({ ...row, "REFORÇADA?": "Não", localName: dafLocal(row, "simple") });
+    }
+    const reinforcedState = dafReinforcedYesItems.has(item) ? "Sim" : dafReinforcedNoItems.has(item) ? "Não" : "-";
+    if (reinforcedState !== "Não" && !dafReinforcedExcludedItems.has(item)) {
+      derived.push({ ...row, "REFORÇADA?": reinforcedState, localName: dafLocal(row, "reinforced") });
+    }
     return derived;
   });
 }
@@ -224,10 +239,10 @@ function derivedDafRows(input: OracleRow[]): OracleRow[] {
 function dafPieceUnit(row: OracleRow): number {
   const description = key(text(row, "RAIL_TYPE_DESCRIPTION", "RAIL_TYPE_DESCRIPTION "));
   const local = canonicalLocal(sourceLocal(row));
-  if (description.includes("longarina")) return 1;
+  const reinforcedState = text(row, "REFORÇADA?");
+  if (description.includes("longarina")) return reinforcedState === "Sim" || reinforcedState === "Não" ? 1 : 0;
   if (description.includes("reforço") || description.includes("reforco")) return key(local) === key("Ag. Stenhøj") ? 0 : 1;
-  const item = text(row, "ITEM");
-  return item.startsWith("1-") ? 1 : 0;
+  return 0;
 }
 
 function distinct(rowsToCount: OracleRow[], ...keys: string[]): number {
