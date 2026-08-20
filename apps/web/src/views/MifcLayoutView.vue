@@ -293,6 +293,8 @@ function measureBufferTrace(buffer: PositionedLayoutMeasureBuffer, entry: Layout
   const isSegregation = entry.measureKey.startsWith("Q-D-S-");
   const piecesKey = `E-M-P-S-${entry.clientKey}`;
   const rateKey = `P-M-${entry.clientKey}`;
+  const slitterRateValueKey = `P-M-SLITTER-${entry.clientKey}`;
+  const slitterAverageValueKey = `C-P-M-TOTAL-${entry.clientKey}`;
   const value = entry.value;
   return {
     id: `measure-buffer-${buffer.id}-${entry.measureKey}`,
@@ -313,9 +315,9 @@ function measureBufferTrace(buffer: PositionedLayoutMeasureBuffer, entry: Layout
         : "Este valor automático permanece no símbolo de buffer da máquina correspondente e não é misturado ao tempo de processamento do card da máquina.",
     inputs: isSlitter ? [
       { key: "C-T-E", label: "Comprimento total dos lotes", value: oracleMeasures.value.values?.["C-T-E"], unit: "m", origin: "ORACLE_MES + DAX MP(m)" },
-      { key: "C-P-M-TOTAL", label: "Comprimento médio no Slitter", value: oracleMeasures.value.values?.["C-P-M-TOTAL"], unit: "m/peça", origin: "ORACLE_MES + Power BI" },
+      { key: "C-P-M-TOTAL", label: "Comprimento médio no Slitter", value: oracleMeasures.value.values?.[slitterAverageValueKey] ?? oracleMeasures.value.values?.["C-P-M-TOTAL"], unit: "m/peça", origin: "ORACLE_MES + Power BI" },
       { key: piecesKey, label: "Estoque médio em peças", value: oracleMeasures.value.values?.[piecesKey], unit: "peças", origin: "CALCULATED" },
-      { key: rateKey, label: "Cadência diária", value: oracleMeasures.value.values?.[rateKey], unit: "peças/dia", origin: "Power BI" },
+      { key: rateKey, label: "Cadência diária no contexto MP[Cliente]", value: oracleMeasures.value.values?.[slitterRateValueKey] ?? oracleMeasures.value.values?.[rateKey], unit: "peças/dia", origin: "Power BI" },
     ] : [{ key: entry.measureKey, label: buffer.label, value, unit: "dias", origin: "ORACLE_MES + Power BI" }],
     intermediateResults: isSlitter ? [
       "MP(m) = (PESO ÷ 7.850) ÷ ((ESPESSURA ÷ 1.000) × (LARGURA ÷ 1.000))",
@@ -549,6 +551,7 @@ function laneMeasureTrace(lane: ClientProcessLane, measure: PositionedClientLane
   const processConfig = processTraceConfig[measure.measureKey];
   const piecesKey = `E-M-P-S-${lane.key}`;
   const rateKey = `P-M-${lane.key}`;
+  const slitterRateValueKey = `P-M-SLITTER-${lane.key}`;
   const formula = isSlitter
     ? `${measure.measureKey} = ${piecesKey} ÷ ${rateKey}`
     : isTransport
@@ -568,7 +571,7 @@ function laneMeasureTrace(lane: ClientProcessLane, measure: PositionedClientLane
   if (isSlitter) {
     inputs.push(
       { key: piecesKey, label: "Estoque Slitter", value: oracleMeasures.value.values?.[piecesKey], unit: "peças", origin: "CALCULATED" },
-      { key: rateKey, label: "Cadência diária", value: oracleMeasures.value.values?.[rateKey], unit: "peças/dia", origin: "ORACLE_MES" },
+      { key: rateKey, label: "Cadência diária no contexto MP[Cliente]", value: oracleMeasures.value.values?.[slitterRateValueKey] ?? oracleMeasures.value.values?.[rateKey], unit: "peças/dia", origin: "ORACLE_MES" },
     );
   }
   return {
