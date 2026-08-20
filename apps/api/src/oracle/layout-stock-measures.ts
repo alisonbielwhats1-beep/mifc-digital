@@ -345,32 +345,32 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
   const stockPairsAt = (client: "FH" | "VM" | "SCA" | "DAF", localName: string): number => localPairs(clients[client], client, localName);
   const stockDaysFor = (client: "FH" | "VM" | "SCA" | "DAF", localName: string, factor = 2): number => stockDays(stockPairsAt(client, localName), rates[client], factor);
 
-  values["D-E-FH-B"] = stockDaysFor("FH", "Beatty Output");
-  values["D-E-VM-B"] = stockDaysFor("VM", "Beatty Output");
-  values["D-E-SCA-B"] = stockDaysFor("SCA", "Beatty Output");
-  values["D-E-DAF-B"] = stockDaysFor("DAF", "Beatty Output");
-  values["D-E-FH-CL"] = stockDaysFor("FH", "Cantilever");
-  values["D-E-VM-CL"] = stockDaysFor("VM", "Cantilever");
-  values["D-E-SCA-CL"] = stockDaysFor("SCA", "Cantilever", .5);
-  values["D-E-DAF-CL"] = stockDaysFor("DAF", "Cantilever");
-  values["D-E-FH-P.I"] = stockDaysFor("FH", "Pintura Input 2", .5);
-  values["D-E-VM-P.I"] = stockDaysFor("VM", "Pintura Input 2");
-  values["D-E-SCA-P.I"] = stockDaysFor("SCA", "Pintura Input 2");
-  values["D-E-DAF-P.I"] = stockDaysFor("DAF", "Pintura Input 2");
-  values["D-E-FH-P.A"] = stockDaysFor("FH", "Buffer P.A - B3 e B4");
-  values["D-E-SCA-P.A"] = stockDaysFor("SCA", "Buffer P.A - B3 e B4");
-  values["D-E-SCA-REB"] = stockDaysFor("SCA", " MTG - REB");
-  values["D-E-DAF-REB"] = stockDaysFor("DAF", " MTG - REB");
+  const setStock = (client: "FH" | "VM" | "SCA" | "DAF", measure: string, localName: string, factor = 2): void => {
+    if (rates[client] > 0) values[measure] = stockDaysFor(client, localName, factor);
+  };
+  setStock("FH", "D-E-FH-B", "Beatty Output");
+  setStock("VM", "D-E-VM-B", "Beatty Output");
+  setStock("SCA", "D-E-SCA-B", "Beatty Output");
+  setStock("DAF", "D-E-DAF-B", "Beatty Output");
+  setStock("FH", "D-E-FH-CL", "Cantilever");
+  setStock("VM", "D-E-VM-CL", "Cantilever");
+  setStock("SCA", "D-E-SCA-CL", "Cantilever", .5);
+  setStock("DAF", "D-E-DAF-CL", "Cantilever");
+  setStock("FH", "D-E-FH-P.I", "Pintura Input 2", .5);
+  setStock("VM", "D-E-VM-P.I", "Pintura Input 2");
+  setStock("SCA", "D-E-SCA-P.I", "Pintura Input 2");
+  setStock("DAF", "D-E-DAF-P.I", "Pintura Input 2");
+  setStock("FH", "D-E-FH-P.A", "Buffer P.A - B3 e B4");
+  setStock("SCA", "D-E-SCA-P.A", "Buffer P.A - B3 e B4");
+  setStock("SCA", "D-E-SCA-REB", " MTG - REB");
+  setStock("DAF", "D-E-DAF-REB", " MTG - REB");
 
   const stageDays = (client: "FH" | "VM" | "SCA" | "DAF", localName: string): number => safeDivide(stockPairsAt(client, localName) * 2, rates[client]);
-  values["E-P-D-FH-RF3"] = stageDays("FH", "Roll Former 3");
-  values["E-P-D-VM-RF3"] = stageDays("VM", "Roll Former 3");
-  values["E-P-D-SCA-RF3"] = stageDays("SCA", "Roll Former 3");
-  values["E-P-D-DAF-RF3"] = stageDays("DAF", "Roll Former 3");
-  values["E-P-D-FH-STJ"] = stageDays("FH", "Ag. Stenhøj");
-  values["E-P-D-VM-STJ"] = stageDays("VM", "Ag. Stenhøj");
-  values["E-P-D-SCA-STJ"] = stageDays("SCA", "Ag. Stenhøj");
-  values["E-P-D-DAF-STJ"] = stageDays("DAF", "Ag. Stenhøj");
+  for (const client of ["FH", "VM", "SCA", "DAF"] as const) {
+    if (rates[client] <= 0) continue;
+    values[`E-P-D-${client}-RF3`] = stageDays(client, "Roll Former 3");
+    values[`E-P-D-${client}-STJ`] = stageDays(client, "Ag. Stenhøj");
+  }
   const scheduleReady = input.shippingSchedule !== undefined;
   const scheduleKeys = futureScheduleKeys(input.shippingSchedule, todayDate);
   const shippingRelated = {
@@ -385,25 +385,30 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
     values["E-P-D-SCA-EMB"] = stockDays(clientPairs(shippingRelated.SCA, "SCA"), rates.SCA, 2);
     values["E-P-D-DAF-EMB"] = stockDays(clientPairs(shippingRelated.DAF, "DAF"), rates.DAF, 2);
   }
-  values["E-P-D-FH-M3"] = safeDivide(segregationPcs.FH, rates.FH);
-  values["E-P-D-SCA-M3"] = safeDivide(segregationPcs.SCA, rates.SCA);
-  values["E-P-D-DAF-M3"] = safeDivide(segregationPcs.DAF, rates.DAF);
+  if (input.segregacao !== undefined) {
+    if (rates.FH > 0) values["E-P-D-FH-M3"] = safeDivide(segregationPcs.FH, rates.FH);
+    if (rates.SCA > 0) values["E-P-D-SCA-M3"] = safeDivide(segregationPcs.SCA, rates.SCA);
+    if (rates.DAF > 0) values["E-P-D-DAF-M3"] = safeDivide(segregationPcs.DAF, rates.DAF);
+  }
 
   const lctPieces = lctStock.reduce((total, row) => total + numeric(row, "TOTAL", "total"), 0);
   const rf2Pairs = distinct(rf2, "Rail id", "RAIL_ID") / 2;
-  values["E-P-LCT"] = lctPieces;
-  values["E-D-P-LCT"] = safeDivide(lctPieces, rates.FH);
-  values["E-D-P-RF2"] = safeDivide(rf2Pairs * 2, rates.FH);
-  values["E-D-P-RF2"] = values["E-D-P-RF2"] || safeDivide(Number(demand["D-P-RF2"] ?? 0), rates.FH);
+  if (input.lctStock !== undefined) {
+    values["E-P-LCT"] = lctPieces;
+    if (rates.FH > 0) values["E-D-P-LCT"] = safeDivide(lctPieces, rates.FH);
+  }
+  if (input.rf2 !== undefined && rates.FH > 0) values["E-D-P-RF2"] = safeDivide(rf2Pairs * 2, rates.FH);
 
   const segregationFor = (enn: string, locations: string[], client?: string, excluded: string[] = []): number => segregationBy(segregationRowsForDate, enn, locations, client, excluded);
   const todayDemand = (measure: string): number => Number(demand[measure] ?? 0);
-  values["Q-D-S-RF2"] = safeDivide(segregationFor("Corte e Conformação", ["Rollformer 2"]) * 1, todayDemand("D-P-RF2"));
-  values["Q-D-S-LPP2"] = safeDivide(segregationFor("Pintura", ["Pintura Input 2", "Pintura Output 2"], undefined, ["RETRABALHO CONCENTRICIDADE", "FULL INNER LINER"]), todayDemand("D-P-LPP2"));
-  values["Q-D-S-RF3"] = safeDivide(segregationFor("Corte e Conformação", ["Roll Former 3"]) * 1, todayDemand("D-P-RF3"));
-  values["Q-D-S-STJ"] = safeDivide(segregationFor("SEE", ["Stenhoj"]) * 1, todayDemand("D-P-STJ"));
-  values["Q-D-S-EMB"] = safeDivide(segregationFor("SEE", ["Embalaje 1", "Embalaje 3"]) * 1, todayDemand("D-P-LPP2"));
-  values["Q-D-S-T"] = values["Q-D-S-RF2"] + values["Q-D-S-LPP2"] + values["Q-D-S-RF3"] + values["Q-D-S-STJ"] + values["Q-D-S-EMB"];
+  if (input.segregacao !== undefined) {
+    values["Q-D-S-RF2"] = safeDivide(segregationFor("Corte e Conformação", ["Rollformer 2"]), todayDemand("D-P-RF2"));
+    values["Q-D-S-LPP2"] = safeDivide(segregationFor("Pintura", ["Pintura Input 2", "Pintura Output 2"], undefined, ["RETRABALHO CONCENTRICIDADE", "FULL INNER LINER"]), todayDemand("D-P-LPP2"));
+    values["Q-D-S-RF3"] = safeDivide(segregationFor("Corte e Conformação", ["Roll Former 3"]), todayDemand("D-P-RF3"));
+    values["Q-D-S-STJ"] = safeDivide(segregationFor("SEE", ["Stenhoj"]), todayDemand("D-P-STJ"));
+    values["Q-D-S-EMB"] = safeDivide(segregationFor("SEE", ["Embalaje 1", "Embalaje 3"]), todayDemand("D-P-LPP2"));
+    values["Q-D-S-T"] = values["Q-D-S-RF2"] + values["Q-D-S-LPP2"] + values["Q-D-S-RF3"] + values["Q-D-S-STJ"] + values["Q-D-S-EMB"];
+  }
 
   const lotes = rowsForDate(input.lotes, input.contextDate, ["DATA", "DATE"]);
   const producao = rowsForDate(input.producao, input.contextDate, ["DATA", "DATE", "CREATION_DATE"]);
@@ -411,11 +416,13 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
   const productionLengths = producao.filter((row) => hasValue(row, "RAIL_ID") && Number.isFinite(Number(row["ITEM(m)"])));
   const averageProductionLength = safeDivide(productionLengths.reduce((total, row) => total + numeric(row, "ITEM(m)"), 0), productionLengths.length);
   const averagePieces = Math.floor(safeDivide(totalLength, averageProductionLength));
-  values["E-M-P-S"] = averagePieces;
-  values["Q-D-FH"] = safeDivide(averagePieces, safeDivide(pairs.FH * 2, days.FH));
-  values["Q-D-VM"] = safeDivide(averagePieces, safeDivide(pairs.VM * 2, days.VM));
-  values["Q-D-SCA"] = safeDivide(averagePieces, safeDivide(pairs.SCA * 2, days.SCA));
-  values["Q-D-DAF"] = safeDivide(averagePieces, safeDivide(pairs.DAF * 2, days.DAF));
+  if (input.lotes !== undefined && input.producao !== undefined && averageProductionLength > 0) {
+    values["E-M-P-S"] = averagePieces;
+    if (rates.FH > 0) values["Q-D-FH"] = safeDivide(averagePieces, rates.FH);
+    if (rates.VM > 0) values["Q-D-VM"] = safeDivide(averagePieces, rates.VM);
+    if (rates.SCA > 0) values["Q-D-SCA"] = safeDivide(averagePieces, rates.SCA);
+    if (rates.DAF > 0) values["Q-D-DAF"] = safeDivide(averagePieces, rates.DAF);
+  }
 
   return {
     values,
