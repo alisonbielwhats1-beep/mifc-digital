@@ -37,4 +37,16 @@ describe("buffers auditáveis no Layout", () => {
 
     expect(positioned.wipDays).toBeUndefined();
   });
+
+  it("separa buffers manuais que apontam para a mesma máquina", () => {
+    const rows = [
+      { id: "buffer-a", customer: "FH", point: "LCT", direction: "entrada" as const, type: "processo" as const, quantityPieces: 20, capacityPieces: 50, pairsPerDay: 10, inputProcess: "LCT", outputProcess: "RF2", origin: "INPUT" as const, status: "active" as const },
+      { id: "buffer-b", customer: "VM", point: "RF2", direction: "entrada" as const, type: "processo" as const, quantityPieces: 10, capacityPieces: 50, pairsPerDay: 10, inputProcess: "LCT", outputProcess: "RF2", origin: "INPUT" as const, status: "active" as const },
+    ];
+    const machine = node("node-cut", "LCT / RF2", 400);
+    const positioned = positionLayoutBuffers(rows, [machine]);
+
+    expect(new Set(positioned.map((buffer) => `${buffer.x}:${buffer.y}`)).size).toBe(2);
+    expect(positioned.every((buffer) => buffer.y + 72 <= machine.y - 12)).toBe(true);
+  });
 });

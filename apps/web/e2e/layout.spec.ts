@@ -94,6 +94,28 @@ test("abre a rastreabilidade do total e exibe os buffers documentados", async ({
   await expect(trace).toContainText("Parâmetros manuais + medidas Power BI");
 });
 
+test("separa buffers e identifica as 42 medidas em dias do Power BI", async ({ page }) => {
+  const legend = page.getByTestId("buffer-legend");
+  await expect(legend).toContainText("Power BI / OMES · dias");
+  await expect(legend).toContainText("Manual · peças");
+  await expect(page.getByRole("button", { name: "Abrir Q-D-S-RF3 de Segregado" })).toBeVisible();
+
+  const rect = async (testId: string) => page.getByTestId(testId).evaluate((element) => {
+    const item = element as HTMLElement;
+    return { left: parseFloat(item.style.left), top: parseFloat(item.style.top), width: item.offsetWidth, height: item.offsetHeight };
+  });
+  const pairs = [
+    ["layout-measure-buffer-beatty-3", "layout-node-node-beatty-4"],
+    ["layout-measure-buffer-beatty-4", "layout-node-node-beatty-2"],
+    ["layout-measure-buffer-beatty-2", "layout-node-node-weld-2"],
+  ];
+  for (const [bufferId, nextMachineId] of pairs) {
+    const buffer = await rect(bufferId);
+    const machine = await rect(nextMachineId);
+    expect(buffer.top + buffer.height).toBeLessThanOrEqual(machine.top - 20);
+  }
+});
+
 test("mostra Beneficiador no início e o valor manual dentro do próprio bloco", async ({ page }) => {
   await page.getByRole("link", { name: "Logística" }).click();
   await page.getByRole("spinbutton", { name: "Dias no beneficiador" }).first().fill("1.5");

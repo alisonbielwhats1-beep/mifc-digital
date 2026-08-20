@@ -65,4 +65,28 @@ describe("buffers automáticos posicionados no fluxograma", () => {
     expect(moved.find((item) => item.id === "beatty-4")?.y)
       .toBe((original.find((item) => item.id === "beatty-4")?.y ?? 0) + 130);
   });
+
+  it("expõe todas as 42 medidas de buffer em dias catalogadas no Power BI", () => {
+    const nodes = ["node-raw", "node-cut", "node-stamp", "node-weld-1", "node-beatty-4", "node-weld-2", "node-beatty-3", "node-beatty-2", "node-weld-3", "node-assembly", "node-inspection"]
+      .map((id, index) => node(id, 150 + index * 220, 455));
+    const expected = [
+      "D-E-DAF-B", "D-E-DAF-CL", "D-E-DAF-P.I", "D-E-DAF-REB",
+      "D-E-FH-B", "D-E-FH-CL", "D-E-FH-P.A", "D-E-FH-P.I",
+      "D-E-SCA-B", "D-E-SCA-CL", "D-E-SCA-P.A", "D-E-SCA-P.I", "D-E-SCA-REB",
+      "D-E-VM-B", "D-E-VM-CL", "D-E-VM-P.I",
+      "E-D-P-LCT", "E-D-P-RF2",
+      "E-P-D-DAF-EMB", "E-P-D-DAF-M3", "E-P-D-DAF-RF3", "E-P-D-DAF-STJ",
+      "E-P-D-FH-EMB", "E-P-D-FH-M3", "E-P-D-FH-RF3", "E-P-D-FH-STJ",
+      "E-P-D-SCA-EMB", "E-P-D-SCA-M3", "E-P-D-SCA-RF3", "E-P-D-SCA-STJ",
+      "E-P-D-VM-EMB", "E-P-D-VM-RF3",
+      "Q-D-DAF", "Q-D-FH", "Q-D-SCA", "Q-D-VM",
+      "Q-D-S-EMB", "Q-D-S-LPP2", "Q-D-S-RF2", "Q-D-S-RF3", "Q-D-S-STJ", "Q-D-S-T",
+    ].sort();
+
+    const actual = buildLayoutMeasureBuffers(nodes, {})
+      .flatMap((buffer) => buffer.values.map((value) => value.measureKey))
+      .sort();
+
+    expect(actual).toEqual(expected);
+  });
 });
