@@ -1,8 +1,9 @@
 import { expect, test } from "playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.clear());
   await page.goto("/mifc/layout");
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
   await expect(page.getByTestId("client-lead-time-board")).toBeVisible();
 });
 
@@ -57,7 +58,7 @@ test("renderiza as quatro linhas de clientes e gera evidência visual", async ({
   await expect(page.getByTestId("client-lane-VM").locator(".client-lane-label strong")).toHaveText("Volvo VM");
   await expect(page.getByTestId("client-lane-SCA").locator(".client-lane-label strong")).toHaveText("Scania");
   await expect(page.getByTestId("client-lane-DAF").locator(".client-lane-label strong")).toHaveText("DAF");
-  await expect(page.locator(".client-measure-keys")).not.toContainText(/T-(RF|B|M|P|C|L|S|EMB)/);
+  expect((await page.locator(".client-measure-keys").allTextContents()).join(" ")).not.toMatch(/T-(RF|B|M|P|C|L|S|EMB)/);
   await expect(page.locator(".client-stage-marker")).toHaveCount(40);
 
   const screenshot = await page.getByTestId("client-lead-time-board").screenshot({ animations: "disabled" });
@@ -99,7 +100,8 @@ test("sincroniza Tempo de Ciclo entre Layout e Capacidade nos dois sentidos", as
   await page.getByLabel("Tempo de Ciclo — CT (s/peça)").fill("51");
   await page.getByRole("button", { name: "Aplicar propriedades" }).click();
   await page.getByRole("link", { name: "Capacidade" }).click();
-  const capacityCt = page.getByRole("spinbutton", { name: "Tempo de Ciclo — CT (s/peça)" }).first();
+  await expect(page.getByRole("heading", { name: "Capacidade", exact: true })).toBeVisible();
+  const capacityCt = page.locator(".capacity-table").getByRole("spinbutton", { name: "Tempo de Ciclo — CT (s/peça)" }).first();
   await expect(capacityCt).toHaveValue("51");
 
   await capacityCt.fill("52");

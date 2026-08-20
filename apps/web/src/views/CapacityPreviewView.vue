@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Activity, AlertTriangle, Factory, Gauge, Plus, Search } from "@lucide/vue";
 import { storeToRefs } from "pinia";
-import { computed, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import DataOriginBadge from "@/components/DataOriginBadge.vue";
 import FormSaveBar from "@/components/FormSaveBar.vue";
 import FormSourcePanel from "@/components/FormSourcePanel.vue";
 import TableRowActions from "@/components/TableRowActions.vue";
-import { useMifcFormsStore } from "@/stores/mifc-forms";
+import { useMifcFormsStore, type CapacityFormRow } from "@/stores/mifc-forms";
 import { useUiStore } from "@/stores/ui";
 
 const forms = useMifcFormsStore();
@@ -15,6 +15,7 @@ forms.hydrate();
 const { capacityRows, isDirty, savedAt } = storeToRefs(forms);
 const { saveStatus } = storeToRefs(ui);
 const search = ref("");
+const cycleTimeDrafts = reactive<Record<string, string>>(Object.fromEntries(capacityRows.value.map((row) => [row.id, String(row.cycleTimeSeconds)])));
 
 const activeRows = computed(() => capacityRows.value.filter((row) => row.status === "active"));
 const visibleRows = computed(() => {
@@ -32,6 +33,19 @@ async function save() {
   if (invalid) { ui.showError("Revise código, processo, unidade e parâmetros de capacidade antes de salvar."); return; }
   try { forms.save(); await ui.saveDemoRevision({ module: "capacity", schemaVersion: 1, savedAt: forms.savedAt }); }
   catch { ui.showError("Não foi possível salvar a revisão no armazenamento local."); }
+}
+function cycleTimeValue(row: CapacityFormRow) { return cycleTimeDrafts[row.id] ?? String(row.cycleTimeSeconds); }
+function updateCycleTime(row: CapacityFormRow, event: Event) {
+  const rawValue = (event.target as HTMLInputElement).value;
+  cycleTimeDrafts[row.id] = rawValue;
+  if (rawValue.trim() === "") return;
+  const value = Number(rawValue);
+  if (Number.isFinite(value)) row.cycleTimeSeconds = value;
+}
+function commitCycleTime(row: CapacityFormRow) {
+  if ((cycleTimeDrafts[row.id] ?? "").trim() !== "") return;
+  cycleTimeDrafts[row.id] = "0";
+  row.cycleTimeSeconds = 0;
 }
 </script>
 
@@ -63,7 +77,7 @@ async function save() {
             <tbody>
               <tr v-for="row in visibleRows" :key="row.id" :class="{ 'inactive-row': row.status === 'inactive' }">
                 <td><input v-model.number="row.sequence" class="table-input number-input sequence-input" type="number" min="1" step="1" aria-label="Sequência" /></td><td><input v-model.trim="row.processCode" class="table-input code-input" required aria-label="Código do processo" /></td><td><input v-model.trim="row.process" class="table-input process-input" required aria-label="Processo" /></td>
-                <td><input v-model.number.lazy="row.cycleTimeSeconds" :data-model-value="row.cycleTimeSeconds" class="table-input number-input" type="number" min="0" step="0.1" aria-label="Tempo de Ciclo — CT (s/peça)" /></td><td><input v-model.number="row.nominalCapacityPerHour" class="table-input number-input" type="number" min="0" step="0.1" aria-label="Capacidade nominal por hora" /></td><td><input v-model.trim="row.speedUnit" class="table-input unit-input" required aria-label="Unidade de velocidade" /></td><td><input v-model.number="row.shifts" class="table-input number-input" type="number" min="1" max="4" step="1" aria-label="Turnos" /></td><td><input v-model.number="row.availableHoursPerDay" class="table-input number-input" type="number" min="0" max="24" step="0.1" aria-label="Horas disponíveis por dia" /></td><td><input v-model.number="row.efficiencyPercent" class="table-input number-input" type="number" min="0" max="100" step="0.1" aria-label="Eficiência percentual" /></td><td><input v-model.number="row.targetWipPieces" class="table-input number-input" type="number" min="0" step="1" aria-label="WIP-meta" /></td>
+                <td><input :value="cycleTimeValue(row)" :data-model-value="row.cycleTimeSeconds" class="table-input number-input" type="number" min="0" step="0.1" aria-label="Tempo de Ciclo — CT (s/peça)" @input="updateCycleTime(row, $event)" @blur="commitCycleTime(row)" /></td><td><input v-model.number="row.nominalCapacityPerHour" class="table-input number-input" type="number" min="0" step="0.1" aria-label="Capacidade nominal por hora" /></td><td><input v-model.trim="row.speedUnit" class="table-input unit-input" required aria-label="Unidade de velocidade" /></td><td><input v-model.number="row.shifts" class="table-input number-input" type="number" min="1" max="4" step="1" aria-label="Turnos" /></td><td><input v-model.number="row.availableHoursPerDay" class="table-input number-input" type="number" min="0" max="24" step="0.1" aria-label="Horas disponíveis por dia" /></td><td><input v-model.number="row.efficiencyPercent" class="table-input number-input" type="number" min="0" max="100" step="0.1" aria-label="Eficiência percentual" /></td><td><input v-model.number="row.targetWipPieces" class="table-input number-input" type="number" min="0" step="1" aria-label="WIP-meta" /></td>
                 <td><span v-if="row.referenceCapacityPerDay !== null" class="readonly-value">{{ row.referenceCapacityPerDay.toLocaleString('pt-BR') }}</span><span v-else class="readonly-value pending">Pendente</span></td><td><DataOriginBadge origin="IMPORT" compact /></td><td><select v-model="row.status" class="table-select table-status-select" :class="{ inactive: row.status === 'inactive' }"><option value="active">Ativo</option><option value="inactive">Inativo</option></select></td><td><TableRowActions :active="row.status === 'active'" :label="row.process" @duplicate="forms.duplicateCapacity(row.id)" @toggle="forms.toggleStatus(row)" /></td>
               </tr>
               <tr v-if="visibleRows.length === 0"><td colspan="14"><div class="empty-row">Nenhum processo corresponde à busca.</div></td></tr>
