@@ -109,3 +109,16 @@ test("sincroniza Tempo de Ciclo entre Layout e Capacidade nos dois sentidos", as
   await page.getByRole("link", { name: "Layout" }).click();
   await expect(page.getByTestId("layout-node-node-stamp")).toContainText("52 s/peça");
 });
+
+test("edita o volume do cliente no cockpit e recalcula o buffer dependente", async ({ page }) => {
+  await page.getByRole("button", { name: "Editar parâmetros do cliente Volvo FH" }).click();
+  const trace = page.getByRole("dialog", { name: "Rastreabilidade do valor" });
+  const vehiclesPerDay = trace.getByRole("spinbutton", { name: "Veículos por dia" });
+
+  await expect(trace).toContainText("127,5");
+  await vehiclesPerDay.fill("90");
+  await vehiclesPerDay.press("Tab");
+
+  await expect(trace).toContainText("135");
+  await expect(page.getByTestId("layout-buffer-buf-fh-lct-in")).toContainText("0,252 dia");
+});
