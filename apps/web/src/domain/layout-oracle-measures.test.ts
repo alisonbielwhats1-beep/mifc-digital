@@ -174,4 +174,23 @@ describe("medidas Oracle da Roll Former 3", () => {
     expect(result.values["E-M-P-S-FH"]).toBe(10);
     expect(result.values["E-M-P-S-SCA"]).toBe(20);
   });
+
+  it("remove o filtro diário ao calcular Q-D e usa o horizonte completo do Slitter", () => {
+    const result = deriveLayoutStockMeasures({
+      contextDate: "2026-08-19",
+      todayDate: "2026-08-19",
+      base1: [
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-fg", MP: "MP-FH", FINISH_LENGHT: 9, LOCATION: "Embalaje 1", SHIP_DATE: "19-AUG-2026 08:00" },
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-slitter", MP: "MP-FH", FINISH_LENGHT: 10, LOCATION: " ", SHIP_DATE: "20-AUG-2026 08:00" },
+      ],
+      base2: [],
+      dafSlitters: [],
+      lotes: [{ MP: "MP-FH", "MP(m)": 100 }],
+      demand: {},
+    });
+
+    expect(result.rows["slitter-finish-lengths"]).toBe(1);
+    expect(result.values["C-P-M-TOTAL"]).toBe(10);
+    expect(result.values["Q-D-FH"]).toBe(20);
+  });
 });
