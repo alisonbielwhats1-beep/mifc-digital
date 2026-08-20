@@ -83,6 +83,17 @@ function base1PowerBiLocal(row: OracleRow): string {
 
   const source = key(text(row, "LOCATION", "location"));
   const mapped: Record<string, string> = {
+    [key("Estoque FG")]: "Estoque FG",
+    [key("Beatty Output")]: "Beatty Output",
+    [key("Cantilever")]: "Cantilever",
+    [key("P.A Output")]: "P.A Output",
+    [key("Buffer P.A - B3 e B4")]: "Buffer P.A - B3 e B4",
+    [key("Buffer P.A")]: "Buffer P.A",
+    [key("Ag. Stenhøj")]: "Ag. Stenhøj",
+    [key("Ag. Emb1")]: "Ag. Emb1",
+    [key("Ag. Emb3")]: "Ag. Emb3",
+    [key("MTG - REB")]: " MTG - REB",
+    [key("Slitter")]: "Slitter",
     [key("Embalaje 1")]: "Estoque FG",
     [key("Embalaje 3")]: "Estoque FG",
     [key("Stenhoj")]: "Stenhoj",
