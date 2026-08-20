@@ -3,6 +3,22 @@ import { base1Client, deriveLayoutDemand, deriveLayoutDemandForDate, oracleDateK
 import { deriveLayoutStockMeasures } from "../../../api/src/oracle/layout-stock-measures.js";
 
 describe("medidas Oracle da Roll Former 3", () => {
+  it("não publica zero para medidas que dependem de fontes opcionais ausentes", () => {
+    const values = deriveLayoutStockMeasures({
+      contextDate: "2026-08-19",
+      todayDate: "2026-08-19",
+      base1: [],
+      base2: [],
+      dafSlitters: [],
+      demand: {},
+    }).values;
+
+    expect(values).not.toHaveProperty("Q-D-FH");
+    expect(values).not.toHaveProperty("E-D-P-LCT");
+    expect(values).not.toHaveProperty("E-D-P-RF2");
+    expect(values).not.toHaveProperty("E-P-D-FH-M3");
+  });
+
   it("reproduz a classificação de clientes da expressão Base1", () => {
     expect(base1Client("04")).toBe("FH");
     expect(base1Client("24")).toBe("FH");
