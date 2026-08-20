@@ -35,9 +35,21 @@ describe("editor legível e seleção em grupo",()=>{
     store.undo();expect(store.activeRevision.nodes.filter((item)=>ids.includes(item.id))).toHaveLength(2);
   });
 
-  it("persiste a revisão visual no schema 5",()=>{
+  it("inclui o Beneficiador no início do fluxo de materiais",()=>{
+    const store=useMifcLayoutStore();store.hydrate();
+    const beneficiator=store.activeRevision.nodes.find((item)=>item.id==="node-beneficiator");
+    expect(beneficiator).toMatchObject({label:"Beneficiador",type:"customer_supplier"});
+    expect(store.activeRevision.edges).toEqual(expect.arrayContaining([
+      expect.objectContaining({sourceNodeId:"node-usiminas",targetNodeId:"node-beneficiator",flowType:"material_push"}),
+      expect.objectContaining({sourceNodeId:"node-csn",targetNodeId:"node-beneficiator",flowType:"material_push"}),
+      expect.objectContaining({sourceNodeId:"node-gerdau",targetNodeId:"node-beneficiator",flowType:"material_push"}),
+      expect.objectContaining({sourceNodeId:"node-beneficiator",targetNodeId:"node-raw",flowType:"material_push"}),
+    ]));
+  });
+
+  it("persiste a revisão visual no schema 6",()=>{
     const store=useMifcLayoutStore();store.hydrate();store.save();
     const payload=JSON.parse(localStorage.getItem("mifc-digital:layout-reference-v2")??"{}");
-    expect(payload.schemaVersion).toBe(5);
+    expect(payload.schemaVersion).toBe(6);
   });
 });

@@ -68,11 +68,34 @@ test("renderiza as quatro linhas de clientes e gera evidência visual", async ({
 
 test("abre a rastreabilidade do total e exibe os buffers documentados", async ({ page }) => {
   await expect(page.getByTestId("layout-buffer-buf-fh-lct-in")).toBeVisible();
+  await expect(page.getByTestId("layout-measure-buffer-slitter")).toBeVisible();
   await page.getByTestId("client-total-FH").click();
   const trace = page.getByRole("dialog", { name: "Rastreabilidade do valor" });
   await expect(trace).toBeVisible();
-  await expect(trace).toContainText("T-T-FH");
-  await expect(trace).toContainText("MIFC.SemanticModel");
+  await expect(trace).toContainText("LT-TOTAL-FH");
+  await expect(trace).toContainText("Parâmetros manuais + medidas Power BI");
+});
+
+test("mostra Beneficiador no início e o valor manual dentro do próprio bloco", async ({ page }) => {
+  await page.getByRole("link", { name: "Logística" }).click();
+  await page.getByRole("spinbutton", { name: "Dias no beneficiador" }).first().fill("1.5");
+  await page.getByRole("button", { name: "Salvar alterações" }).click();
+  await page.getByRole("link", { name: "Layout" }).click();
+
+  const beneficiator = page.getByTestId("layout-node-node-beneficiator");
+  await expect(beneficiator).toBeVisible();
+  await expect(beneficiator).toContainText("Beneficiador");
+  await expect(beneficiator).toContainText("FH 1,5 d");
+});
+
+test("mantém o tempo no card da máquina sem criar blocos duplicados de ENN", async ({ page }) => {
+  const rf3 = page.getByTestId("layout-node-node-stamp");
+  await expect(rf3).toContainText("Tempo do processo");
+  await expect(rf3).toContainText("T-RF3");
+  await expect(page.getByTestId("layout-node-node-cc")).toHaveCount(0);
+  await expect(page.getByTestId("layout-node-node-furacao")).toHaveCount(0);
+  await expect(page.getByTestId("layout-node-node-pintura-enn")).toHaveCount(0);
+  await expect(page.getByTestId("layout-node-node-see")).toHaveCount(0);
 });
 
 test("recolhe e expande a biblioteca de símbolos", async ({ page }) => {

@@ -127,4 +127,27 @@ describe("medidas Oracle da Roll Former 3", () => {
     expect(values["E-D-P-RF2"]).toBeCloseTo(1);
     expect(values["E-P-D-FH-M3"]).toBeCloseTo(0.5);
   });
+
+  it("calcula os dias de Slitter pelo estoque de lotes e comprimento das peças no Slitter", () => {
+    const values = deriveLayoutStockMeasures({
+      contextDate: "2026-08-19",
+      todayDate: "2026-08-19",
+      base1: [
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-1", MP: "MP-FH", FINISH_LENGHT: 8, LOCATION: "Roll Former 3 Input", SHIP_DATE: "19-AUG-2026 08:00" },
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-2", MP: "MP-FH", FINISH_LENGHT: 12, LOCATION: "Roll Former 3 Input", SHIP_DATE: "19-AUG-2026 08:00" },
+      ],
+      base2: [],
+      dafSlitters: [],
+      lotes: [
+        { MP: "MP-FH", PESO: 7_850, ESPESSURA: 10, LARGURA: 1_000, CREATION_DATE: "18-AUG-2026 08:00" },
+      ],
+      producao: [
+        { RAIL_ID: "nao-usar", "ITEM(m)": 1_000, CREATION_DATE: "19-AUG-2026 08:00" },
+      ],
+      demand: {},
+    }).values;
+
+    expect(values["E-M-P-S-FH"]).toBe(10);
+    expect(values["Q-D-FH"]).toBeCloseTo(5);
+  });
 });

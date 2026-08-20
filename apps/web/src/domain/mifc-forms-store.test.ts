@@ -35,4 +35,23 @@ describe("migração dos parâmetros de capacidade", () => {
     expect(store.capacityRows.filter((row) => /^cap-beatty(?:-[234])?$/.test(row.id)).every((row) => row.availableHoursPerDay === 17.25)).toBe(true);
     expect(store.capacityRows.map((row) => row.id)).toEqual(expect.arrayContaining(["cap-lct", "cap-pa", "cap-cnc"]));
   });
+
+  it("adiciona Beneficiador com zero dias aos parâmetros logísticos já salvos", () => {
+    localStorage.setItem("mifc-digital:prompt-3:revision-04", JSON.stringify({
+      schemaVersion: 2,
+      shiftRows: [], volumeRows: [], bufferRows: [], capacityRows: [],
+      logisticsRows: [{
+        id: "log-fh", customer: "Volvo FH", vehicle: "FH", flatbed: "", plannedDate: "2026-08-19",
+        shipDate: "", plannedTime: "06:00", transportHours: 4, movementMinutes: 5, shipmentFrequency: "Diária",
+        shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES",
+        orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active",
+      }],
+    }));
+
+    const store = useMifcFormsStore();
+    store.hydrate();
+
+    expect(store.schemaVersion).toBe(3);
+    expect(store.logisticsRows[0].beneficiatorDays).toBe(0);
+  });
 });
