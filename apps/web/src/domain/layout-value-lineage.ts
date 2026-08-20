@@ -18,6 +18,35 @@ export interface ClientTotalResult {
   sourceReference: string;
 }
 
+export interface LayoutTraceInput {
+  key: string;
+  label: string;
+  value?: number;
+  textValue?: string;
+  unit: string;
+  origin: string;
+}
+
+export interface LayoutValueTrace {
+  id: string;
+  title: string;
+  displayValue: string;
+  unit: string;
+  formula: string;
+  simpleExplanation: string;
+  inputs: LayoutTraceInput[];
+  intermediateResults: string[];
+  origin: string;
+  measureKeys: string[];
+  filters: string[];
+  client?: string;
+  process?: string;
+  date: string;
+  updatedAt?: string | null;
+  sourceReference: string;
+  missingKeys: string[];
+}
+
 interface TotalDefinition {
   measureKey: string;
   movementCount: number;
