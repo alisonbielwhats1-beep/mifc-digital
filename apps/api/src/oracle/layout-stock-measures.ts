@@ -277,13 +277,6 @@ const mpClientDimension = new Map<string, LayoutClient>([
   ["4-MPS50475SL401-00", "DAF"], ["4-MPS50675SL380-0", "DAF"],
 ]);
 
-function normalizedLotClient(value: string): LayoutClient | undefined {
-  const suffix = value.trim().toUpperCase().slice(-3);
-  if (suffix === "SCA" || suffix === "DAF" || suffix === "VM") return suffix;
-  if (suffix.endsWith("FH")) return "FH";
-  return undefined;
-}
-
 function clientPairs(rowsToCount: OracleRow[], client: "FH" | "VM" | "SCA" | "DAF"): number {
   if (client === "FH" || client === "VM") return rowsToCount.filter((row) => hasValue(row, "CHASSIS_NUMBER")).length / 2;
   if (client === "SCA") return rowsToCount.reduce((total, row) => total + scaniaPieceUnit(row), 0) / 2;
@@ -428,6 +421,19 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
   const rates = {
     FH: rate(allPairs.FH, days.FH), VM: rate(allPairs.VM, days.VM), SCA: rate(allPairs.SCA, days.SCA), DAF: rate(allPairs.DAF, days.DAF),
   };
+  const matchesMpClient = (row: OracleRow, client: LayoutClient): boolean => mpClientDimension.get(text(row, "MP").toUpperCase()) === client;
+  const scaniaMpRows = allBase1
+    .filter((row) => clientFromBase1(row) === "SCA" && (text(row, "ITEM").includes("1-") || text(row, "ITEM").includes("2-")))
+    .map((row) => ({ ...row, localName: base1Local(row, "SCA") }))
+    .filter((row) => matchesMpClient(row, "SCA"));
+  const dafMpRows = dafAll.filter((row) => matchesMpClient(row, "DAF"));
+  const dafSlitterMpRows = rows(input.dafSlitters).filter((row) => matchesMpClient(row, "DAF"));
+  const slitterRates = {
+    FH: rate(clientPairs(fhAll.filter((row) => matchesMpClient(row, "FH")), "FH"), futureDays(fhAll.filter((row) => matchesMpClient(row, "FH")), todayDate)),
+    VM: rate(clientPairs(vmAll.filter((row) => matchesMpClient(row, "VM")), "VM"), futureDays(vmAll.filter((row) => matchesMpClient(row, "VM")), todayDate)),
+    SCA: rate(clientPairs(scaniaMpRows, "SCA"), futureDays(scaniaMpRows, todayDate)),
+    DAF: rate(clientPairs(dafMpRows, "DAF") + dafSlitterPairs(dafSlitterMpRows), futureDays(dafMpRows, todayDate)),
+  };
   const demand = input.demand;
   const segregationPcs = {
     FH: segregationCount(segregacaoRows(input.segregacao, input.contextDate), "FH"),
@@ -515,52 +521,26 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
     values["Q-D-S-T"] = values["Q-D-S-RF2"] + values["Q-D-S-LPP2"] + values["Q-D-S-RF3"] + values["Q-D-S-STJ"] + values["Q-D-S-EMB"];
   }
 
-  const mpClients = new Map<string, Set<LayoutClient>>(
-    [...mpClientDimension].map(([mp, client]) => [mp, new Set([client])]),
-  );
-  const registerMp = (sourceRows: OracleRow[], resolveClient: (row: OracleRow) => LayoutClient | undefined): void => {
-    for (const row of sourceRows) {
-      const mp = text(row, "MP").toUpperCase();
-      const client = resolveClient(row);
-      if (!mp || !client) continue;
-      const clientsForMp = mpClients.get(mp) ?? new Set<LayoutClient>();
-      clientsForMp.add(client);
-      mpClients.set(mp, clientsForMp);
-    }
-  };
-  registerMp(allBase1, (row) => clientFromBase1(row) ?? undefined);
-  registerMp(allScaniaFallback, () => "SCA");
-  registerMp(rows(input.dafSlitters), () => "DAF");
-  const clientForMp = (value: string, fallback?: LayoutClient): LayoutClient | undefined => {
-    const normalized = value.toUpperCase();
-    const dimensionClient = mpClientDimension.get(normalized);
-    if (dimensionClient) return dimensionClient;
-    const inferred = mpClients.get(normalized);
-    return inferred?.size === 1 ? [...inferred][0] : fallback;
-  };
-
   // Q-D-* remove Calendar[Date] no PBIP; o comprimento médio usa todo o horizonte carregado.
-  const slitterLengthEntries: Array<{ value: number; client: LayoutClient }> = [];
-  const addLength = (row: OracleRow, fallback: LayoutClient | undefined): void => {
+  const slitterLengthEntries: Array<{ value: number; client?: LayoutClient }> = [];
+  const addLength = (row: OracleRow): void => {
     const value = finishLengthMeters(row);
-    const client = clientForMp(text(row, "MP"), fallback);
-    if (value !== undefined && client) slitterLengthEntries.push({ value, client });
+    if (value !== undefined) slitterLengthEntries.push({ value, client: mpClientDimension.get(text(row, "MP").toUpperCase()) });
   };
   allBase1
     .filter((row) => ["FH", "VM", "SCA"].includes(clientFromBase1(row) ?? ""))
     .filter(isSlitterLengthRow)
-    .forEach((row) => addLength(row, clientFromBase1(row) ?? undefined));
-  if (input.scania !== undefined) allScaniaFallback.filter(isSlitterLengthRow).forEach((row) => addLength(row, "SCA"));
-  rows(input.dafSlitters).forEach((row) => addLength(row, "DAF"));
+    .forEach(addLength);
+  if (input.scania !== undefined) allScaniaFallback.filter(isSlitterLengthRow).forEach(addLength);
+  rows(input.dafSlitters).forEach(addLength);
   const slitterLengths = slitterLengthEntries.map((entry) => entry.value);
   const averageFinishLength = safeDivide(slitterLengths.reduce((total, value) => total + value, 0), slitterLengths.length);
 
   const lotRows = rows(input.lotes).map((row) => {
     const meters = lotLengthMeters(row);
-    const explicitClient = normalizedLotClient(text(row, "Cliente", "CLIENTE", "DESCRIPTION"));
-    const client = clientForMp(text(row, "MP"), explicitClient);
+    const client = mpClientDimension.get(text(row, "MP").toUpperCase());
     return { meters, client };
-  }).filter((row): row is { meters: number; client: LayoutClient } => row.meters !== undefined && row.client !== undefined);
+  }).filter((row): row is { meters: number; client: LayoutClient | undefined } => row.meters !== undefined);
 
   if (input.lotes !== undefined && averageFinishLength > 0) {
     const totalLength = lotRows.reduce((total, row) => total + row.meters, 0);
@@ -576,7 +556,8 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
       values[`C-P-M-${client}`] = clientAverageLength;
       values[`C-P-M-TOTAL-${client}`] = clientAverageLength;
       values[`E-M-P-S-${client}`] = pieces;
-      if (rates[client] > 0) values[`Q-D-${client}`] = safeDivide(pieces, rates[client]);
+      values[`P-M-SLITTER-${client}`] = slitterRates[client];
+      if (slitterRates[client] > 0) values[`Q-D-${client}`] = safeDivide(pieces, slitterRates[client]);
     }
   }
 

@@ -133,13 +133,13 @@ describe("medidas Oracle da Roll Former 3", () => {
       contextDate: "2026-08-19",
       todayDate: "2026-08-19",
       base1: [
-        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-1", MP: "MP-FH", FINISH_LENGHT: 8, LOCATION: "Roll Former 3 Input", SHIP_DATE: "19-AUG-2026 08:00" },
-        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-2", MP: "MP-FH", FINISH_LENGHT: 12, LOCATION: "Roll Former 3 Input", SHIP_DATE: "19-AUG-2026 08:00" },
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-1", MP: "4-MP600760SL445-0", FINISH_LENGHT: 8, LOCATION: "Roll Former 3 Input", SHIP_DATE: "19-AUG-2026 08:00" },
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-2", MP: "4-MP600760SL445-0", FINISH_LENGHT: 12, LOCATION: "Roll Former 3 Input", SHIP_DATE: "19-AUG-2026 08:00" },
       ],
       base2: [],
       dafSlitters: [],
       lotes: [
-        { MP: "MP-FH", PESO: 7_850, ESPESSURA: 10, LARGURA: 1_000, CREATION_DATE: "18-AUG-2026 08:00" },
+        { MP: "4-MP600760SL445-0", PESO: 7_850, ESPESSURA: 10, LARGURA: 1_000, CREATION_DATE: "18-AUG-2026 08:00" },
       ],
       producao: [
         { RAIL_ID: "nao-usar", "ITEM(m)": 1_000, CREATION_DATE: "19-AUG-2026 08:00" },
@@ -156,15 +156,15 @@ describe("medidas Oracle da Roll Former 3", () => {
       contextDate: "2026-08-19",
       todayDate: "2026-08-19",
       base1: [
-        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-1", MP: "MP-FH", FINISH_LENGHT: 10, LOCATION: "LOCAL NÃO MAPEADO", SHIP_DATE: "19-AUG-2026 08:00" },
-        { PRODUCT_CLASS: "NC", CUSTOMER_CODE: "SCA", ITEM: "1-SCA", COMPONENT: "sca-1", MP: "MP-SCA", FINISH_LENGHT: 20, LOCATION: "OUTRO LOCAL", SHIP_DATE: "19-AUG-2026 08:00" },
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-1", MP: "4-MP600760SL445-0", FINISH_LENGHT: 10, LOCATION: "LOCAL NÃO MAPEADO", SHIP_DATE: "19-AUG-2026 08:00" },
+        { PRODUCT_CLASS: "NC", CUSTOMER_CODE: "SCA", ITEM: "1-SCA", COMPONENT: "sca-1", MP: "4-MPTB1259935SL412-A01", FINISH_LENGHT: 20, LOCATION: "OUTRO LOCAL", SHIP_DATE: "19-AUG-2026 08:00" },
       ],
       base2: [],
       dafSlitters: [],
       scania: [],
       lotes: [
-        { MP: "MP-FH", "MP(m)": 150 },
-        { MP: "MP-SCA", "MP(m)": 300 },
+        { MP: "4-MP600760SL445-0", "MP(m)": 150 },
+        { MP: "4-MPTB1259935SL412-A01", "MP(m)": 300 },
       ],
       demand: {},
     });
@@ -180,12 +180,12 @@ describe("medidas Oracle da Roll Former 3", () => {
       contextDate: "2026-08-19",
       todayDate: "2026-08-19",
       base1: [
-        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-fg", MP: "MP-FH", FINISH_LENGHT: 9, LOCATION: "Embalaje 1", SHIP_DATE: "19-AUG-2026 08:00" },
-        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-slitter", MP: "MP-FH", FINISH_LENGHT: 10, LOCATION: " ", SHIP_DATE: "20-AUG-2026 08:00" },
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-fg", MP: "4-MP600760SL445-0", FINISH_LENGHT: 9, LOCATION: "Embalaje 1", SHIP_DATE: "19-AUG-2026 08:00" },
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-slitter", MP: "4-MP600760SL445-0", FINISH_LENGHT: 10, LOCATION: " ", SHIP_DATE: "20-AUG-2026 08:00" },
       ],
       base2: [],
       dafSlitters: [],
-      lotes: [{ MP: "MP-FH", "MP(m)": 100 }],
+      lotes: [{ MP: "4-MP600760SL445-0", "MP(m)": 100 }],
       demand: {},
     });
 
