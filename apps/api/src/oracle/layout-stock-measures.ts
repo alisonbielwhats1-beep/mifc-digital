@@ -493,16 +493,17 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
     values["Q-D-S-T"] = values["Q-D-S-RF2"] + values["Q-D-S-LPP2"] + values["Q-D-S-RF3"] + values["Q-D-S-STJ"] + values["Q-D-S-EMB"];
   }
 
-  const baseSlitterLengths = base1
+  // Q-D-* remove Calendar[Date] no PBIP; o comprimento médio usa todo o horizonte carregado.
+  const baseSlitterLengths = allBase1
     .filter((row) => ["FH", "VM", "SCA"].includes(clientFromBase1(row) ?? ""))
     .filter(isSlitterLengthRow)
     .map(finishLengthMeters)
     .filter((value): value is number => value !== undefined);
-  const scaniaSlitterLengths = input.scania === undefined ? [] : scaniaFallback
+  const scaniaSlitterLengths = input.scania === undefined ? [] : allScaniaFallback
     .filter(isSlitterLengthRow)
     .map(finishLengthMeters)
     .filter((value): value is number => value !== undefined);
-  const dafSlitterLengths = rowsForDate(input.dafSlitters, input.contextDate, ["SHIP_DATE", "DATA", "DATE"])
+  const dafSlitterLengths = rows(input.dafSlitters)
     .map(finishLengthMeters)
     .filter((value): value is number => value !== undefined);
   const slitterLengths = [...baseSlitterLengths, ...scaniaSlitterLengths, ...dafSlitterLengths];

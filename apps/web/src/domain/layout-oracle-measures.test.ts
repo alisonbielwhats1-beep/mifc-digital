@@ -191,6 +191,6 @@ describe("medidas Oracle da Roll Former 3", () => {
 
     expect(result.rows["slitter-finish-lengths"]).toBe(1);
     expect(result.values["C-P-M-TOTAL"]).toBe(10);
-    expect(result.values["Q-D-FH"]).toBe(20);
+    expect(result.values["Q-D-FH"]).toBe(10);
   });
 });
