@@ -1,11 +1,26 @@
 # MIFC Digital — estado atual e pendências
 
-Atualizado em: 2026-08-19  
-Branch: `main`  
-Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`  
-Último marco concluído: **Integração da Programação de Embarque — rede + anexo**
+Atualizado em: 2026-08-20
+Branch: `main`
+Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`
+Último marco concluído: **Correção Funcional 01 — cockpit rastreável e fechamento por ausência**
 
 ## Onde paramos
+
+### Correção Funcional 01 — 2026-08-20
+
+- Layout passou a funcionar como cockpit para cliente, processo/máquina, buffer, valores de etapa e tempo total;
+- painel de rastreabilidade mostra fórmula, entradas, intermediários, origem, medida, filtros, data e referência;
+- os quatro totais de cliente reproduzem os componentes e multiplicadores do TMDL e fecham como `—` se faltar qualquer parcela;
+- medidas opcionais de estoque/segregação/LCT/RF2 não transformam ausência de fonte em zero;
+- cinco buffers configurados são renderizados com o símbolo PBIP, WIP, tempo, origem e vínculos, acompanhando os processos;
+- volume/reforço do cliente pode ser editado no Layout e recalcula imediatamente pares/dia e dias de buffer;
+- Tempo de Ciclo sincroniza Layout ↔ Capacidade, e os campos receberam rótulos/unidades inequívocos;
+- busca global, ajuda contextual, notificações reais e biblioteca recolhível/expansível foram ativadas;
+- cadastros operacionais desativam/reativam sem apagar e mantêm identificação visual;
+- relatório detalhado: `docs/functional-correction-01-checkpoint.md`;
+- validação final: typecheck, 78 testes unitários, build, 10 testes Chromium e auditoria de dependências aprovados;
+- paridade numérica Power BI × MIFC × MES permanece pendente até existir carga Oracle e refresh PBIP coincidentes no mesmo período/filtros.
 
 O MVP local está executável e os Prompts 1 a 6.1 foram realizados. O projeto está em repositório público com código, documentação, referências visuais e recursos extraídos usados durante a análise.
 
@@ -213,10 +228,10 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 71 testes aprovados (15 arquivos);
+- `npm test`: 78 testes aprovados (18 arquivos);
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
-- `npm run test:e2e`: não executado neste checkpoint porque o binário do Playwright/Chromium não está disponível no ambiente de trabalho;
+- `npm run test:e2e`: 10 cenários aprovados no Chromium;
 - branch local contém as alterações até o Prompt 6.6 e ainda não foi enviada ao `origin/main`.
 
 ## Parcial ou ainda não validado
@@ -226,7 +241,7 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - 309 medidas existem no modelo Power BI; as 62 medidas usadas nos cartões do Layout foram catalogadas, e as famílias de demanda, operação, estoque e segregação agora têm cálculo local/Oracle para o Layout;
 - os valores atuais ainda dependem das fontes Oracle online e da validação dos parâmetros de máquina; a programação de embarque já possui rede direta e fallback por anexo;
 - as 47 conexões iniciais do novo Layout seguem a referência visual e ainda precisam de validação operacional da planta;
-- a suíte visual do Playwright está pronta, mas precisa da primeira execução em uma máquina com Chromium instalado (`npx playwright install chromium`);
+- a suíte visual do Playwright foi executada com Chromium; novas mudanças de UI devem continuar rodando `npm run test:e2e`;
 - a participação de Volvo VM na Mesa 3 requer confirmação operacional; até lá a linha permanece reta e sinalizada como pendente;
 - persistência atual é local no navegador; banco próprio da aplicação, autenticação e perfis ainda não foram implementados;
 - o código está no GitHub público, mas a aplicação ainda não foi hospedada como site online.
