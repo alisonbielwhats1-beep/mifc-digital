@@ -64,3 +64,32 @@ test("renderiza as quatro linhas de clientes e gera evidência visual", async ({
   expect(screenshot.byteLength).toBeGreaterThan(20_000);
   await testInfo.attach("linhas-cliente-processo.png", { body: screenshot, contentType: "image/png" });
 });
+
+test("abre a rastreabilidade do total e exibe os buffers documentados", async ({ page }) => {
+  await expect(page.getByTestId("layout-buffer-buf-fh-lct-in")).toBeVisible();
+  await page.getByTestId("client-total-FH").click();
+  const trace = page.getByRole("dialog", { name: "Rastreabilidade do valor" });
+  await expect(trace).toBeVisible();
+  await expect(trace).toContainText("T-T-FH");
+  await expect(trace).toContainText("MIFC.SemanticModel");
+});
+
+test("recolhe e expande a biblioteca de símbolos", async ({ page }) => {
+  const palette = page.getByLabel("Biblioteca de símbolos MIFC");
+  await page.getByRole("button", { name: "Recolher biblioteca de símbolos" }).click();
+  await expect(palette.getByRole("button", { name: /Adicionar processo/ })).toHaveCount(0);
+  await page.getByRole("button", { name: "Expandir biblioteca de símbolos" }).click();
+  await expect(palette.getByRole("button", { name: /Adicionar processo/ })).toBeVisible();
+});
+
+test("busca um bloco, navega e abre a ajuda contextual", async ({ page }) => {
+  await page.keyboard.press("Control+K");
+  const search = page.getByRole("searchbox", { name: "Buscar no MIFC" });
+  await expect(search).toBeFocused();
+  await search.fill("Roll Former 3");
+  await page.getByRole("option", { name: /Roll Former 3/ }).first().click();
+  await expect(page.getByTestId("layout-node-node-stamp")).toHaveClass(/selected/);
+
+  await page.getByRole("button", { name: "Ajuda" }).click();
+  await expect(page.getByRole("dialog", { name: "Ajuda desta tela" })).toContainText("Mover tela");
+});
