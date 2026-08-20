@@ -14,7 +14,7 @@ export interface ProcessRecord {
   id: string; code: string; name: string; sequence: number; type: string;
   customerKeys: string[]; productIds: string[]; resourceIds: string[]; layoutNodeId: string;
   powerBiMeasure: string; demandMeasure: string; productionMeasure: string;
-  status: RecordStatus; notes: string; validation: "mapped"|"pending"; updatedAt: string;
+  status: RecordStatus; notes: string; validation: "mapped"|"divergent"|"pending"; updatedAt: string;
 }
 
 export interface ResourceRecord {

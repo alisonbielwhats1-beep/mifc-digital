@@ -2,15 +2,45 @@ import { describe, expect, it } from "vitest";
 import { deriveOperationalMeasures } from "../../../api/src/oracle/operational-measure-formulas.js";
 
 describe("medidas operacionais materializadas do Power BI", () => {
+  it("filtra produção por LOCATION_DATE como o Power BI", () => {
+    const result = deriveOperationalMeasures({
+      contextDate: "2026-08-19",
+      demand: {},
+      producao: [
+        {
+          CREATION_DATE: "2026-08-18T22:00:00",
+          LOCATION_DATE: "2026-08-19T06:00:00",
+          RAIL_ID: "A",
+          DESCRIPTION: "Beatty Alma Output 1",
+        },
+        {
+          CREATION_DATE: "2026-08-18T23:00:00",
+          LOCATION_DATE: "2026-08-19T08:00:00",
+          RAIL_ID: "B",
+          DESCRIPTION: "Beatty Alma Output 1",
+        },
+        {
+          CREATION_DATE: "2026-08-19T18:00:00",
+          LOCATION_DATE: "2026-08-20T00:00:00",
+          RAIL_ID: "C",
+          DESCRIPTION: "Beatty Alma Output 1",
+        },
+      ],
+    });
+
+    expect(result.values["P-B1"]).toBe(2);
+    expect(result.rows.producao).toBe(2);
+  });
+
   it("reproduz produção distinta, paradas, estoque e golpes", () => {
     const result = deriveOperationalMeasures({
       contextDate: "2026-08-19",
       demand: { "D-P-RF3": 10, "D-P-B1": 4 },
       producao: [
-        { DATA: "2026-08-19", RAIL_ID: 1, DESCRIPTION: "Roll Former 3" },
-        { DATA: "2026-08-19", RAIL_ID: 1, DESCRIPTION: "Roll Former 3" },
-        { DATA: "2026-08-19", RAIL_ID: 2, DESCRIPTION: "Beatty Alma Output 1" },
-        { DATA: "2026-08-18", RAIL_ID: 3, DESCRIPTION: "Roll Former 3" },
+        { LOCATION_DATE: "2026-08-19", RAIL_ID: 1, DESCRIPTION: "Roll Former 3" },
+        { LOCATION_DATE: "2026-08-19", RAIL_ID: 1, DESCRIPTION: "Roll Former 3" },
+        { LOCATION_DATE: "2026-08-19", RAIL_ID: 2, DESCRIPTION: "Beatty Alma Output 1" },
+        { LOCATION_DATE: "2026-08-18", RAIL_ID: 3, DESCRIPTION: "Roll Former 3" },
       ],
       paradas: [
         { ID_PARADA: 1, PARADA: "2026-08-19T08:00:00", RETORNO: "2026-08-19T08:30:00", CODIGO: "L9", OPERAÇÃO: "ROLLFORMER 3" },

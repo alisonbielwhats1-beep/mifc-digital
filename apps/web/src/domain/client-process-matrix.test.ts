@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildClientProcessPath, clientProcessLanes, clientProcessStages, mappingForClientStage, positionClientStages } from "./client-process-matrix";
+import { buildClientProcessPath, clientProcessLanes, clientProcessStages, mappingForClientStage, positionClientLaneMeasures, positionClientStages } from "./client-process-matrix";
 import type { LayoutNode } from "@/stores/mifc-layout";
 
 function stageNodes(): LayoutNode[] {
@@ -76,5 +76,25 @@ describe("matriz cliente × processo do Layout", () => {
     const fh = clientProcessLanes.find((lane) => lane.key === "FH")!;
     const rf3 = positionClientStages(stageNodes()).find((stage) => stage.id === "rf3")!;
     expect(buildClientProcessPath(fh, [rf3])).toContain(" 7");
+  });
+
+  it("posiciona transporte, Slitter e todos os buffers na linha do cliente", () => {
+    const nodes = [
+      ...stageNodes(),
+      { ...stageNodes()[0], id: "node-beneficiator", label: "Beneficiador", x: 225, width: 110 },
+      { ...stageNodes()[0], id: "node-raw", label: "Almox. Matéria-prima", x: 440, width: 110 },
+    ];
+    const stages = positionClientStages(nodes);
+    const daf = clientProcessLanes.find((lane) => lane.key === "DAF")!;
+    const measures = positionClientLaneMeasures(daf, stages, nodes);
+
+    expect(measures.find((item) => item.measureKey === "T-B")).toMatchObject({ kind: "manual", centerX: 280 });
+    expect(measures.find((item) => item.measureKey === "T-T")).toMatchObject({ kind: "manual", centerX: 387.5 });
+    expect(measures.find((item) => item.measureKey === "Q-D-DAF")).toMatchObject({ kind: "stock", centerX: 495 });
+    expect(measures.map((item) => item.measureKey)).toEqual(expect.arrayContaining([
+      "T-RF3", "E-P-D-DAF-RF3", "T-M3", "E-P-D-DAF-M3", "T-B2", "D-E-DAF-B",
+      "T-CNC", "D-E-DAF-CL", "T-LPP2", "T-DAF-REB", "D-E-DAF-P.I", "D-E-DAF-REB",
+      "T-STJ", "E-P-D-DAF-STJ", "E-P-D-DAF-EMB",
+    ]));
   });
 });

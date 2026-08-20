@@ -1,15 +1,70 @@
 # MIFC Digital — estado atual e pendências
 
-Atualizado em: 2026-08-19  
-Branch: `main`  
-Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`  
-Último marco concluído: **Integração da Programação de Embarque — rede + anexo**
+Atualizado em: 2026-08-20
+Branch: `main`
+Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`
+Último marco concluído: **Prompt 2 — reorganização funcional e experiência de uso**
 
 ## Onde paramos
 
+### Prompt 2 — reorganização funcional e experiência de uso — 2026-08-20
+
+- menu reorganizado em OPERAR, ALIMENTAR e ADMINISTRAR, com MIFC, Cadastros e Configurações recolhíveis;
+- Visão Geral substituiu a duplicidade com Dashboard; `/dashboard` redireciona e Relatórios foi apenas ocultado enquanto continuar placeholder;
+- Visão Geral agora usa o mesmo estado, linhagem e cálculo do Layout para Lead Time, VA, NVA, WIP, gargalo, produção × demanda, atrasos e conexão MES, falhando fechado quando a fonte não está pronta;
+- contadores técnicos foram movidos para a nova tela Diagnóstico;
+- painel do Layout inicia recolhido e abre por contexto; cliente permite editar Volume e Logística e recalcular imediatamente Beneficiador/Lead Time;
+- biblioteca de símbolos preserva o estado recolhido/expandido;
+- formulários passaram a ser isolados por revisão, e uma nova revisão clona explicitamente sua origem;
+- Produtos resume a rota em `N processos` com diálogo; Processos distingue Validado/Divergente/Pendente; Máquinas & Recursos exibe observado e encaminha planejamento para Capacidade;
+- Integrações recebeu diagnóstico Power BI / Semantic Model explicitamente offline, baseado no inventário documental;
+- tabelas receberam rolagem controlada em larguras menores;
+- nenhuma fórmula de Slitter, buffer, tempo de máquina ou `LT-TOTAL-*` foi alterada;
+- relatório completo: `docs/prompt-2-ux-reorganization.md`;
+- validação: typecheck, 88 testes unitários, build, 18 testes Chromium e auditoria de dependências aprovados.
+
+### Beneficiador, Slitter e reconciliação do Lead Time — 2026-08-20
+
+- Logística recebeu `Beneficiador (dias)` manual por cliente; snapshots locais schema 1/2 migram para schema 3 com valor inicial zero;
+- o bloco `Beneficiador` foi incluído no começo do fluxo de materiais e exibe FH, VM, Scania e DAF no próprio card; layouts salvos migram para schema 6 sem apagar revisões;
+- transporte e movimentação deixaram de ser constantes escondidas no total funcional e usam os valores manuais da linha do cliente;
+- Slitter reproduz `Lotes[MP(m)] = (PESO/7850) / ((ESPESSURA/1000) × (LARGURA/1000))`, `C-P-M-TOTAL`, `ROUNDDOWN` e `Q-D-*`; `Produção[ITEM(m)]` não participa;
+- FH e VM preservam o agrupamento de lotes `VDB` do modelo semântico, mas cada cliente divide o estoque em peças pela sua própria medida `P-M-*`;
+- os tempos `T-*` aparecem nos cards das máquinas físicas e entram uma única vez no total; CC, Furação, Pintura e SEE permanecem ENNs, sem subtotal duplicado;
+- estoques automáticos são agrupados em símbolos de buffer ancorados a Slitter, LCT, RF2, RF3, Mesa 3, Beattys, P.A/Cantilever, Pintura/Rebitagem e Stenhoj/Embalagem;
+- o total ampliado se chama `LT-TOTAL-FH/VM/SCA/DAF`, pois é uma regra funcional da aplicação; as medidas originais `T-T-*` do PBIP continuam identificadas separadamente e não são renomeadas;
+- se faltar parâmetro manual, estoque ou tempo de máquina, o total fica `—`; nenhuma soma parcial é publicada como total observado.
+
+### Prompt 1.1 — validação de produção, ciclo e capacidade (2026-08-20)
+
+- conexão OMES validada com transação somente leitura; catálogo de 15 consultas auditado como `SELECT-ONLY`;
+- leituras live habilitadas apenas nos processos temporários de diagnóstico; `.env` permaneceu com live desativado;
+- owner confirmou `LOCATION_DATE` como data/hora canônica de produção, reproduzindo o Power BI;
+- defeito corrigido: o Digital usava `CREATION_DATE`; teste RED recebeu 1 contra 2 esperados e ficou GREEN após a correção;
+- snapshot `OMES-2026-08-20T1137-BRT` fechou diferença zero em RF3, Beattys 1–4, P.A, CNC, Pintura e Stenhoj entre OMES agregado, DAX recalculado e MIFC corrigido;
+- valor visual de um refresh Power BI coincidente, unidade física de `RAIL_ID`, CT nominal oficial, capacidade efetiva e OEE permanecem pendentes;
+- `928` das Beattys foi identificado como `58 unid./h × 16 h`; não é produção OMES e não incorpora o input local de 82%;
+- relatório detalhado: `docs/MIFC-PRODUCTION-VALIDATION-2026-08-20.md`;
+- matriz tabular: `docs/mifc-machine-production-validation.csv`.
+
+### Correção Funcional 01 — 2026-08-20
+
+- Layout passou a funcionar como cockpit para cliente, processo/máquina, buffer, valores de etapa e tempo total;
+- painel de rastreabilidade mostra fórmula, entradas, intermediários, origem, medida, filtros, data e referência;
+- os quatro totais de cliente reproduzem os componentes e multiplicadores do TMDL e fecham como `—` se faltar qualquer parcela;
+- medidas opcionais de estoque/segregação/LCT/RF2 não transformam ausência de fonte em zero;
+- cinco buffers configurados são renderizados com o símbolo PBIP, WIP, tempo, origem e vínculos, acompanhando os processos;
+- volume/reforço do cliente pode ser editado no Layout e recalcula imediatamente pares/dia e dias de buffer;
+- Tempo de Ciclo sincroniza Layout ↔ Capacidade, e os campos receberam rótulos/unidades inequívocos;
+- busca global, ajuda contextual, notificações reais e biblioteca recolhível/expansível foram ativadas;
+- cadastros operacionais desativam/reativam sem apagar e mantêm identificação visual;
+- relatório detalhado: `docs/functional-correction-01-checkpoint.md`;
+- validação final: typecheck, 78 testes unitários, build, 10 testes Chromium e auditoria de dependências aprovados;
+- paridade numérica Power BI × MIFC × MES permanece pendente até existir carga Oracle e refresh PBIP coincidentes no mesmo período/filtros.
+
 O MVP local está executável e os Prompts 1 a 6.1 foram realizados. O projeto está em repositório público com código, documentação, referências visuais e recursos extraídos usados durante a análise.
 
-O Layout possui 32 blocos, 56 linhas editáveis e linhas específicas para Volvo FH, Volvo VM, Scania e DAF. A tela de Integrações agora consegue carregar, sob ação explícita do usuário, somente as consultas SQL aprovadas e manter os resultados na memória da API local.
+O Layout possui 33 blocos, incluindo o Beneficiador, e linhas específicas para Volvo FH, Volvo VM, Scania e DAF. A tela de Integrações agora consegue carregar, sob ação explícita do usuário, somente as consultas SQL aprovadas e manter os resultados na memória da API local.
 
 Uma leitura real da consulta `base1` foi validada pelo proprietário na rede autorizada: 3.888 linhas, transação somente leitura e resposta HTTP 200. Nenhuma operação de escrita foi executada.
 
@@ -200,7 +255,7 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - toda etapa da faixa é posicionada a partir do respectivo bloco do Layout; ao mover uma máquina, somente seu pico acompanha a nova posição;
 - `Ctrl/Shift + clique` adiciona/remove blocos da seleção; arraste normal move somente o bloco clicado e o arraste de grupo exige manter `Ctrl/Shift` ao iniciá-lo;
 - exclusão com vários blocos selecionados remove também suas conexões, exige confirmação e pode ser desfeita;
-- migração de Layout schema 5 aplica a composição legível às revisões locais existentes sem apagar propriedades ou medidas.
+- migração de Layout schema 6 preserva a composição legível e acrescenta o Beneficiador às revisões locais existentes sem apagar propriedades ou medidas.
 
 ### Auditoria de paridade Power BI
 
@@ -210,23 +265,37 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - a auditoria em `docs/power-bi-parity-audit.md` registra a cobertura atual e as lacunas de filtros, relacionamentos, parâmetros e medidas;
 - o TMDL recebido contém 309 medidas e o Layout catalogado usa 62 medidas únicas; não há declaração de paridade integral nesta revisão.
 
+### Gate 0.5 — contrato e validação documental (2026-08-20)
+
+- os quatro anexos do gate foram localizados e inspecionados integralmente: manual de 20 páginas, treinamento de 75 slides e dois workbooks;
+- o Semantic Model foi inventariado em 817 registros: 44 tabelas, 367 colunas, 309 medidas, 44 partições e 53 relacionamentos;
+- `docs/MIFC-DATA-CONTRACT.md` fixa unidades, granularidades, calendário, timezone, produção×capacidade, Beattys, rotas, Lead Time e estados de ausência;
+- `docs/MIFC-SOURCE-MATRIX.md` registra todas as fontes físicas/lógicas, objetos Oracle/SQL Server, arquivos Excel, 26 tabelas visíveis, workbooks, rotas e buffers;
+- `docs/MIFC-VALIDATION-GATES.md` contém 30 gates: 7 `VALIDADO`, 10 `PARCIAL`, 6 `DIVERGENTE` e 7 `PENDENTE`, além de seis Golden Cases sem números inventados;
+- `docs/MIFC-SYMBOL-MATRIX.md` confronta os 31 símbolos oficiais com a biblioteca atual;
+- `docs/MIFC-OPEN-QUESTIONS.md` registra 30 decisões humanas, com owners sugeridos e impacto;
+- nenhuma regra de negócio, fórmula DAX, workbook, UI ou consulta Oracle foi alterada para aproximar resultados;
+- a separação estrutural das Beattys 1–4 foi validada; a paridade numérica MES↔Power BI↔Digital continua pendente;
+- divergências principais: reunião do segundo turno ignorada pela fórmula, `E-B-SCA` sem ramo falso, conversões `×2/÷2` inconsistentes, zeros-placeholder e composição de Lead Time diferente da metodologia.
+
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
-- `npm test`: 71 testes aprovados (15 arquivos);
+- `npm test`: 88 testes aprovados (20 arquivos);
 - `npm run build`: aprovado;
 - servidor local: respondeu em `http://127.0.0.1:5173/`;
-- `npm run test:e2e`: não executado neste checkpoint porque o binário do Playwright/Chromium não está disponível no ambiente de trabalho;
-- branch local contém as alterações até o Prompt 6.6 e ainda não foi enviada ao `origin/main`.
+- `npm run test:e2e`: 18 cenários aprovados no Chromium;
+- `npm audit --audit-level=high`: 0 vulnerabilidades;
+- branch local contém as alterações até este checkpoint e ainda não foi enviada ao `origin/main`.
 
 ## Parcial ou ainda não validado
 
-- Overview e Resultados ainda funcionam como prévias com dados locais; o Layout já recebe RF3, quatro Beattys, LCT/RF2, P.A, CNC, Pintura, Stenhoj, embalagem VM e Rebitagens por fonte mista;
+- Visão Geral agora é funcional e falha fechada, mas seus valores observados ainda dependem do cache MES autorizado; Relatórios permanece oculto até existir exportação real;
 - os formulários estão funcionais, mas a validação operacional final de todos os campos contra o Excel 2026 deve ser feita pelo usuário da área;
 - 309 medidas existem no modelo Power BI; as 62 medidas usadas nos cartões do Layout foram catalogadas, e as famílias de demanda, operação, estoque e segregação agora têm cálculo local/Oracle para o Layout;
 - os valores atuais ainda dependem das fontes Oracle online e da validação dos parâmetros de máquina; a programação de embarque já possui rede direta e fallback por anexo;
 - as 47 conexões iniciais do novo Layout seguem a referência visual e ainda precisam de validação operacional da planta;
-- a suíte visual do Playwright está pronta, mas precisa da primeira execução em uma máquina com Chromium instalado (`npx playwright install chromium`);
+- a suíte visual do Playwright foi executada com Chromium; novas mudanças de UI devem continuar rodando `npm run test:e2e`;
 - a participação de Volvo VM na Mesa 3 requer confirmação operacional; até lá a linha permanece reta e sinalizada como pendente;
 - persistência atual é local no navegador; banco próprio da aplicação, autenticação e perfis ainda não foram implementados;
 - o código está no GitHub público, mas a aplicação ainda não foi hospedada como site online.
@@ -293,7 +362,7 @@ npm run test:e2e
 npm run dev
 ```
 
-Em seguida, abrir o Layout, selecionar a mesma data exibida/filtrada no Power BI e comparar `T-RF3`, `T-B1`, `T-B2`, `T-B3`, `T-B4`, `T-LCT/RF2`, `T-P.A` e `T-CNC`. Se houver divergência numérica, conferir na tela Capacidade se os minutos disponíveis das máquinas são iguais aos da planilha de parâmetros usada pelo Power BI.
+Em seguida, responder primeiro `OQ01`–`OQ12` e `OQ30` de `docs/MIFC-OPEN-QUESTIONS.md`. Dentro da rede autorizada, escolher um snapshot fechado e executar `GC01`–`GC06` de `docs/MIFC-VALIDATION-GATES.md`, registrando para cada valor a fonte, unidade, filtros, timestamp e resultado bruto. Não ajustar fórmula para compensar divergência.
 
 ## Prompt para retomada
 

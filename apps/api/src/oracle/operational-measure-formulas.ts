@@ -16,12 +16,33 @@ const numeric = (row: OracleRow, key: string): number => {
   return Number.isFinite(value) ? value : 0;
 };
 
+function lotLengthMeters(row: OracleRow): number {
+  const calculated = numeric(row, "MP(m)");
+  if (calculated > 0) return calculated;
+  const weightKg = numeric(row, "PESO");
+  const thicknessMm = numeric(row, "ESPESSURA");
+  const widthMm = numeric(row, "LARGURA");
+  if (weightKg <= 0 || thicknessMm <= 0 || widthMm <= 0) return 0;
+  return (weightKg / 7850) / ((thicknessMm / 1000) * (widthMm / 1000));
+}
+
 function rowsForDate(rows: OracleRow[], contextDate: string, keys: string[]): OracleRow[] {
   return rows.filter((row) => {
     const populated = keys.filter((key) => row[key] !== null && row[key] !== undefined && String(row[key]).trim() !== "");
     if (!populated.length) return true;
     return populated.some((key) => oracleDateKey(row[key]) === contextDate);
   });
+}
+
+function productionRowsForDate(rows: OracleRow[], contextDate: string): OracleRow[] {
+  const powerBiDateKeys = ["LOCATION_DATE", "Data_Processada", "DATA_PROCESSADA"];
+  return rows.filter((row) => powerBiDateKeys.some((key) => {
+    const value = row[key];
+    return value !== null
+      && value !== undefined
+      && String(value).trim() !== ""
+      && oracleDateKey(value) === contextDate;
+  }));
 }
 
 function distinctCount(rows: OracleRow[], key: string): number {
@@ -80,7 +101,7 @@ export function deriveOperationalMeasures(input: {
   contextDate: string;
   demand: Record<string, number>;
 }): OperationalMeasureResult {
-  const producao = rowsForDate(asRows(input.producao), input.contextDate, ["DATA", "DATE", "DATA_PRODUCAO", "CREATION_DATE"]);
+  const producao = productionRowsForDate(asRows(input.producao), input.contextDate);
   const paradas = rowsForDate(asRows(input.paradas), input.contextDate, ["PARADA", "DATA", "DATE"]);
   const lotes = asRows(input.lotes);
   const punchScania = rowsForDate(asRows(input.punchScania), input.contextDate, ["DATA", "DATA_EMBARQUE"]);
@@ -100,7 +121,7 @@ export function deriveOperationalMeasures(input: {
     "P-T": distinctCount(producao, "RAIL_ID"),
     "Q-P-T": distinctCount(paradas, "ID_PARADA"),
     "PT-RF3": sumStops(paradas, "ROLLFORMER 3", false),
-    "C-T-E": lotes.reduce((total, row) => total + numeric(row, "MP(m)"), 0),
+    "C-T-E": lotes.reduce((total, row) => total + lotLengthMeters(row), 0),
     "Q-S-E": lotes.filter((row) => text(row, "DESCRIPTION")).length,
     "P-S-T": lotes.reduce((total, row) => total + numeric(row, "PESO"), 0) / 1_000,
     "Q-G-SCA": punchCount(punchScania),

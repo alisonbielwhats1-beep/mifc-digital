@@ -48,6 +48,10 @@ Os arquivos de origem externos não devem ser alterados. O PBIP e os anexos orig
 - arraste normal move apenas o bloco clicado; seleção e arraste em grupo exigem `Ctrl/Shift`, e a exclusão conjunta preserva um único passo de desfazer.
 - faixas de cliente mostram somente números, nunca nomes/chaves de medida no lugar do resultado; ausência falha fechada com `—`;
 - a paridade com o Power BI permanece explicitamente parcial e está auditada em `docs/power-bi-parity-audit.md`.
+- o Gate 0.5 consolidou contrato de dados, matriz de fontes, gates, símbolos e perguntas abertas sem alterar regras de negócio;
+- o inventário completo do Semantic Model contém 817 registros, incluindo todas as 309 medidas e 53 relações;
+- existem seis Golden Cases definidos, ainda sem valores operacionais inventados; eles devem ser executados no mesmo snapshot MES/Power BI;
+- o gate canônico registra 7 regras validadas, 10 parciais, 6 divergentes e 7 pendentes.
 
 ## Segurança Oracle
 
@@ -83,9 +87,9 @@ npm run build
 
 1. Abrir o Layout e comparar visualmente posições/linhas com `assets/ui-references/metalsa-mifc-layout.png`.
 2. Ajustar nomes e conexões que dependem de validação operacional da planta.
-3. Na rede Metalsa, preencher `.env` e executar apenas o preflight Oracle.
-4. Validar a allowlist das consultas realmente usadas pelo PBIP.
-5. Liberar uma consulta por vez, somente leitura, e comparar resultados.
+3. Responder as questões críticas `OQ01`–`OQ12` e `OQ30` em `docs/MIFC-OPEN-QUESTIONS.md`.
+4. Na rede Metalsa, preencher `.env`, executar apenas o preflight Oracle e validar a allowlist.
+5. Liberar uma consulta por vez, somente leitura, e executar os seis Golden Cases no mesmo snapshot do Power BI.
 6. Validar os novos cadastros do Prompt 7 com os responsáveis da planta.
 7. Concluir Overview/Resultados com os valores validados.
 8. Executar validação ponta a ponta e preparar publicação do aplicativo.
@@ -106,3 +110,9 @@ Para a ordem atualizada e detalhada, seguir `docs/CURRENT-STATUS.md`; em caso de
 - `docs/calculation-rule-catalog.md`
 - `docs/layout-measure-lineage.md`
 - `docs/prompt-6-layout-checkpoint.md`
+- `docs/MIFC-DATA-CONTRACT.md`
+- `docs/MIFC-SOURCE-MATRIX.md`
+- `docs/MIFC-VALIDATION-GATES.md`
+- `docs/MIFC-SYMBOL-MATRIX.md`
+- `docs/MIFC-OPEN-QUESTIONS.md`
+- `docs/mifc-semantic-model-inventory.csv`

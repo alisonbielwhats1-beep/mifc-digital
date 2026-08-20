@@ -76,8 +76,55 @@ function canonicalLocal(value: string): string {
   return value.trim();
 }
 
+/** Reproduz integralmente a coluna Base1[local] do Power Query, inclusive o `else "Slitter"`. */
+function base1PowerBiLocal(row: OracleRow): string {
+  const alreadyTransformed = text(row, "localName", "local", "Local");
+  if (alreadyTransformed) return canonicalLocal(alreadyTransformed);
+
+  const source = key(text(row, "LOCATION", "location"));
+  const mapped: Record<string, string> = {
+    [key("Estoque FG")]: "Estoque FG",
+    [key("Beatty Output")]: "Beatty Output",
+    [key("Cantilever")]: "Cantilever",
+    [key("P.A Output")]: "P.A Output",
+    [key("Buffer P.A - B3 e B4")]: "Buffer P.A - B3 e B4",
+    [key("Buffer P.A")]: "Buffer P.A",
+    [key("Ag. Stenhøj")]: "Ag. Stenhøj",
+    [key("Ag. Emb1")]: "Ag. Emb1",
+    [key("Ag. Emb3")]: "Ag. Emb3",
+    [key("MTG - REB")]: " MTG - REB",
+    [key("Slitter")]: "Slitter",
+    [key("Embalaje 1")]: "Estoque FG",
+    [key("Embalaje 3")]: "Estoque FG",
+    [key("Stenhoj")]: "Stenhoj",
+    [key("Rebitagem")]: "Rebitagem",
+    [key("Beatty Alma Output 1")]: "Beatty Output",
+    [key("Beatty Alma Output 2")]: "Beatty Output",
+    [key("Beatty Alma Input 1")]: "Beatty Output",
+    [key("Beatty Alma Input 2")]: "Beatty Output",
+    [key("Pintura Output 2")]: "Pintura Output 2",
+    [key("Pintura Input 2")]: "Pintura Input 2",
+    [key("Plasma 03 Auto")]: "Cantilever",
+    [key("Plasma CNC 02 Auto")]: "Cantilever",
+    [key("Mesa 04")]: "Cantilever",
+    [key("Marking VIN Output")]: "Cantilever",
+    [key("Marking VIN Input")]: "Cantilever",
+    [key("Beatty ABA Output")]: "P.A Output",
+    [key("Beatty ABA Input")]: "P.A Output",
+    [key("Beatty Alma Output 3")]: "Buffer P.A - B3 e B4",
+    [key("Beatty Alma Output 4")]: "Buffer P.A - B3 e B4",
+    [key("Beatty Alma Input 3")]: "Buffer P.A - B3 e B4",
+    [key("Yoke Punch 3")]: "Buffer P.A - B3 e B4",
+    [key("Beatty Alma Input 4")]: "Buffer P.A",
+    [key("Roll Former 3")]: "Roll Former 3",
+    [key("Roll Former 3 Output")]: "Roll Former 3",
+    [key("Roll Former 3 Input")]: "Slitter",
+  };
+  return mapped[source] ?? "Slitter";
+}
+
 function base1Local(row: OracleRow, client: "FH" | "VM" | "SCA"): string {
-  const location = canonicalLocal(sourceLocal(row));
+  const location = base1PowerBiLocal(row);
   const item = text(row, "ITEM");
   if (client === "FH") {
     if (key(location) === "pintura output 2") return "Ag. Stenhøj";
@@ -95,6 +142,13 @@ function base1Local(row: OracleRow, client: "FH" | "VM" | "SCA"): string {
     if (key(location) === "pintura output 2") return "Ag. Stenhøj";
   }
   return location;
+}
+
+function base2PowerBiLocal(row: OracleRow): string {
+  const local = base1PowerBiLocal(row);
+  if (key(local) === key("Stenhoj")) return "Ag. Emb1";
+  if (key(local) === key("Rebitagem")) return "Ag. Stenhøj";
+  return local;
 }
 
 function clientFromBase1(row: OracleRow): "FH" | "VM" | "SCA" | null {
@@ -118,11 +172,13 @@ function scaniaPieceUnit(row: OracleRow): number {
   }
   const local = canonicalLocal(sourceLocal(row));
   const tipo = key(text(row, "TIPO", "Tipo"));
-  if (tipo.includes("reforço") && key(local) === key("Ag. Stenhøj")) return 0;
+  const item = text(row, "ITEM");
+  const reinforcement = tipo.includes("reforço") || item.includes("2-");
+  if (reinforcement && key(local) === key("Ag. Stenhøj")) return 0;
   return 1;
 }
 
-const dafReinforcedItems = new Set([
+const dafReinforcedYesItems = new Set([
   "1-2159711-00", "1-2159712-00", "1-2193601-01", "1-2193602-01", "1-2193603-01", "1-2193604-01",
   "1-2193611-02", "1-2193612-02", "1-2193613-02", "1-2193614-02", "1-2295253-00", "1-2295253-01",
   "1-2295254-00", "1-2295254-01", "1-2295255-00", "1-2295256-00", "1-2307051-00", "1-2307052-00",
@@ -133,13 +189,21 @@ const dafReinforcedItems = new Set([
   "1-2414598-00", "1-2414599-00", "1-2422369-00", "1-2422370-00", "1-2440060-00", "1-2440061-00",
 ]);
 
-const dafSimpleItems = new Set([
-  "1-2184071-02", "1-2184071-06", "1-2184072-02", "1-2184072-06", "1-2340888-02", "1-2340889-02",
-  "1-2340892-02", "1-2340893-02", "1-2340898-02", "1-2340899-02", "1-2341030-03", "1-2341030-04", "1-2341031-03",
-  "1-2341031-04", "1-2342621-02", "1-2342622-02", "1-2342631-02", "1-2342632-02", "1-2407324-00",
-  "1-2407324-01", "1-2407325-00", "1-2407325-01", "1-2407330-00", "1-2407330-01", "1-2407331-00",
-  "1-2407331-01", "1-2414609-00", "1-2414610-00", "1-2418272-00", "1-2418273-00", "1-2422369-00",
-  "1-2422370-00", "1-2422375-00", "1-2422376-00", "1-2440318-00", "1-2440319-00",
+const dafSimpleNoItems = new Set([
+  "1-2184071-02", "1-2184072-02", "1-2341030-04", "1-2341031-04", "1-2342631-02", "1-2342632-02",
+  "1-2422369-00", "1-2422370-00", "1-2422375-00", "1-2422376-00", "1-2340892-02", "1-2340893-02",
+  "1-2340899-02", "1-2418272-00", "1-2418273-00", "1-2342621-02", "1-2342622-02", "1-2184071-06",
+  "1-2184072-06", "1-2407324-00", "1-2407325-00", "1-2407330-00", "1-2407331-00",
+]);
+
+const dafReinforcedNoItems = new Set([
+  "1-2184071-02", "1-2184072-02", "1-2341030-03", "1-2341031-03", "1-2422375-00", "1-2422376-00",
+  "1-2407330-00", "1-2407331-00", "1-2414609-00", "1-2414610-00", "1-2418272-00", "1-2418273-00",
+  "1-2340888-02", "1-2340889-02", "1-2407330-01", "1-2407331-01", "1-2440318-00", "1-2440319-00",
+]);
+
+const dafReinforcedExcludedItems = new Set([
+  "1-2342621-02", "1-2342622-02", "1-2342631-02", "1-2342632-02",
 ]);
 
 function normalizedDafItem(item: string): string {
@@ -147,7 +211,7 @@ function normalizedDafItem(item: string): string {
 }
 
 function dafLocal(row: OracleRow, variant: "original" | "simple" | "reinforced" = "reinforced"): string {
-  const local = canonicalLocal(sourceLocal(row));
+  const local = base2PowerBiLocal(row);
   if (variant === "simple" && key(local) === key("pintura output 2")) return "Ag. Stenhøj";
   if (variant === "reinforced" && key(local) === key("pintura output 2")) return " MTG - REB";
   if (key(local) === key("stenhoj")) return "Ag. Emb1";
@@ -158,9 +222,16 @@ function dafLocal(row: OracleRow, variant: "original" | "simple" | "reinforced" 
 function derivedDafRows(input: OracleRow[]): OracleRow[] {
   return input.flatMap((row) => {
     const item = normalizedDafItem(text(row, "ITEM"));
-    const derived: OracleRow[] = [{ ...row, localName: dafLocal(row, "original") }];
-    if (dafSimpleItems.has(item)) derived.push({ ...row, localName: dafLocal(row, "simple") });
-    if (!dafSimpleItems.has(item) || dafReinforcedItems.has(item)) derived.push({ ...row, localName: dafLocal(row, "reinforced") });
+    const derived: OracleRow[] = text(row, "DESCRIPTION") === "BEATTY 2"
+      ? []
+      : [{ ...row, localName: dafLocal(row, "original") }];
+    if (dafSimpleNoItems.has(item)) {
+      derived.push({ ...row, "REFORÇADA?": "Não", localName: dafLocal(row, "simple") });
+    }
+    const reinforcedState = dafReinforcedYesItems.has(item) ? "Sim" : dafReinforcedNoItems.has(item) ? "Não" : "-";
+    if (reinforcedState !== "Não" && !dafReinforcedExcludedItems.has(item)) {
+      derived.push({ ...row, "REFORÇADA?": reinforcedState, localName: dafLocal(row, "reinforced") });
+    }
     return derived;
   });
 }
@@ -168,10 +239,10 @@ function derivedDafRows(input: OracleRow[]): OracleRow[] {
 function dafPieceUnit(row: OracleRow): number {
   const description = key(text(row, "RAIL_TYPE_DESCRIPTION", "RAIL_TYPE_DESCRIPTION "));
   const local = canonicalLocal(sourceLocal(row));
-  if (description.includes("longarina")) return 1;
+  const reinforcedState = text(row, "REFORÇADA?");
+  if (description.includes("longarina")) return reinforcedState === "Sim" || reinforcedState === "Não" ? 1 : 0;
   if (description.includes("reforço") || description.includes("reforco")) return key(local) === key("Ag. Stenhøj") ? 0 : 1;
-  const item = text(row, "ITEM");
-  return item.startsWith("1-") ? 1 : 0;
+  return 0;
 }
 
 function distinct(rowsToCount: OracleRow[], ...keys: string[]): number {
@@ -182,10 +253,59 @@ function safeDivide(value: number, divisor: number): number {
   return Number.isFinite(value) && Number.isFinite(divisor) && divisor !== 0 ? value / divisor : 0;
 }
 
+function positiveNumber(row: OracleRow, ...keys: string[]): number | undefined {
+  for (const column of keys) {
+    const value = Number(row[column]);
+    if (Number.isFinite(value) && value > 0) return value;
+  }
+  return undefined;
+}
+
+/** Reproduz a coluna calculada DAX Lotes[MP(m)]. */
+function lotLengthMeters(row: OracleRow): number | undefined {
+  const calculated = positiveNumber(row, "MP(m)", "MP_M", "MP(metros)");
+  if (calculated !== undefined) return calculated;
+  const weightKg = positiveNumber(row, "PESO");
+  const thicknessMm = positiveNumber(row, "ESPESSURA");
+  const widthMm = positiveNumber(row, "LARGURA");
+  if (weightKg === undefined || thicknessMm === undefined || widthMm === undefined) return undefined;
+  return (weightKg / 7850) / ((thicknessMm / 1000) * (widthMm / 1000));
+}
+
+function finishLengthMeters(row: OracleRow): number | undefined {
+  return positiveNumber(row, "FINISH_LENGHT", "FINISH_LENGTH");
+}
+
+function isSlitterLengthRow(row: OracleRow): boolean {
+  return key(base1PowerBiLocal(row)) === key("Slitter");
+}
+
+type LayoutClient = "FH" | "VM" | "SCA" | "DAF";
+
+/** Dimensão MP estática publicada no PBIP (MP.tmdl). */
+const mpClientDimension = new Map<string, LayoutClient>([
+  ["4-MP600760SL445-0", "FH"], ["4-MP600760SL369-0", "VM"], ["4-MPTB1259935SL412-A01", "SCA"],
+  ["4-MP500770SL377-00", "DAF"], ["4-MP600760SL411-0", "FH"], ["4-MP380660SL332-00", "VM"],
+  ["4-MP600660SL451-0", "FH"], ["4-MPTB1259785SL415-A01", "SCA"], ["4-MPS50675SL430-00", "DAF"],
+  ["4-MP600770SL427-00", "DAF"], ["4-MP600660SL417-00", "FH"], ["4-MPTB1259764SL371-0", "SCA"],
+  ["4-MPTB1259685SL358-A01", "SCA"], ["4-MP600450SL411-0", "FH"], ["2-MPS50475SL350-0", "DAF"],
+  ["4-MPS50475SL401-00", "DAF"], ["4-MPS50675SL380-0", "DAF"],
+]);
+
 function clientPairs(rowsToCount: OracleRow[], client: "FH" | "VM" | "SCA" | "DAF"): number {
   if (client === "FH" || client === "VM") return rowsToCount.filter((row) => hasValue(row, "CHASSIS_NUMBER")).length / 2;
   if (client === "SCA") return rowsToCount.reduce((total, row) => total + scaniaPieceUnit(row), 0) / 2;
   return rowsToCount.reduce((total, row) => total + dafPieceUnit(row), 0) / 2;
+}
+
+function dafSlitterPairs(rowsToCount: OracleRow[]): number {
+  const byJob = new Map<string, number>();
+  for (const [index, row] of rowsToCount.entries()) {
+    const job = text(row, "JOB_ORACLE") || `row-${index}`;
+    const outstanding = Math.max(0, numeric(row, "QUANTITY_ORDERED") - numeric(row, "QUANTITY_FINISHED"));
+    if (!byJob.has(job)) byJob.set(job, outstanding / 2);
+  }
+  return [...byJob.values()].reduce((total, value) => total + value, 0);
 }
 
 function localPairs(rowsToCount: OracleRow[], client: "FH" | "VM" | "SCA" | "DAF", localName: string): number {
@@ -228,8 +348,6 @@ function segregationBy(input: OracleRow[], enn: string, locations: string[], cli
     && locations.map(key).includes(key(text(row, "LOCATION", "location")))
     && !excludeReasons.map(key).includes(key(text(row, "MOTIVO", "motivo")))), "RAIL_ID", "CHASSIS_NUMBER");
 }
-
-type LayoutClient = "FH" | "VM" | "SCA" | "DAF";
 
 function relationshipValue(value: unknown): string {
   return String(value ?? "").trim().toUpperCase();
@@ -278,6 +396,7 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
   const base1 = rowsForDate(input.base1, input.contextDate, ["SHIP_DATE"]);
   const base2 = rowsForDate(input.base2, input.contextDate, ["SHIP_DATE"]);
   const scaniaFallback = rowsForDate(input.scania, input.contextDate, ["SHIP_DATE"]);
+  const dafSlitters = rowsForDate(input.dafSlitters, input.contextDate, ["SHIP_DATE", "DATA", "DATE"]);
   const segregation = rowsForDate(input.segregacao, input.contextDate, ["DATA", "DATA SEGREGAÇÃO", "DATE"]);
   const rf2 = rowsForDate(input.rf2, input.contextDate, ["Data", "Data de fabricação", "DATE"]);
   const lctStock = rowsForDate(input.lctStock, input.contextDate, ["DATA", "Data", "DATE"]);
@@ -292,11 +411,8 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
     ? scaniaFallback
     : base1.filter((row) => clientFromBase1(row) === "SCA" && (text(row, "ITEM").includes("1-") || text(row, "ITEM").includes("2-")));
   const scania = scaniaSource.map((row) => ({ ...row, localName: hasDedicatedScania ? canonicalLocal(sourceLocal(row)) : base1Local(row, "SCA") }));
-  const dafBase = base2.filter((row) => text(row, "CUSTOMER_CODE", "customer_code") === "DAF"
-    && text(row, "DESCRIPTION") !== "BEATTY 2"
-    && key(sourceLocal(row)) !== key("Slitter")
-    && key(text(row, "LOCATION", "location")) !== key("Roll Former 3 Input"));
-  const daf = derivedDafRows(dafBase);
+  const dafBase = base2.filter((row) => text(row, "CUSTOMER_CODE", "customer_code") === "DAF");
+  const daf = derivedDafRows(dafBase).filter((row) => key(String(row.localName ?? "")) !== key("Slitter"));
 
   const fhAll = allBase1.filter((row) => clientFromBase1(row) === "FH" && hasValue(row, "CHASSIS_NUMBER")).map((row) => ({ ...row, localName: base1Local(row, "FH") }));
   const vmAll = allBase1.filter((row) => clientFromBase1(row) === "VM" && hasValue(row, "CHASSIS_NUMBER")).map((row) => ({ ...row, localName: base1Local(row, "VM") }));
@@ -304,24 +420,34 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
     ? allScaniaFallback
     : allBase1.filter((row) => clientFromBase1(row) === "SCA" && (text(row, "ITEM").includes("1-") || text(row, "ITEM").includes("2-"))))
     .map((row) => ({ ...row, localName: hasDedicatedScania ? canonicalLocal(sourceLocal(row)) : base1Local(row, "SCA") }));
-  const dafAllBase = allBase2.filter((row) => text(row, "CUSTOMER_CODE", "customer_code") === "DAF"
-    && text(row, "DESCRIPTION") !== "BEATTY 2"
-    && key(sourceLocal(row)) !== key("Slitter")
-    && key(text(row, "LOCATION", "location")) !== key("Roll Former 3 Input"));
-  const dafAll = derivedDafRows(dafAllBase);
+  const dafAllBase = allBase2.filter((row) => text(row, "CUSTOMER_CODE", "customer_code") === "DAF");
+  const dafAll = derivedDafRows(dafAllBase).filter((row) => key(String(row.localName ?? "")) !== key("Slitter"));
 
   const clients = { FH: fh, VM: vm, SCA: scania, DAF: daf };
   const pairs = {
-    FH: clientPairs(fh, "FH"), VM: clientPairs(vm, "VM"), SCA: clientPairs(scania, "SCA"), DAF: clientPairs(daf, "DAF"),
+    FH: clientPairs(fh, "FH"), VM: clientPairs(vm, "VM"), SCA: clientPairs(scania, "SCA"), DAF: clientPairs(daf, "DAF") + dafSlitterPairs(dafSlitters),
   };
   const allPairs = {
-    FH: clientPairs(fhAll, "FH"), VM: clientPairs(vmAll, "VM"), SCA: clientPairs(scaniaAll, "SCA"), DAF: clientPairs(dafAll, "DAF"),
+    FH: clientPairs(fhAll, "FH"), VM: clientPairs(vmAll, "VM"), SCA: clientPairs(scaniaAll, "SCA"), DAF: clientPairs(dafAll, "DAF") + dafSlitterPairs(rows(input.dafSlitters)),
   };
   const days = {
     FH: futureDays(fhAll, todayDate), VM: futureDays(vmAll, todayDate), SCA: futureDays(scaniaAll, todayDate), DAF: futureDays(dafAll, todayDate),
   };
   const rates = {
     FH: rate(allPairs.FH, days.FH), VM: rate(allPairs.VM, days.VM), SCA: rate(allPairs.SCA, days.SCA), DAF: rate(allPairs.DAF, days.DAF),
+  };
+  const matchesMpClient = (row: OracleRow, client: LayoutClient): boolean => mpClientDimension.get(text(row, "MP").toUpperCase()) === client;
+  const scaniaMpRows = allBase1
+    .filter((row) => clientFromBase1(row) === "SCA" && (text(row, "ITEM").includes("1-") || text(row, "ITEM").includes("2-")))
+    .map((row) => ({ ...row, localName: base1Local(row, "SCA") }))
+    .filter((row) => matchesMpClient(row, "SCA"));
+  const dafMpRows = dafAll.filter((row) => matchesMpClient(row, "DAF"));
+  const dafSlitterMpRows = rows(input.dafSlitters).filter((row) => matchesMpClient(row, "DAF"));
+  const slitterRates = {
+    FH: rate(clientPairs(fhAll.filter((row) => matchesMpClient(row, "FH")), "FH"), futureDays(fhAll.filter((row) => matchesMpClient(row, "FH")), todayDate)),
+    VM: rate(clientPairs(vmAll.filter((row) => matchesMpClient(row, "VM")), "VM"), futureDays(vmAll.filter((row) => matchesMpClient(row, "VM")), todayDate)),
+    SCA: rate(clientPairs(scaniaMpRows, "SCA"), futureDays(scaniaMpRows, todayDate)),
+    DAF: rate(clientPairs(dafMpRows, "DAF") + dafSlitterPairs(dafSlitterMpRows), futureDays(dafMpRows, todayDate)),
   };
   const demand = input.demand;
   const segregationPcs = {
@@ -345,32 +471,32 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
   const stockPairsAt = (client: "FH" | "VM" | "SCA" | "DAF", localName: string): number => localPairs(clients[client], client, localName);
   const stockDaysFor = (client: "FH" | "VM" | "SCA" | "DAF", localName: string, factor = 2): number => stockDays(stockPairsAt(client, localName), rates[client], factor);
 
-  values["D-E-FH-B"] = stockDaysFor("FH", "Beatty Output");
-  values["D-E-VM-B"] = stockDaysFor("VM", "Beatty Output");
-  values["D-E-SCA-B"] = stockDaysFor("SCA", "Beatty Output");
-  values["D-E-DAF-B"] = stockDaysFor("DAF", "Beatty Output");
-  values["D-E-FH-CL"] = stockDaysFor("FH", "Cantilever");
-  values["D-E-VM-CL"] = stockDaysFor("VM", "Cantilever");
-  values["D-E-SCA-CL"] = stockDaysFor("SCA", "Cantilever", .5);
-  values["D-E-DAF-CL"] = stockDaysFor("DAF", "Cantilever");
-  values["D-E-FH-P.I"] = stockDaysFor("FH", "Pintura Input 2", .5);
-  values["D-E-VM-P.I"] = stockDaysFor("VM", "Pintura Input 2");
-  values["D-E-SCA-P.I"] = stockDaysFor("SCA", "Pintura Input 2");
-  values["D-E-DAF-P.I"] = stockDaysFor("DAF", "Pintura Input 2");
-  values["D-E-FH-P.A"] = stockDaysFor("FH", "Buffer P.A - B3 e B4");
-  values["D-E-SCA-P.A"] = stockDaysFor("SCA", "Buffer P.A - B3 e B4");
-  values["D-E-SCA-REB"] = stockDaysFor("SCA", " MTG - REB");
-  values["D-E-DAF-REB"] = stockDaysFor("DAF", " MTG - REB");
+  const setStock = (client: "FH" | "VM" | "SCA" | "DAF", measure: string, localName: string, factor = 2): void => {
+    if (rates[client] > 0) values[measure] = stockDaysFor(client, localName, factor);
+  };
+  setStock("FH", "D-E-FH-B", "Beatty Output");
+  setStock("VM", "D-E-VM-B", "Beatty Output");
+  setStock("SCA", "D-E-SCA-B", "Beatty Output");
+  setStock("DAF", "D-E-DAF-B", "Beatty Output");
+  setStock("FH", "D-E-FH-CL", "Cantilever");
+  setStock("VM", "D-E-VM-CL", "Cantilever");
+  setStock("SCA", "D-E-SCA-CL", "Cantilever", .5);
+  setStock("DAF", "D-E-DAF-CL", "Cantilever");
+  setStock("FH", "D-E-FH-P.I", "Pintura Input 2", .5);
+  setStock("VM", "D-E-VM-P.I", "Pintura Input 2");
+  setStock("SCA", "D-E-SCA-P.I", "Pintura Input 2");
+  setStock("DAF", "D-E-DAF-P.I", "Pintura Input 2");
+  setStock("FH", "D-E-FH-P.A", "Buffer P.A - B3 e B4");
+  setStock("SCA", "D-E-SCA-P.A", "Buffer P.A - B3 e B4");
+  setStock("SCA", "D-E-SCA-REB", " MTG - REB");
+  setStock("DAF", "D-E-DAF-REB", " MTG - REB");
 
   const stageDays = (client: "FH" | "VM" | "SCA" | "DAF", localName: string): number => safeDivide(stockPairsAt(client, localName) * 2, rates[client]);
-  values["E-P-D-FH-RF3"] = stageDays("FH", "Roll Former 3");
-  values["E-P-D-VM-RF3"] = stageDays("VM", "Roll Former 3");
-  values["E-P-D-SCA-RF3"] = stageDays("SCA", "Roll Former 3");
-  values["E-P-D-DAF-RF3"] = stageDays("DAF", "Roll Former 3");
-  values["E-P-D-FH-STJ"] = stageDays("FH", "Ag. Stenhøj");
-  values["E-P-D-VM-STJ"] = stageDays("VM", "Ag. Stenhøj");
-  values["E-P-D-SCA-STJ"] = stageDays("SCA", "Ag. Stenhøj");
-  values["E-P-D-DAF-STJ"] = stageDays("DAF", "Ag. Stenhøj");
+  for (const client of ["FH", "VM", "SCA", "DAF"] as const) {
+    if (rates[client] <= 0) continue;
+    values[`E-P-D-${client}-RF3`] = stageDays(client, "Roll Former 3");
+    values[`E-P-D-${client}-STJ`] = stageDays(client, "Ag. Stenhøj");
+  }
   const scheduleReady = input.shippingSchedule !== undefined;
   const scheduleKeys = futureScheduleKeys(input.shippingSchedule, todayDate);
   const shippingRelated = {
@@ -385,37 +511,70 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
     values["E-P-D-SCA-EMB"] = stockDays(clientPairs(shippingRelated.SCA, "SCA"), rates.SCA, 2);
     values["E-P-D-DAF-EMB"] = stockDays(clientPairs(shippingRelated.DAF, "DAF"), rates.DAF, 2);
   }
-  values["E-P-D-FH-M3"] = safeDivide(segregationPcs.FH, rates.FH);
-  values["E-P-D-SCA-M3"] = safeDivide(segregationPcs.SCA, rates.SCA);
-  values["E-P-D-DAF-M3"] = safeDivide(segregationPcs.DAF, rates.DAF);
+  if (input.segregacao !== undefined) {
+    if (rates.FH > 0) values["E-P-D-FH-M3"] = safeDivide(segregationPcs.FH, rates.FH);
+    if (rates.SCA > 0) values["E-P-D-SCA-M3"] = safeDivide(segregationPcs.SCA, rates.SCA);
+    if (rates.DAF > 0) values["E-P-D-DAF-M3"] = safeDivide(segregationPcs.DAF, rates.DAF);
+  }
 
   const lctPieces = lctStock.reduce((total, row) => total + numeric(row, "TOTAL", "total"), 0);
   const rf2Pairs = distinct(rf2, "Rail id", "RAIL_ID") / 2;
-  values["E-P-LCT"] = lctPieces;
-  values["E-D-P-LCT"] = safeDivide(lctPieces, rates.FH);
-  values["E-D-P-RF2"] = safeDivide(rf2Pairs * 2, rates.FH);
-  values["E-D-P-RF2"] = values["E-D-P-RF2"] || safeDivide(Number(demand["D-P-RF2"] ?? 0), rates.FH);
+  if (input.lctStock !== undefined) {
+    values["E-P-LCT"] = lctPieces;
+    if (rates.FH > 0) values["E-D-P-LCT"] = safeDivide(lctPieces, rates.FH);
+  }
+  if (input.rf2 !== undefined && rates.FH > 0) values["E-D-P-RF2"] = safeDivide(rf2Pairs * 2, rates.FH);
 
   const segregationFor = (enn: string, locations: string[], client?: string, excluded: string[] = []): number => segregationBy(segregationRowsForDate, enn, locations, client, excluded);
   const todayDemand = (measure: string): number => Number(demand[measure] ?? 0);
-  values["Q-D-S-RF2"] = safeDivide(segregationFor("Corte e Conformação", ["Rollformer 2"]) * 1, todayDemand("D-P-RF2"));
-  values["Q-D-S-LPP2"] = safeDivide(segregationFor("Pintura", ["Pintura Input 2", "Pintura Output 2"], undefined, ["RETRABALHO CONCENTRICIDADE", "FULL INNER LINER"]), todayDemand("D-P-LPP2"));
-  values["Q-D-S-RF3"] = safeDivide(segregationFor("Corte e Conformação", ["Roll Former 3"]) * 1, todayDemand("D-P-RF3"));
-  values["Q-D-S-STJ"] = safeDivide(segregationFor("SEE", ["Stenhoj"]) * 1, todayDemand("D-P-STJ"));
-  values["Q-D-S-EMB"] = safeDivide(segregationFor("SEE", ["Embalaje 1", "Embalaje 3"]) * 1, todayDemand("D-P-LPP2"));
-  values["Q-D-S-T"] = values["Q-D-S-RF2"] + values["Q-D-S-LPP2"] + values["Q-D-S-RF3"] + values["Q-D-S-STJ"] + values["Q-D-S-EMB"];
+  if (input.segregacao !== undefined) {
+    values["Q-D-S-RF2"] = safeDivide(segregationFor("Corte e Conformação", ["Rollformer 2"]), todayDemand("D-P-RF2"));
+    values["Q-D-S-LPP2"] = safeDivide(segregationFor("Pintura", ["Pintura Input 2", "Pintura Output 2"], undefined, ["RETRABALHO CONCENTRICIDADE", "FULL INNER LINER"]), todayDemand("D-P-LPP2"));
+    values["Q-D-S-RF3"] = safeDivide(segregationFor("Corte e Conformação", ["Roll Former 3"]), todayDemand("D-P-RF3"));
+    values["Q-D-S-STJ"] = safeDivide(segregationFor("SEE", ["Stenhoj"]), todayDemand("D-P-STJ"));
+    values["Q-D-S-EMB"] = safeDivide(segregationFor("SEE", ["Embalaje 1", "Embalaje 3"]), todayDemand("D-P-LPP2"));
+    values["Q-D-S-T"] = values["Q-D-S-RF2"] + values["Q-D-S-LPP2"] + values["Q-D-S-RF3"] + values["Q-D-S-STJ"] + values["Q-D-S-EMB"];
+  }
 
-  const lotes = rowsForDate(input.lotes, input.contextDate, ["DATA", "DATE"]);
-  const producao = rowsForDate(input.producao, input.contextDate, ["DATA", "DATE", "CREATION_DATE"]);
-  const totalLength = lotes.reduce((total, row) => total + numeric(row, "MP(m)", "MP_M", "MP(metros)"), 0);
-  const productionLengths = producao.filter((row) => hasValue(row, "RAIL_ID") && Number.isFinite(Number(row["ITEM(m)"])));
-  const averageProductionLength = safeDivide(productionLengths.reduce((total, row) => total + numeric(row, "ITEM(m)"), 0), productionLengths.length);
-  const averagePieces = Math.floor(safeDivide(totalLength, averageProductionLength));
-  values["E-M-P-S"] = averagePieces;
-  values["Q-D-FH"] = safeDivide(averagePieces, safeDivide(pairs.FH * 2, days.FH));
-  values["Q-D-VM"] = safeDivide(averagePieces, safeDivide(pairs.VM * 2, days.VM));
-  values["Q-D-SCA"] = safeDivide(averagePieces, safeDivide(pairs.SCA * 2, days.SCA));
-  values["Q-D-DAF"] = safeDivide(averagePieces, safeDivide(pairs.DAF * 2, days.DAF));
+  // Q-D-* remove Calendar[Date] no PBIP; o comprimento médio usa todo o horizonte carregado.
+  const slitterLengthEntries: Array<{ value: number; client?: LayoutClient }> = [];
+  const addLength = (row: OracleRow): void => {
+    const value = finishLengthMeters(row);
+    if (value !== undefined) slitterLengthEntries.push({ value, client: mpClientDimension.get(text(row, "MP").toUpperCase()) });
+  };
+  allBase1
+    .filter((row) => ["FH", "VM", "SCA"].includes(clientFromBase1(row) ?? ""))
+    .filter(isSlitterLengthRow)
+    .forEach(addLength);
+  if (input.scania !== undefined) allScaniaFallback.filter(isSlitterLengthRow).forEach(addLength);
+  rows(input.dafSlitters).forEach(addLength);
+  const slitterLengths = slitterLengthEntries.map((entry) => entry.value);
+  const averageFinishLength = safeDivide(slitterLengths.reduce((total, value) => total + value, 0), slitterLengths.length);
+
+  const lotRows = rows(input.lotes).map((row) => {
+    const meters = lotLengthMeters(row);
+    const client = mpClientDimension.get(text(row, "MP").toUpperCase());
+    return { meters, client };
+  }).filter((row): row is { meters: number; client: LayoutClient | undefined } => row.meters !== undefined);
+
+  if (input.lotes !== undefined && averageFinishLength > 0) {
+    const totalLength = lotRows.reduce((total, row) => total + row.meters, 0);
+    values["C-T-E"] = totalLength;
+    values["C-P-M-TOTAL"] = averageFinishLength;
+    values["E-M-P-S"] = Math.floor(totalLength / averageFinishLength);
+    for (const client of ["FH", "VM", "SCA", "DAF"] as const) {
+      const groupRows = lotRows.filter((row) => row.client === client);
+      const clientLengths = slitterLengthEntries.filter((entry) => entry.client === client).map((entry) => entry.value);
+      const clientAverageLength = safeDivide(clientLengths.reduce((total, value) => total + value, 0), clientLengths.length);
+      if (!groupRows.length || clientAverageLength <= 0) continue;
+      const pieces = Math.floor(groupRows.reduce((total, row) => total + row.meters, 0) / clientAverageLength);
+      values[`C-P-M-${client}`] = clientAverageLength;
+      values[`C-P-M-TOTAL-${client}`] = clientAverageLength;
+      values[`E-M-P-S-${client}`] = pieces;
+      values[`P-M-SLITTER-${client}`] = slitterRates[client];
+      if (slitterRates[client] > 0) values[`Q-D-${client}`] = safeDivide(pieces, slitterRates[client]);
+    }
+  }
 
   return {
     values,
@@ -433,6 +592,8 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
       "shipping-related-scania": shippingRelated.SCA.length,
       "shipping-related-daf": shippingRelated.DAF.length,
       "shipping-related-daf-slitters": rowsRelatedToSchedule(rows(input.dafSlitters), "DAF", scheduleKeys).length,
+      "slitter-finish-lengths": slitterLengths.length,
+      "slitter-lots-mapped": lotRows.length,
     },
   };
 }
