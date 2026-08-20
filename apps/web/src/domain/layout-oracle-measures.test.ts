@@ -171,8 +171,8 @@ describe("medidas Oracle da Roll Former 3", () => {
 
     expect(result.rows["slitter-finish-lengths"]).toBe(2);
     expect(result.values["C-P-M-TOTAL"]).toBe(15);
-    expect(result.values["E-M-P-S-FH"]).toBe(10);
-    expect(result.values["E-M-P-S-SCA"]).toBe(20);
+    expect(result.values["E-M-P-S-FH"]).toBe(15);
+    expect(result.values["E-M-P-S-SCA"]).toBe(15);
   });
 
   it("remove o filtro diário ao calcular Q-D e usa o horizonte completo do Slitter", () => {
@@ -215,8 +215,8 @@ describe("medidas Oracle da Roll Former 3", () => {
 
     expect(values["E-M-P-S-FH"]).toBe(10);
     expect(values["E-M-P-S-VM"]).toBe(20);
-    expect(values["Q-D-FH"]).toBe(10);
-    expect(values["Q-D-VM"]).toBe(20);
+    expect(values["Q-D-FH"]).toBe(5);
+    expect(values["Q-D-VM"]).toBe(10);
   });
 
   it("recompõe a DAF simples/reforçada antes de excluir a origem Beatty 2", () => {

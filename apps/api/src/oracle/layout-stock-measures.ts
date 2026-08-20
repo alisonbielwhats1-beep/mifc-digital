@@ -144,6 +144,13 @@ function base1Local(row: OracleRow, client: "FH" | "VM" | "SCA"): string {
   return location;
 }
 
+function base2PowerBiLocal(row: OracleRow): string {
+  const local = base1PowerBiLocal(row);
+  if (key(local) === key("Stenhoj")) return "Ag. Emb1";
+  if (key(local) === key("Rebitagem")) return "Ag. Stenhøj";
+  return local;
+}
+
 function clientFromBase1(row: OracleRow): "FH" | "VM" | "SCA" | null {
   const explicit = text(row, "Clientes", "CLIENTES");
   if (explicit === "FH" || explicit === "VM" || explicit === "SCA") return explicit;
@@ -194,7 +201,7 @@ function normalizedDafItem(item: string): string {
 }
 
 function dafLocal(row: OracleRow, variant: "original" | "simple" | "reinforced" = "reinforced"): string {
-  const local = canonicalLocal(sourceLocal(row));
+  const local = base2PowerBiLocal(row);
   if (variant === "simple" && key(local) === key("pintura output 2")) return "Ag. Stenhøj";
   if (variant === "reinforced" && key(local) === key("pintura output 2")) return " MTG - REB";
   if (key(local) === key("stenhoj")) return "Ag. Emb1";
@@ -205,7 +212,9 @@ function dafLocal(row: OracleRow, variant: "original" | "simple" | "reinforced" 
 function derivedDafRows(input: OracleRow[]): OracleRow[] {
   return input.flatMap((row) => {
     const item = normalizedDafItem(text(row, "ITEM"));
-    const derived: OracleRow[] = [{ ...row, localName: dafLocal(row, "original") }];
+    const derived: OracleRow[] = text(row, "DESCRIPTION") === "BEATTY 2"
+      ? []
+      : [{ ...row, localName: dafLocal(row, "original") }];
     if (dafSimpleItems.has(item)) derived.push({ ...row, localName: dafLocal(row, "simple") });
     if (!dafSimpleItems.has(item) || dafReinforcedItems.has(item)) derived.push({ ...row, localName: dafLocal(row, "reinforced") });
     return derived;
@@ -256,12 +265,22 @@ function isSlitterLengthRow(row: OracleRow): boolean {
   return key(base1PowerBiLocal(row)) === key("Slitter");
 }
 
-type LotClientGroup = "VDB" | "SCA" | "DAF";
+type LayoutClient = "FH" | "VM" | "SCA" | "DAF";
 
-function normalizedLotClient(value: string): LotClientGroup | undefined {
+/** Dimensão MP estática publicada no PBIP (MP.tmdl). */
+const mpClientDimension = new Map<string, LayoutClient>([
+  ["4-MP600760SL445-0", "FH"], ["4-MP600760SL369-0", "VM"], ["4-MPTB1259935SL412-A01", "SCA"],
+  ["4-MP500770SL377-00", "DAF"], ["4-MP600760SL411-0", "FH"], ["4-MP380660SL332-00", "VM"],
+  ["4-MP600660SL451-0", "FH"], ["4-MPTB1259785SL415-A01", "SCA"], ["4-MPS50675SL430-00", "DAF"],
+  ["4-MP600770SL427-00", "DAF"], ["4-MP600660SL417-00", "FH"], ["4-MPTB1259764SL371-0", "SCA"],
+  ["4-MPTB1259685SL358-A01", "SCA"], ["4-MP600450SL411-0", "FH"], ["2-MPS50475SL350-0", "DAF"],
+  ["4-MPS50475SL401-00", "DAF"], ["4-MPS50675SL380-0", "DAF"],
+]);
+
+function normalizedLotClient(value: string): LayoutClient | undefined {
   const suffix = value.trim().toUpperCase().slice(-3);
-  if (suffix === "VDB" || suffix === "SCA" || suffix === "DAF") return suffix;
-  if (suffix === "FH" || suffix === "VM") return "VDB";
+  if (suffix === "SCA" || suffix === "DAF" || suffix === "VM") return suffix;
+  if (suffix.endsWith("FH")) return "FH";
   return undefined;
 }
 
@@ -269,6 +288,16 @@ function clientPairs(rowsToCount: OracleRow[], client: "FH" | "VM" | "SCA" | "DA
   if (client === "FH" || client === "VM") return rowsToCount.filter((row) => hasValue(row, "CHASSIS_NUMBER")).length / 2;
   if (client === "SCA") return rowsToCount.reduce((total, row) => total + scaniaPieceUnit(row), 0) / 2;
   return rowsToCount.reduce((total, row) => total + dafPieceUnit(row), 0) / 2;
+}
+
+function dafSlitterPairs(rowsToCount: OracleRow[]): number {
+  const byJob = new Map<string, number>();
+  for (const [index, row] of rowsToCount.entries()) {
+    const job = text(row, "JOB_ORACLE") || `row-${index}`;
+    const outstanding = Math.max(0, numeric(row, "QUANTITY_ORDERED") - numeric(row, "QUANTITY_FINISHED"));
+    if (!byJob.has(job)) byJob.set(job, outstanding / 2);
+  }
+  return [...byJob.values()].reduce((total, value) => total + value, 0);
 }
 
 function localPairs(rowsToCount: OracleRow[], client: "FH" | "VM" | "SCA" | "DAF", localName: string): number {
@@ -311,8 +340,6 @@ function segregationBy(input: OracleRow[], enn: string, locations: string[], cli
     && locations.map(key).includes(key(text(row, "LOCATION", "location")))
     && !excludeReasons.map(key).includes(key(text(row, "MOTIVO", "motivo")))), "RAIL_ID", "CHASSIS_NUMBER");
 }
-
-type LayoutClient = "FH" | "VM" | "SCA" | "DAF";
 
 function relationshipValue(value: unknown): string {
   return String(value ?? "").trim().toUpperCase();
@@ -361,6 +388,7 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
   const base1 = rowsForDate(input.base1, input.contextDate, ["SHIP_DATE"]);
   const base2 = rowsForDate(input.base2, input.contextDate, ["SHIP_DATE"]);
   const scaniaFallback = rowsForDate(input.scania, input.contextDate, ["SHIP_DATE"]);
+  const dafSlitters = rowsForDate(input.dafSlitters, input.contextDate, ["SHIP_DATE", "DATA", "DATE"]);
   const segregation = rowsForDate(input.segregacao, input.contextDate, ["DATA", "DATA SEGREGAÇÃO", "DATE"]);
   const rf2 = rowsForDate(input.rf2, input.contextDate, ["Data", "Data de fabricação", "DATE"]);
   const lctStock = rowsForDate(input.lctStock, input.contextDate, ["DATA", "Data", "DATE"]);
@@ -375,11 +403,8 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
     ? scaniaFallback
     : base1.filter((row) => clientFromBase1(row) === "SCA" && (text(row, "ITEM").includes("1-") || text(row, "ITEM").includes("2-")));
   const scania = scaniaSource.map((row) => ({ ...row, localName: hasDedicatedScania ? canonicalLocal(sourceLocal(row)) : base1Local(row, "SCA") }));
-  const dafBase = base2.filter((row) => text(row, "CUSTOMER_CODE", "customer_code") === "DAF"
-    && text(row, "DESCRIPTION") !== "BEATTY 2"
-    && key(sourceLocal(row)) !== key("Slitter")
-    && key(text(row, "LOCATION", "location")) !== key("Roll Former 3 Input"));
-  const daf = derivedDafRows(dafBase);
+  const dafBase = base2.filter((row) => text(row, "CUSTOMER_CODE", "customer_code") === "DAF");
+  const daf = derivedDafRows(dafBase).filter((row) => key(String(row.localName ?? "")) !== key("Slitter"));
 
   const fhAll = allBase1.filter((row) => clientFromBase1(row) === "FH" && hasValue(row, "CHASSIS_NUMBER")).map((row) => ({ ...row, localName: base1Local(row, "FH") }));
   const vmAll = allBase1.filter((row) => clientFromBase1(row) === "VM" && hasValue(row, "CHASSIS_NUMBER")).map((row) => ({ ...row, localName: base1Local(row, "VM") }));
@@ -387,18 +412,15 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
     ? allScaniaFallback
     : allBase1.filter((row) => clientFromBase1(row) === "SCA" && (text(row, "ITEM").includes("1-") || text(row, "ITEM").includes("2-"))))
     .map((row) => ({ ...row, localName: hasDedicatedScania ? canonicalLocal(sourceLocal(row)) : base1Local(row, "SCA") }));
-  const dafAllBase = allBase2.filter((row) => text(row, "CUSTOMER_CODE", "customer_code") === "DAF"
-    && text(row, "DESCRIPTION") !== "BEATTY 2"
-    && key(sourceLocal(row)) !== key("Slitter")
-    && key(text(row, "LOCATION", "location")) !== key("Roll Former 3 Input"));
-  const dafAll = derivedDafRows(dafAllBase);
+  const dafAllBase = allBase2.filter((row) => text(row, "CUSTOMER_CODE", "customer_code") === "DAF");
+  const dafAll = derivedDafRows(dafAllBase).filter((row) => key(String(row.localName ?? "")) !== key("Slitter"));
 
   const clients = { FH: fh, VM: vm, SCA: scania, DAF: daf };
   const pairs = {
-    FH: clientPairs(fh, "FH"), VM: clientPairs(vm, "VM"), SCA: clientPairs(scania, "SCA"), DAF: clientPairs(daf, "DAF"),
+    FH: clientPairs(fh, "FH"), VM: clientPairs(vm, "VM"), SCA: clientPairs(scania, "SCA"), DAF: clientPairs(daf, "DAF") + dafSlitterPairs(dafSlitters),
   };
   const allPairs = {
-    FH: clientPairs(fhAll, "FH"), VM: clientPairs(vmAll, "VM"), SCA: clientPairs(scaniaAll, "SCA"), DAF: clientPairs(dafAll, "DAF"),
+    FH: clientPairs(fhAll, "FH"), VM: clientPairs(vmAll, "VM"), SCA: clientPairs(scaniaAll, "SCA"), DAF: clientPairs(dafAll, "DAF") + dafSlitterPairs(rows(input.dafSlitters)),
   };
   const days = {
     FH: futureDays(fhAll, todayDate), VM: futureDays(vmAll, todayDate), SCA: futureDays(scaniaAll, todayDate), DAF: futureDays(dafAll, todayDate),
@@ -493,58 +515,66 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
     values["Q-D-S-T"] = values["Q-D-S-RF2"] + values["Q-D-S-LPP2"] + values["Q-D-S-RF3"] + values["Q-D-S-STJ"] + values["Q-D-S-EMB"];
   }
 
-  // Q-D-* remove Calendar[Date] no PBIP; o comprimento médio usa todo o horizonte carregado.
-  const baseSlitterLengths = allBase1
-    .filter((row) => ["FH", "VM", "SCA"].includes(clientFromBase1(row) ?? ""))
-    .filter(isSlitterLengthRow)
-    .map(finishLengthMeters)
-    .filter((value): value is number => value !== undefined);
-  const scaniaSlitterLengths = input.scania === undefined ? [] : allScaniaFallback
-    .filter(isSlitterLengthRow)
-    .map(finishLengthMeters)
-    .filter((value): value is number => value !== undefined);
-  const dafSlitterLengths = rows(input.dafSlitters)
-    .map(finishLengthMeters)
-    .filter((value): value is number => value !== undefined);
-  const slitterLengths = [...baseSlitterLengths, ...scaniaSlitterLengths, ...dafSlitterLengths];
-  const averageFinishLength = safeDivide(slitterLengths.reduce((total, value) => total + value, 0), slitterLengths.length);
-
-  const mpGroups = new Map<string, Set<LotClientGroup>>();
-  const registerMp = (sourceRows: OracleRow[], resolveGroup: (row: OracleRow) => LotClientGroup | undefined): void => {
+  const mpClients = new Map<string, Set<LayoutClient>>(
+    [...mpClientDimension].map(([mp, client]) => [mp, new Set([client])]),
+  );
+  const registerMp = (sourceRows: OracleRow[], resolveClient: (row: OracleRow) => LayoutClient | undefined): void => {
     for (const row of sourceRows) {
       const mp = text(row, "MP").toUpperCase();
-      const group = resolveGroup(row);
-      if (!mp || !group) continue;
-      const groups = mpGroups.get(mp) ?? new Set<LotClientGroup>();
-      groups.add(group);
-      mpGroups.set(mp, groups);
+      const client = resolveClient(row);
+      if (!mp || !client) continue;
+      const clientsForMp = mpClients.get(mp) ?? new Set<LayoutClient>();
+      clientsForMp.add(client);
+      mpClients.set(mp, clientsForMp);
     }
   };
-  registerMp(allBase1, (row) => {
-    const client = clientFromBase1(row);
-    return client === "SCA" ? "SCA" : client === "FH" || client === "VM" ? "VDB" : undefined;
-  });
+  registerMp(allBase1, (row) => clientFromBase1(row) ?? undefined);
   registerMp(allScaniaFallback, () => "SCA");
   registerMp(rows(input.dafSlitters), () => "DAF");
+  const clientForMp = (value: string, fallback?: LayoutClient): LayoutClient | undefined => {
+    const normalized = value.toUpperCase();
+    const dimensionClient = mpClientDimension.get(normalized);
+    if (dimensionClient) return dimensionClient;
+    const inferred = mpClients.get(normalized);
+    return inferred?.size === 1 ? [...inferred][0] : fallback;
+  };
+
+  // Q-D-* remove Calendar[Date] no PBIP; o comprimento médio usa todo o horizonte carregado.
+  const slitterLengthEntries: Array<{ value: number; client: LayoutClient }> = [];
+  const addLength = (row: OracleRow, fallback: LayoutClient | undefined): void => {
+    const value = finishLengthMeters(row);
+    const client = clientForMp(text(row, "MP"), fallback);
+    if (value !== undefined && client) slitterLengthEntries.push({ value, client });
+  };
+  allBase1
+    .filter((row) => ["FH", "VM", "SCA"].includes(clientFromBase1(row) ?? ""))
+    .filter(isSlitterLengthRow)
+    .forEach((row) => addLength(row, clientFromBase1(row) ?? undefined));
+  if (input.scania !== undefined) allScaniaFallback.filter(isSlitterLengthRow).forEach((row) => addLength(row, "SCA"));
+  rows(input.dafSlitters).forEach((row) => addLength(row, "DAF"));
+  const slitterLengths = slitterLengthEntries.map((entry) => entry.value);
+  const averageFinishLength = safeDivide(slitterLengths.reduce((total, value) => total + value, 0), slitterLengths.length);
 
   const lotRows = rows(input.lotes).map((row) => {
     const meters = lotLengthMeters(row);
-    const explicitGroup = normalizedLotClient(text(row, "Cliente", "CLIENTE", "DESCRIPTION"));
-    const inferredGroups = mpGroups.get(text(row, "MP").toUpperCase());
-    const inferredGroup = inferredGroups?.size === 1 ? [...inferredGroups][0] : undefined;
-    return { meters, group: explicitGroup ?? inferredGroup };
-  }).filter((row): row is { meters: number; group: LotClientGroup } => row.meters !== undefined && row.group !== undefined);
+    const explicitClient = normalizedLotClient(text(row, "Cliente", "CLIENTE", "DESCRIPTION"));
+    const client = clientForMp(text(row, "MP"), explicitClient);
+    return { meters, client };
+  }).filter((row): row is { meters: number; client: LayoutClient } => row.meters !== undefined && row.client !== undefined);
 
   if (input.lotes !== undefined && averageFinishLength > 0) {
     const totalLength = lotRows.reduce((total, row) => total + row.meters, 0);
     values["C-T-E"] = totalLength;
     values["C-P-M-TOTAL"] = averageFinishLength;
     values["E-M-P-S"] = Math.floor(totalLength / averageFinishLength);
-    const groupForClient: Record<LayoutClient, LotClientGroup> = { FH: "VDB", VM: "VDB", SCA: "SCA", DAF: "DAF" };
     for (const client of ["FH", "VM", "SCA", "DAF"] as const) {
-      const groupRows = lotRows.filter((row) => row.group === groupForClient[client]);
-      if (!groupRows.length) continue;
-      const pieces = Math.floor(groupRows.reduce((total, row) => total + row.meters, 0) / averageFinishLength);
+      const groupRows = lotRows.filter((row) => row.client === client);
+      const clientLengths = slitterLengthEntries.filter((entry) => entry.client === client).map((entry) => entry.value);
+      const clientAverageLength = safeDivide(clientLengths.reduce((total, value) => total + value, 0), clientLengths.length);
+      if (!groupRows.length || clientAverageLength <= 0) continue;
+      const pieces = Math.floor(groupRows.reduce((total, row) => total + row.meters, 0) / clientAverageLength);
+      values[`C-P-M-${client}`] = clientAverageLength;
+      values[`C-P-M-TOTAL-${client}`] = clientAverageLength;
       values[`E-M-P-S-${client}`] = pieces;
       if (rates[client] > 0) values[`Q-D-${client}`] = safeDivide(pieces, rates[client]);
     }
