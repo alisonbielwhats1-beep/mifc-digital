@@ -234,4 +234,25 @@ describe("medidas Oracle da Roll Former 3", () => {
     expect(values["Q-D-E-DAF"]).toBe(1);
     expect(values["P-M-DAF"]).toBe(1);
   });
+
+  it("usa somente as linhas Scania relacionadas à dimensão MP na cadência de Q-D", () => {
+    const values = deriveLayoutStockMeasures({
+      contextDate: "2026-08-19",
+      todayDate: "2026-08-19",
+      base1: [
+        { PRODUCT_CLASS: "NC", CUSTOMER_CODE: "SCA", CHASSIS_NUMBER: "sca-1", ITEM: "1-SCA", MP: "4-MPTB1259935SL412-A01", FINISH_LENGHT: 10, LOCATION: " ", SHIP_DATE: "19-AUG-2026" },
+        { PRODUCT_CLASS: "NC", CUSTOMER_CODE: "SCA", CHASSIS_NUMBER: "sca-2", ITEM: "1-SCA", MP: "4-MPTB1259935SL412-A01", FINISH_LENGHT: 10, LOCATION: " ", SHIP_DATE: "19-AUG-2026" },
+      ],
+      base2: [],
+      dafSlitters: [],
+      scania: [
+        { CUSTOMER_CODE: "SCA", CHASSIS_NUMBER: "conjunto-1", ITEM: "1-F", LOCATION: "Embalaje 1", SHIP_DATE: "19-AUG-2026" },
+      ],
+      lotes: [{ MP: "4-MPTB1259935SL412-A01", "MP(m)": 100 }],
+      demand: {},
+    }).values;
+
+    expect(values["E-M-P-S-SCA"]).toBe(10);
+    expect(values["Q-D-SCA"]).toBe(5);
+  });
 });
