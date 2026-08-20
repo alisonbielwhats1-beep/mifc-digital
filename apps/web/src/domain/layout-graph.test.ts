@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createPinia, setActivePinia } from "pinia";
 import { canConnect, clamp, edgeGeometry, edgePath } from "./layout-graph";
-import { useMifcLayoutStore } from "@/stores/mifc-layout";
+import { LAYOUT_PROCESS_AREA_BOTTOM, useMifcLayoutStore } from "@/stores/mifc-layout";
 
 class MemoryStorage implements Storage {
   private values = new Map<string, string>();
@@ -50,16 +50,17 @@ describe("histórico e revisões do Layout", () => {
     expect(store.revisions).toHaveLength(2);
     expect(store.activeRevision.number).toBe(5);
     expect(store.activeRevision.nodes.every((node) => node.revisionId === store.activeRevision.id)).toBe(true);
-    expect(localStorage.getItem("mifc-digital:layout-reference-v2")).toContain('"schemaVersion":6');
+    expect(localStorage.getItem("mifc-digital:layout-reference-v2")).toContain('"schemaVersion":7');
   });
 
   it("move, redimensiona e conecta elementos com limites do canvas", () => {
     const store = useMifcLayoutStore(); store.hydrate();
     store.addNode("process"); const firstId = store.selectedNodeId!;
     store.addNode("process"); const secondId = store.selectedNodeId!;
+    const originalHeight = store.activeRevision.nodes.find((node) => node.id === firstId)!.height;
     store.beginMutation(); store.moveNode(firstId, -500, 3000); store.resizeNode(firstId, 20, 900);
     const moved = store.activeRevision.nodes.find((node) => node.id === firstId)!;
-    expect({ x: moved.x, y: moved.y, width: moved.width, height: moved.height }).toEqual({ x: 0, y: 716, width: 62, height: 180 });
+    expect({ x: moved.x, y: moved.y, width: moved.width, height: moved.height }).toEqual({ x: 0, y: LAYOUT_PROCESS_AREA_BOTTOM - originalHeight, width: 62, height: 180 });
     store.connectNode(firstId, "electronic_information"); store.connectNode(secondId, "electronic_information");
     expect(store.activeRevision.edges).toHaveLength(58);
     store.undo(); expect(store.activeRevision.edges).toHaveLength(57);

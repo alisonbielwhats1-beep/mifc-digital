@@ -23,7 +23,7 @@ interface PersistedLayout { schemaVersion: 7; activeRevisionId: string; revision
 
 export const LAYOUT_WORLD_WIDTH = 3500;
 export const LAYOUT_WORLD_HEIGHT = 1600;
-const LAYOUT_PROCESS_AREA_BOTTOM = 1262;
+export const LAYOUT_PROCESS_AREA_BOTTOM = 1262;
 
 const storageKey = "mifc-digital:layout-reference-v2";
 const now = "2026-08-19T12:00:00.000Z";
