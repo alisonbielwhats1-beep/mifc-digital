@@ -150,4 +150,28 @@ describe("medidas Oracle da Roll Former 3", () => {
     expect(values["E-M-P-S-FH"]).toBe(10);
     expect(values["Q-D-FH"]).toBeCloseTo(5);
   });
+
+  it("reproduz o else Slitter da Base1 e mantém os comprimentos Scania quando a fonte dedicada existe", () => {
+    const result = deriveLayoutStockMeasures({
+      contextDate: "2026-08-19",
+      todayDate: "2026-08-19",
+      base1: [
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-1", MP: "MP-FH", FINISH_LENGHT: 10, LOCATION: "LOCAL NÃO MAPEADO", SHIP_DATE: "19-AUG-2026 08:00" },
+        { PRODUCT_CLASS: "NC", CUSTOMER_CODE: "SCA", ITEM: "1-SCA", COMPONENT: "sca-1", MP: "MP-SCA", FINISH_LENGHT: 20, LOCATION: "OUTRO LOCAL", SHIP_DATE: "19-AUG-2026 08:00" },
+      ],
+      base2: [],
+      dafSlitters: [],
+      scania: [],
+      lotes: [
+        { MP: "MP-FH", "MP(m)": 150 },
+        { MP: "MP-SCA", "MP(m)": 300 },
+      ],
+      demand: {},
+    });
+
+    expect(result.rows["slitter-finish-lengths"]).toBe(2);
+    expect(result.values["C-P-M-TOTAL"]).toBe(15);
+    expect(result.values["E-M-P-S-FH"]).toBe(10);
+    expect(result.values["E-M-P-S-SCA"]).toBe(20);
+  });
 });
