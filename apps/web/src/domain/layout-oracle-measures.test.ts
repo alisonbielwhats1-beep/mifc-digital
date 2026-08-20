@@ -255,4 +255,47 @@ describe("medidas Oracle da Roll Former 3", () => {
     expect(values["E-M-P-S-SCA"]).toBe(10);
     expect(values["Q-D-SCA"]).toBe(5);
   });
+
+  it("reproduz as colunas calculadas Scania ao formar a cadência do Slitter", () => {
+    const values = deriveLayoutStockMeasures({
+      contextDate: "2026-08-19",
+      todayDate: "2026-08-19",
+      base1: [
+        { PRODUCT_CLASS: "NC", CUSTOMER_CODE: "SCA", CHASSIS_NUMBER: "simples", ITEM: "1-SCA", MP: "4-MPTB1259935SL412-A01", FINISH_LENGHT: 10, REFORÇADA: "", LOCATION: " ", SHIP_DATE: "19-AUG-2026" },
+        { PRODUCT_CLASS: "NC", CUSTOMER_CODE: "SCA", CHASSIS_NUMBER: "reforcada", ITEM: "1-SCA-R", MP: "4-MPTB1259935SL412-A01", FINISH_LENGHT: 10, REFORÇADA: "Reforçada", LOCATION: " ", SHIP_DATE: "19-AUG-2026" },
+        { PRODUCT_CLASS: "NC", CUSTOMER_CODE: "SCA", CHASSIS_NUMBER: "ref-consumido", ITEM: "2-R-SCA", MP: "4-MPTB1259935SL412-A01", LOCATION: "Rebitagem", SHIP_DATE: "19-AUG-2026" },
+        { PRODUCT_CLASS: "NC", CUSTOMER_CODE: "SCA", CHASSIS_NUMBER: "ref-estoque", ITEM: "2-R-SCA", MP: "4-MPTB1259935SL412-A01", LOCATION: " ", SHIP_DATE: "19-AUG-2026" },
+      ],
+      base2: [],
+      dafSlitters: [],
+      scania: [],
+      lotes: [{ MP: "4-MPTB1259935SL412-A01", "MP(m)": 100 }],
+      demand: {},
+    }).values;
+
+    expect(values["P-M-SLITTER-SCA"]).toBe(3);
+    expect(values["Q-D-SCA"]).toBeCloseTo(10 / 3);
+  });
+
+  it("não conta a Base2 original como longarina DAF e respeita Sim/Não do Power Query", () => {
+    const values = deriveLayoutStockMeasures({
+      contextDate: "2026-08-19",
+      todayDate: "2026-08-19",
+      base1: [],
+      base2: [
+        { CUSTOMER_CODE: "DAF", DESCRIPTION: "OUTRA", ITEM: "1-2159711-00", MP: "4-MP500770SL377-00", RAIL_TYPE_DESCRIPTION: "Longarina", LOCATION: "Embalaje 1", SHIP_DATE: "19-AUG-2026" },
+        { CUSTOMER_CODE: "DAF", DESCRIPTION: "OUTRA", ITEM: "1-2184071-02", MP: "4-MP500770SL377-00", RAIL_TYPE_DESCRIPTION: "Longarina", LOCATION: "Embalaje 1", SHIP_DATE: "19-AUG-2026" },
+        { CUSTOMER_CODE: "DAF", DESCRIPTION: "OUTRA", ITEM: "1-SEM-MAPA", MP: "4-MP500770SL377-00", RAIL_TYPE_DESCRIPTION: "Longarina", LOCATION: "Embalaje 1", SHIP_DATE: "19-AUG-2026" },
+        { CUSTOMER_CODE: "DAF", DESCRIPTION: "OUTRA", ITEM: "2-R-SEM-MAPA", MP: "4-MP500770SL377-00", RAIL_TYPE_DESCRIPTION: "Reforço", LOCATION: "Embalaje 1", SHIP_DATE: "19-AUG-2026" },
+      ],
+      dafSlitters: [
+        { JOB_ORACLE: "slitter-1", MP: "4-MP500770SL377-00", QUANTITY_ORDERED: 4, QUANTITY_FINISHED: 0, FINISH_LENGTH: 10, SHIP_DATE: "19-AUG-2026" },
+      ],
+      lotes: [{ MP: "4-MP500770SL377-00", "MP(m)": 80 }],
+      demand: {},
+    }).values;
+
+    expect(values["P-M-SLITTER-DAF"]).toBe(8);
+    expect(values["Q-D-DAF"]).toBe(1);
+  });
 });
