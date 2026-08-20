@@ -59,7 +59,7 @@ Um número sem essa proveniência pode ser exibido apenas como parâmetro de dem
 |---|---|---|---|
 | Veículo/chassi | veículos | cliente + data + chassi | não converter automaticamente em peças |
 | Par | pares | cliente/família + data | normalmente duas peças, somente quando a família comprovar essa composição |
-| Peça/longarina | peças | `RAIL_ID` ou contador validado + data + processo | `DISTINCTCOUNT(RAIL_ID)` é diferente de somar ciclos PLC |
+| Peça/longarina | peças após validação física | `RAIL_ID` ou contador validado + data + processo | `DISTINCTCOUNT(RAIL_ID)` é a unidade técnica atual; ainda é diferente de somar ciclos PLC e não prova sozinho uma peça boa |
 | Conjunto | conjuntos | família + composição + período | aparece em famílias/consultas; composição por cliente ainda precisa de contrato |
 | Ciclo/batida | ciclos | tag + timestamp + máquina | `_VALUE` de LCT/RF2; fator ciclo→peça pendente |
 | Contêiner/pallet | contêineres/pallets | identificação logística + instante | nenhuma unidade/campo oficial foi comprovado no recorte; usar `Pendente` |
@@ -114,8 +114,8 @@ Contrato: timestamps devem ser armazenados com offset/UTC e convertidos para `Am
 
 | Classe | Exemplo | O que representa | O que não pode representar |
 |---|---|---|---|
-| Produção observada Oracle | `P-RF3 = DISTINCTCOUNT(Produção[RAIL_ID])` com `DESCRIPTION="Roll Former 3"` | peças distintas que satisfazem o filtro | capacidade, plano ou ciclos PLC |
-| Produção observada por Beatty | `P-B1`…`P-B4`, cada qual com sua descrição de saída | peças por máquina/localização | uma Beatty genérica ou soma indiscriminada |
+| Produção observada Oracle | `P-RF3 = DISTINCTCOUNT(Produção[RAIL_ID])` com `DESCRIPTION="Roll Former 3"` | `RAIL_ID` distintos que satisfazem saída e `LOCATION_DATE` | capacidade, plano, ciclos PLC ou peça física até validação do processo |
+| Produção observada por Beatty | `P-B1`…`P-B4`, cada qual com sua descrição de saída | `RAIL_ID` distintos por máquina/localização e `LOCATION_DATE` | uma Beatty genérica ou soma indiscriminada |
 | Contador industrial | `Produção LCT[_VALUE]`, `Produção RF2[_VALUE]` | ciclos/valor do tag no período | peças até validar a razão ciclo→peça |
 | Demanda | `D-P-RF3 = P-T-D × 2`; Beattys por cliente | necessidade calculada | produção realizada |
 | Tempo disponível planejado | `Máquinas[Tempo Disponível (Min)]` | parâmetro de máquina | tempo observado do MES |
@@ -124,6 +124,8 @@ Contrato: timestamps devem ser armazenados com offset/UTC e convertidos para `Am
 | OEE | nenhuma medida explícita localizada entre as 309 medidas | conceito solicitado, ainda sem contrato de fonte/fórmula | inferir OEE a partir de `BI_OEE_SCRAP` ou do nome da tabela |
 
 Comparações de utilização exigem unidade comum, mesma janela, mesmo cliente/processo e capacidade efetiva do calendário aplicável. Até isso estar comprovado, a interface deve separar “realizado”, “planejado” e “capacidade de referência”.
+
+Contrato temporal aprovado em 2026-08-20: produção Oracle usa `Date(LOCATION_DATE)` no dia e `Time.StartOfHour(LOCATION_DATE)` na hora, reproduzindo `Data_Processada` e `Início da Hora` do Power BI. `CREATION_DATE` permanece metadado de origem e não é fallback para o período de produção.
 
 ### 7.1 Máquinas, processos e recursos materializados
 

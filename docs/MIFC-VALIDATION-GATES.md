@@ -19,9 +19,9 @@ Escopo liberado: contrato, inventário, linhagem e paridade local de fórmulas e
 
 ## 2. Registro canônico dos gates
 
-O registro tem 30 regras: **7 validadas, 10 parciais, 6 divergentes e 7 pendentes**.
+O registro tem 31 regras: **8 validadas, 10 parciais, 6 divergentes e 7 pendentes**.
 
-### 2.1 Validadas — 7
+### 2.1 Validadas — 8
 
 | ID | Regra | Evidência e escopo |
 |---|---|---|
@@ -32,6 +32,7 @@ O registro tem 30 regras: **7 validadas, 10 parciais, 6 divergentes e 7 pendente
 | `V05` | WIP em dias | `peças ÷ 2 ÷ pares/dia`, com restrição explícita de duas peças por par |
 | `V06` | semântica de armazenamento/estagnação e fluxos push/pull | definições concordantes no manual, treinamento e formulário de símbolos |
 | `V07` | independência estrutural das Beattys 1–4 | filtros de produção, demanda, máquina, parada e IDs separados no modelo e aplicativo |
+| `V08` | data da produção Oracle | owner aprovou `LOCATION_DATE`; Power BI usa `Data_Processada`/`Início da Hora`; Digital corrigido com teste RED→GREEN e diferença zero no snapshot canônico |
 
 ### 2.2 Parciais — 10
 
@@ -39,7 +40,7 @@ O registro tem 30 regras: **7 validadas, 10 parciais, 6 divergentes e 7 pendente
 |---|---|---|---|
 | `P01` | calendário e turnos fabris | horários e dois cálculos do workbook inventariados | feriados, fins de semana, extra, vigência e fronteira do dia produtivo |
 | `P02` | timezone | aplicativo/planta usam `America/Sao_Paulo`; `F-H=180` identificado | timezone Oracle, gateway/Power BI e significado aprovado de `F-H` |
-| `P03` | produção Oracle | `DISTINCTCOUNT(RAIL_ID)` e filtros de RF3/Beattys identificados | snapshot e valores reais |
+| `P03` | produção Oracle | snapshot `OMES-2026-08-20T1137-BRT`, valores reais, filtros `DESCRIPTION` e `LOCATION_DATE`, e diferença zero entre bruto/recomputado/Digital | unidade física de `RAIL_ID` e valor visual de refresh Power BI coincidente |
 | `P04` | produção LCT/RF2 | tags e soma de `_VALUE` identificados | conversão ciclo→peça e tratamento de resets/qualidade |
 | `P05` | ciclo e takt | numeradores/denominadores DAX identificados | unidade oficial por medida e comportamento com zero/ausência |
 | `P06` | capacidade | parâmetros de máquina e formulário separados de produção | unidade de `dOperacao`, calendário efetivo e aprovação dos valores-base |
@@ -63,7 +64,7 @@ O registro tem 30 regras: **7 validadas, 10 parciais, 6 divergentes e 7 pendente
 
 | ID | Gate | Condição de saída |
 |---|---|---|
-| `Q01` | paridade Oracle por medida | executar leitura autorizada, registrar snapshot e comparar bruto, Power BI e Digital |
+| `Q01` | paridade Oracle por medida | anexar valor visual/refresh Power BI coincidente e confirmar unidade física; bruto OMES, DAX recalculado e Digital já fecharam no snapshot canônico |
 | `Q02` | sincronismo MES↔Power BI | obter refresh ID/horário do dataset e mesma janela da API |
 | `Q03` | seis Golden Cases numéricos | preencher período, filtros, resultado esperado e evidência de aprovação |
 | `Q04` | inventário completo de buffers | aprovar todos os pontos/locais e sua distinção estoque×estagnação |
@@ -83,6 +84,8 @@ Nenhum resultado numérico foi inventado. Campos `A DEFINIR` precisam ser preenc
 | `GC04 — buffer real` | local/colunas aprovados de `BI_MIFC_LCT_POS_STOCK`, instante conhecido | tabela `BI_MIFC_LCT_POS_STOCK` e medida aplicável | `buf-fh-lct-in` ou novo buffer MES com `quantityPieces` não nulo | A DEFINIR após aprovar agregação | peças exatas; dias dentro de 1 segundo no valor bruto | PENDENTE |
 | `GC05 — Lead Time FH completo` | mesma data/revisão/filtros de Calendar, MP, Operações e embarque | `T-T-FH` e todos os 13 grupos de componentes DAX | soma versionada e decomponível dos mesmos componentes | A DEFINIR por componente e total | duração bruta ≤ 1 s; arredondamento só na apresentação | PENDENTE/DIVERGENTE por `D03` e `D05` |
 | `GC06 — produção real conhecida` | período fechado assinado pelo processo, tag LCT ou RF2, resets e qualidade documentados | `Produção LCT/RF2[_VALUE]` + registro de chão de fábrica | conversão ciclo→peça aprovada | A DEFINIR pelo registro conhecido | peças inteiras exatas após conversão | PENDENTE |
+
+O snapshot intradiário `OMES-2026-08-20T1137-BRT` é um canário de integração, não substitui os Golden Cases de período fechado. Nele, RF3 fechou em 193 e Beatty 3 em 72 `RAIL_ID` distintos entre OMES bruto, DAX recalculado e Digital; o valor visual de um refresh Power BI identificado não estava disponível.
 
 ### 3.1 Componentes mínimos do `GC05`
 

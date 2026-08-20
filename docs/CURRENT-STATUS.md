@@ -3,9 +3,21 @@
 Atualizado em: 2026-08-20
 Branch: `main`
 Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`
-Último marco concluído: **Correção Funcional 01 — cockpit rastreável e fechamento por ausência**
+Último marco concluído: **Prompt 1.1 — snapshot OMES e correção de `LOCATION_DATE`**
 
 ## Onde paramos
+
+### Prompt 1.1 — validação de produção, ciclo e capacidade (2026-08-20)
+
+- conexão OMES validada com transação somente leitura; catálogo de 15 consultas auditado como `SELECT-ONLY`;
+- leituras live habilitadas apenas nos processos temporários de diagnóstico; `.env` permaneceu com live desativado;
+- owner confirmou `LOCATION_DATE` como data/hora canônica de produção, reproduzindo o Power BI;
+- defeito corrigido: o Digital usava `CREATION_DATE`; teste RED recebeu 1 contra 2 esperados e ficou GREEN após a correção;
+- snapshot `OMES-2026-08-20T1137-BRT` fechou diferença zero em RF3, Beattys 1–4, P.A, CNC, Pintura e Stenhoj entre OMES agregado, DAX recalculado e MIFC corrigido;
+- valor visual de um refresh Power BI coincidente, unidade física de `RAIL_ID`, CT nominal oficial, capacidade efetiva e OEE permanecem pendentes;
+- `928` das Beattys foi identificado como `58 unid./h × 16 h`; não é produção OMES e não incorpora o input local de 82%;
+- relatório detalhado: `docs/MIFC-PRODUCTION-VALIDATION-2026-08-20.md`;
+- matriz tabular: `docs/mifc-machine-production-validation.csv`.
 
 ### Correção Funcional 01 — 2026-08-20
 

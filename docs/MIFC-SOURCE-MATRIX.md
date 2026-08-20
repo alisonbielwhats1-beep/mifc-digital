@@ -63,7 +63,7 @@ Todas as partições estão em modo `import`. O agendamento e a última atualiza
 | `Paradas` | Oracle `BOMES.BI_MFIC_PARADAS` | intervalo de parada | timestamps/minutos derivados | data da parada; códigos/operação nas medidas | PARCIAL; timezone pendente |
 | `Produção LCT` | SQL Server `DT_LOGGER.dbo.GOLPES_LCT` | tag + timestamp | `_VALUE` de ciclos/hora | tag `LCT.PLC_1215C.PRODUÇÃO.CICLOS_POR_HORA` | PENDENTE: ciclo→peça |
 | `Produção RF2` | SQL Server `DT_LOGGER.dbo.GOLPES_RF2` | tag + timestamp | `_VALUE` | datas desde 2024-05-03 | PENDENTE: ciclo→peça |
-| `Produção` | Oracle `BOMES.BI_MFIC_PROD` | `RAIL_ID` + localização/data | peças distintas nas medidas | descrição de processo e calendário | PARCIAL; Golden Cases pendentes |
+| `Produção` | Oracle `BOMES.BI_MFIC_PROD` | `RAIL_ID` + localização/data | `RAIL_ID` distintos; peça física pendente | descrição de processo; dia/hora por `LOCATION_DATE` | PARCIAL; snapshot OMES validado, refresh visual PBI e unidade pendentes |
 | `Relatorio_bases` | SQL nativo Oracle | `RAIL_ID`/item/lote | peças/base | últimos 365 dias, item BB, status OK | PARCIAL; snapshot pendente |
 | `Relatorio_Item RF2` | SQL nativo Oracle | `RAIL_ID`/item/lote | comprimento e item | MP allowlist, localização 185, status 6/7, 180 dias | PARCIAL; conversão/resultado pendentes |
 | `SCANIA` | SQL nativo Oracle + consultas derivadas | item/chassi/localização | conjuntos/itens | SCA, item `1-F*`, estoque FG e simples/reforçada | PARCIAL; granularidade por família pendente |
@@ -81,11 +81,11 @@ Não foi encontrado um objeto What-if Parameter dedicado. Os parâmetros corrent
 
 | Elemento | Campo/medida | Fonte | Unidade | Granularidade | Filtros | Atualização | Status |
 |---|---|---|---|---|---|---|---|
-| Produção RF3 | `P-RF3` | Oracle `BI_MFIC_PROD` | peças | máquina + período + `RAIL_ID` | `DESCRIPTION="Roll Former 3"`, data | refresh import | PARCIAL |
-| Produção Beatty 1 | `P-B1` | Oracle `BI_MFIC_PROD` | peças | máquina + período + `RAIL_ID` | `Beatty Alma Output 1`, data | refresh import | PARCIAL |
-| Produção Beatty 2 | `P-B2` | Oracle `BI_MFIC_PROD` | peças | máquina + período + `RAIL_ID` | `Beatty Alma Output 2`, data | refresh import | PARCIAL |
-| Produção Beatty 3 | `P-B3` | Oracle `BI_MFIC_PROD` | peças | máquina + período + `RAIL_ID` | `Beatty Alma Output 3`, data | refresh import | PARCIAL |
-| Produção Beatty 4 | `P-B4` | Oracle `BI_MFIC_PROD` | peças | máquina + período + `RAIL_ID` | `Beatty Alma Output 4`, data | refresh import | PARCIAL |
+| Produção RF3 | `P-RF3` | Oracle `BI_MFIC_PROD` | `RAIL_ID` distintos | máquina + período + `RAIL_ID` | `DESCRIPTION="Roll Former 3"`; dia/hora de `LOCATION_DATE` | refresh import | PARCIAL; 193 no snapshot canônico |
+| Produção Beatty 1 | `P-B1` | Oracle `BI_MFIC_PROD` | `RAIL_ID` distintos | máquina + período + `RAIL_ID` | `Beatty Alma Output 1`; dia/hora de `LOCATION_DATE` | refresh import | PARCIAL; 70 no snapshot canônico |
+| Produção Beatty 2 | `P-B2` | Oracle `BI_MFIC_PROD` | `RAIL_ID` distintos | máquina + período + `RAIL_ID` | `Beatty Alma Output 2`; dia/hora de `LOCATION_DATE` | refresh import | PARCIAL; 58 no snapshot canônico |
+| Produção Beatty 3 | `P-B3` | Oracle `BI_MFIC_PROD` | `RAIL_ID` distintos | máquina + período + `RAIL_ID` | `Beatty Alma Output 3`; dia/hora de `LOCATION_DATE` | refresh import | PARCIAL; 72 no snapshot canônico |
+| Produção Beatty 4 | `P-B4` | Oracle `BI_MFIC_PROD` | `RAIL_ID` distintos | máquina + período + `RAIL_ID` | `Beatty Alma Output 4`; dia/hora de `LOCATION_DATE` | refresh import | PARCIAL; 60 no snapshot canônico |
 | Produção LCT | `P-LCT` / `_VALUE` | SQL Server `GOLPES_LCT` | ciclos; peças não comprovadas | tag + timestamp/hora | nome exato do tag, período | refresh import | PENDENTE |
 | Produção RF2 | família `P-RF2` / `_VALUE` | SQL Server `GOLPES_RF2` | ciclos; peças não comprovadas | tag + timestamp/hora | desde 2024-05-03, período | refresh import | PENDENTE |
 | Pares FH | `P-FH-F = T-I-FH/2` | tabela `FH` derivada do Oracle | pares | família + chassi/item + período | FH, MP/local/data do visual | refresh import | PARCIAL |
@@ -97,14 +97,14 @@ Não foi encontrado um objeto What-if Parameter dedicado. Os parâmetros corrent
 | Demanda Beattys | `D-P-B1..B4` | DAX + família correspondente | peças | Beatty + período | B1=VM, B2=DAF, B3=SCA, B4=FH | derivado | PARCIAL |
 | Tempo planejado de máquina | `T-P-M-*` | Excel `Máquinas` | minutos | máquina + revisão | nome exato da máquina | refresh de parâmetro | PARCIAL |
 | Tempo líquido | `T-D-L-*` | Calendar + Paradas + `F-H` | minutos | máquina + período | operação, códigos de parada, data | derivado | PARCIAL/DIVERGENTE |
-| Ciclo observado calculado | `T-C-* = T-D-L-*/P-*` | DAX | min/peça provável | máquina + período | mesmos filtros de tempo e produção | derivado | PARCIAL |
+| Ciclo observado calculado | `T-C-* = T-D-L-*/P-*` | DAX | min/`RAIL_ID` no período | máquina + período | mesmos filtros de tempo e produção | derivado | PARCIAL; não comparável diretamente ao CT nominal em s/ciclo |
 | Takt planejado | `TKT-C-* = T-P-M-*/D-P-*` | DAX + parâmetros | min/peça | máquina + revisão/período | máquina e demanda | derivado | PARCIAL |
 | Parada programada | `P-P-*` | Oracle `BI_MFIC_PARADAS` | minutos | máquina/operação + intervalo | códigos `L9/O3/M6/O2`, operação | refresh import | PARCIAL |
-| Capacidade de referência | `capacityRows` / `dOperacao` | Digital + tabela M/Excel | peças/h, peças/dia ou unidade pendente | máquina + revisão | processo ativo | cenário | PARCIAL |
-| Capacidade nominal/h | `nominalCapacityPerHour` | Digital/parâmetro de máquina | peças/h | máquina + revisão | recurso ativo | cenário | PARCIAL |
-| Capacidade de referência/dia | `referenceCapacityPerDay` | Digital/parâmetro de máquina | peças/dia | máquina + revisão + turnos | recurso ativo | cenário | PARCIAL |
+| Capacidade de referência | `capacityRows` / `dOperacao` | Digital + tabela M/Excel | unidade/h ou unidade/dia pendente | máquina + revisão | processo ativo | cenário | PARCIAL; não é produção OMES |
+| Capacidade nominal/h | `nominalCapacityPerHour` | Digital/parâmetro de máquina | ciclos/h ou unidade/h pendente | máquina + revisão | recurso ativo | cenário | PARCIAL; fator ciclo→saída não aprovado |
+| Capacidade de referência/dia | `referenceCapacityPerDay` | Digital/parâmetro de máquina | unidade/dia pendente | máquina + revisão + turnos | recurso ativo | cenário | PARCIAL; Beatty `928=58×16` |
 | Capacidade efetiva | regra ainda bloqueada | calendário + disponibilidade + capacidade | peças/período | máquina + período/revisão | turnos/calendário/OEE | derivado | PENDENTE |
-| Produção da hora/dia | medidas `P-*` sob filtro temporal | Oracle/SQL Server | peças ou ciclos | máquina + hora/dia | data/hora e processo | refresh import | PARCIAL |
+| Produção da hora/dia | medidas `P-*` sob filtro temporal | Oracle/SQL Server | `RAIL_ID` distintos ou ciclos, conforme fonte | máquina + hora/dia | Oracle por `LOCATION_DATE`; SQL Server por timestamp do tag | refresh import | PARCIAL |
 | Disponibilidade | parâmetro `availabilityPercent` | Digital/input | % planejado | máquina + revisão | recurso ativo | cenário | PARCIAL; não observado |
 | OEE | nenhuma medida explícita identificada | fonte não definida | % | máquina + período | A DEFINIR | A DEFINIR | PENDENTE |
 | Estoque por ponto | famílias `E-*` | FH/VM/SCANIA/DAF/SHIPDATE | peças/conjuntos a declarar | cliente + localização + período | cliente, local, item, ship date | refresh import | PARCIAL |
