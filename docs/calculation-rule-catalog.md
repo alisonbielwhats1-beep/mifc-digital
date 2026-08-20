@@ -17,8 +17,31 @@ Versão do catálogo: 1
 | `wip.days` | 1 | WIP | dias | quantidade em peças, pares/dia | linhas de espera do `MIFC-2023`; família `D-E-*` do PBIP |
 | `logistics.movement_days` | 1 | Logística | dias | minutos de movimentação | `MIFC-2023`; medida `T-M` |
 | `logistics.transport_days` | 1 | Logística | dias | horas de transporte | `MIFC-2023`; medida `T-T` |
+| `logistics.beneficiator_days` | 1 | Logística | dias | dias no beneficiador por cliente | `INPUT` manual; substitui a constante zero de `T-B` |
 | `process.time_days` | 1 | Processo | dias | minutos disponíveis, demanda em peças | linhas de processo do `MIFC-2023`; família `T-*` do PBIP |
 | `lead_time.total_days` | 1 | Lead Time | dias | componentes do fluxo | `MIFC-2023!CV23:CV34`; medidas `T-T-FH/VM/SCA/DAF` |
+| `slitter.lot_length_m` | 1 | Estoque | m | peso, espessura, largura, densidade 7.850 kg/m³ | `Lotes[MP(m)]` no PBIP |
+| `slitter.stock_pieces` | 1 | Estoque | peças | metros de lote por cliente, comprimento médio total do Slitter | `E-M-P-S` no PBIP; arredondamento para baixo |
+| `slitter.stock_days` | 1 | Estoque | dias | peças de Slitter e `P-M-*` | medidas `Q-D-FH/VM/SCA/DAF` |
+| `lead_time.functional_total_days` | 1 | Lead Time | dias | transporte, beneficiador, movimentações, estoques e tempos de máquina | regra local `LT-TOTAL-*`; não duplica subtotal de ENN |
+
+## Regra funcional do total
+
+`LT-TOTAL-*` não substitui nem renomeia `T-T-*` do Power BI. A regra local acrescenta o Beneficiador manual e os tempos de cada máquina participante, exatamente uma vez:
+
+`transporte_h/24 + beneficiador_dias + movimento_min/1440 × N + Σ estoques/esperas da rota + Σ tempos T-* da rota`
+
+`N = 7` para FH e `N = 8` para VM, Scania e DAF. CC, Furação, Pintura e SEE agrupam máquinas, portanto não geram parcelas adicionais.
+
+## Regra exata do Slitter
+
+1. `MP(m) = (PESO / 7850) / ((ESPESSURA / 1000) × (LARGURA / 1000))`.
+2. `C-T-E = SUM(Lotes[MP(m)])` no grupo de cliente (`VDB`, `SCA` ou `DAF`).
+3. `C-P-M-TOTAL = soma de FINISH_LENGTH das linhas Local=Slitter ÷ quantidade dessas linhas`, combinando DAF Slitters, FH, Scania e VM no contexto de data.
+4. `E-M-P-S = ROUNDDOWN(C-T-E / C-P-M-TOTAL, 0)`.
+5. `Q-D-cliente = E-M-P-S do grupo ÷ P-M-cliente`, sendo `P-M-cliente = (pares futuros × 2) ÷ quantidade distinta de SHIP_DATE >= TODAY()` conforme o modelo.
+
+FH e VM compartilham os lotes terminados em `VDB`; as cadências `P-M-FH` e `P-M-VM` permanecem separadas. A tabela `Produção` não entra nesta sequência.
 
 ## Regras cadastradas, mas bloqueadas
 

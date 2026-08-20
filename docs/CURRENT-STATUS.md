@@ -3,9 +3,21 @@
 Atualizado em: 2026-08-20
 Branch: `main`
 Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`
-Último marco concluído: **Prompt 1.1 — snapshot OMES e correção de `LOCATION_DATE`**
+Último marco concluído: **Correção funcional — Beneficiador, Slitter e total por cliente**
 
 ## Onde paramos
+
+### Beneficiador, Slitter e reconciliação do Lead Time — 2026-08-20
+
+- Logística recebeu `Beneficiador (dias)` manual por cliente; snapshots locais schema 1/2 migram para schema 3 com valor inicial zero;
+- o bloco `Beneficiador` foi incluído no começo do fluxo de materiais e exibe FH, VM, Scania e DAF no próprio card; layouts salvos migram para schema 6 sem apagar revisões;
+- transporte e movimentação deixaram de ser constantes escondidas no total funcional e usam os valores manuais da linha do cliente;
+- Slitter reproduz `Lotes[MP(m)] = (PESO/7850) / ((ESPESSURA/1000) × (LARGURA/1000))`, `C-P-M-TOTAL`, `ROUNDDOWN` e `Q-D-*`; `Produção[ITEM(m)]` não participa;
+- FH e VM preservam o agrupamento de lotes `VDB` do modelo semântico, mas cada cliente divide o estoque em peças pela sua própria medida `P-M-*`;
+- os tempos `T-*` aparecem nos cards das máquinas físicas e entram uma única vez no total; CC, Furação, Pintura e SEE permanecem ENNs, sem subtotal duplicado;
+- estoques automáticos são agrupados em símbolos de buffer ancorados a Slitter, LCT, RF2, RF3, Mesa 3, Beattys, P.A/Cantilever, Pintura/Rebitagem e Stenhoj/Embalagem;
+- o total ampliado se chama `LT-TOTAL-FH/VM/SCA/DAF`, pois é uma regra funcional da aplicação; as medidas originais `T-T-*` do PBIP continuam identificadas separadamente e não são renomeadas;
+- se faltar parâmetro manual, estoque ou tempo de máquina, o total fica `—`; nenhuma soma parcial é publicada como total observado.
 
 ### Prompt 1.1 — validação de produção, ciclo e capacidade (2026-08-20)
 
@@ -36,7 +48,7 @@ Repositório: `https://github.com/alisonbielwhats1-beep/mifc-digital`
 
 O MVP local está executável e os Prompts 1 a 6.1 foram realizados. O projeto está em repositório público com código, documentação, referências visuais e recursos extraídos usados durante a análise.
 
-O Layout possui 32 blocos, 56 linhas editáveis e linhas específicas para Volvo FH, Volvo VM, Scania e DAF. A tela de Integrações agora consegue carregar, sob ação explícita do usuário, somente as consultas SQL aprovadas e manter os resultados na memória da API local.
+O Layout possui 33 blocos, incluindo o Beneficiador, e linhas específicas para Volvo FH, Volvo VM, Scania e DAF. A tela de Integrações agora consegue carregar, sob ação explícita do usuário, somente as consultas SQL aprovadas e manter os resultados na memória da API local.
 
 Uma leitura real da consulta `base1` foi validada pelo proprietário na rede autorizada: 3.888 linhas, transação somente leitura e resposta HTTP 200. Nenhuma operação de escrita foi executada.
 
@@ -227,7 +239,7 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - toda etapa da faixa é posicionada a partir do respectivo bloco do Layout; ao mover uma máquina, somente seu pico acompanha a nova posição;
 - `Ctrl/Shift + clique` adiciona/remove blocos da seleção; arraste normal move somente o bloco clicado e o arraste de grupo exige manter `Ctrl/Shift` ao iniciá-lo;
 - exclusão com vários blocos selecionados remove também suas conexões, exige confirmação e pode ser desfeita;
-- migração de Layout schema 5 aplica a composição legível às revisões locais existentes sem apagar propriedades ou medidas.
+- migração de Layout schema 6 preserva a composição legível e acrescenta o Beneficiador às revisões locais existentes sem apagar propriedades ou medidas.
 
 ### Auditoria de paridade Power BI
 

@@ -19,7 +19,7 @@ export interface LayoutEdge {
 }
 export interface LayoutRevision { id: string; number: number; label: string; createdAt: string; savedAt?: string; nodes: LayoutNode[]; edges: LayoutEdge[] }
 interface GraphSnapshot { nodes: LayoutNode[]; edges: LayoutEdge[] }
-interface PersistedLayout { schemaVersion: 5; activeRevisionId: string; revisions: LayoutRevision[] }
+interface PersistedLayout { schemaVersion: 6; activeRevisionId: string; revisions: LayoutRevision[] }
 
 export const LAYOUT_WORLD_WIDTH = 2260;
 export const LAYOUT_WORLD_HEIGHT = 1160;
@@ -53,6 +53,7 @@ function initialRevision(): LayoutRevision {
     node(r,"node-usiminas","customer_supplier","USIMINAS",18,388,96,64,properties("EXT-001")),
     node(r,"node-csn","customer_supplier","CSN",18,476,96,64,properties("EXT-002")),
     node(r,"node-gerdau","customer_supplier","GERDAU",18,564,96,64,properties("EXT-003")),
+    node(r,"node-beneficiator","customer_supplier","Beneficiador",150,340,124,92,properties("EXT-BEN",0,0,0,2,95,"Tempo manual por cliente no cadastro Logística.","T-B")),
     node(r,"node-raw","storage","Almox.\nMatéria-prima",150,455,124,92,properties("BUF-001",0,250,100,2,95,"Estoque de matéria-prima.","D-E-MP")),
     node(r,"node-cut","process","LCT / RF2",320,455,136,90,properties("P-005",0,0,0,2,90,"LCT para Volvo FH; RF2 segue os dois MPs definidos no PBIP.","T-LCT/RF2"),"cap-lct"),
     node(r,"node-stamp","process","Roll Former 3",500,455,136,90,properties("P-001",48,68,1200,2,85,"Etapa identificada no PBIP.","T-RF3"),"cap-rf3"),
@@ -77,8 +78,8 @@ function initialRevision(): LayoutRevision {
   ];
   const edges: LayoutEdge[] = [];
   const add = (id: string, source: string, target: string, flow: MifcFlowType, curve = 0) => edges.push(edge(r,id,source,target,flow,curve));
-  add("mat-01","node-usiminas","node-raw","material_push",-30); add("mat-02","node-csn","node-raw","material_push",0); add("mat-03","node-gerdau","node-raw","material_push",30);
-  add("mat-04","node-raw","node-cut","material_push"); add("mat-05","node-cut","node-stamp","material_push"); add("mat-06","node-stamp","node-weld-1","material_push");
+  add("mat-01","node-usiminas","node-beneficiator","material_push",-30); add("mat-02","node-csn","node-beneficiator","material_push",0); add("mat-03","node-gerdau","node-beneficiator","material_push",30);
+  add("mat-beneficiator","node-beneficiator","node-raw","material_push"); add("mat-04","node-raw","node-cut","material_push"); add("mat-05","node-cut","node-stamp","material_push"); add("mat-06","node-stamp","node-weld-1","material_push");
   ["node-weld-2","node-beatty-2","node-beatty-3","node-beatty-4"].forEach((target,index) => add(`mat-07-${index+1}`,"node-weld-1",target,"material_push",(index-1.5)*18));
   ["node-weld-2","node-beatty-2","node-beatty-3","node-beatty-4"].forEach((source,index) => add(`mat-08-${index+1}`,source,"node-weld-3","material_push",(index-1.5)*18));
   add("mat-09","node-weld-3","node-assembly","material_push"); add("mat-10","node-assembly","node-inspection","material_push"); add("mat-11","node-inspection","node-finished","material_push"); add("mat-12","node-finished","node-shipping","material_push");
@@ -184,6 +185,35 @@ function migrateReadableLayout(revisions: LayoutRevision[]): LayoutRevision[] {
   return revisions;
 }
 
+function migrateBeneficiator(revisions: LayoutRevision[]): LayoutRevision[] {
+  const template = initialRevision().nodes.find((item) => item.id === "node-beneficiator")!;
+  for (const revision of revisions) {
+    const raw = revision.nodes.find((item) => item.id === "node-raw" || item.id.endsWith("-node-raw"));
+    if (!raw) continue;
+    const prefix = raw.id.slice(0, -"node-raw".length);
+    const id = `${prefix}node-beneficiator`;
+    let beneficiator = revision.nodes.find((item) => item.id === id);
+    if (!beneficiator) {
+      beneficiator = { ...clone(template), id, revisionId: revision.id };
+      revision.nodes.push(beneficiator);
+    }
+    const supplierIds = ["node-usiminas", "node-csn", "node-gerdau"].map((suffix) => `${prefix}${suffix}`);
+    for (const item of revision.edges) {
+      if (item.flowType === "material_push" && supplierIds.includes(item.sourceNodeId) && item.targetNodeId === raw.id) item.targetNodeId = beneficiator.id;
+    }
+    for (const [index, supplierId] of supplierIds.entries()) {
+      if (!revision.nodes.some((item) => item.id === supplierId)) continue;
+      if (!revision.edges.some((item) => item.flowType === "material_push" && item.sourceNodeId === supplierId && item.targetNodeId === beneficiator.id)) {
+        revision.edges.push(edge(revision.id, `${prefix}mat-beneficiator-in-${index + 1}`, supplierId, beneficiator.id, "material_push", (index - 1) * 30));
+      }
+    }
+    if (!revision.edges.some((item) => item.flowType === "material_push" && item.sourceNodeId === beneficiator.id && item.targetNodeId === raw.id)) {
+      revision.edges.push(edge(revision.id, `${prefix}mat-beneficiator`, beneficiator.id, raw.id, "material_push"));
+    }
+  }
+  return revisions;
+}
+
 export const useMifcLayoutStore = defineStore("mifc-layout", {
   state: () => ({ revisions: [initialRevision()] as LayoutRevision[], activeRevisionId: "layout-rev-04", selectedNodeId: "node-weld-2" as string | null, selectedEdgeId: null as string | null, connectSourceId: null as string | null, activeTool: "select" as LayoutTool, undoStack: [] as GraphSnapshot[], redoStack: [] as GraphSnapshot[], hydrated: false, persistedGraph: "" }),
   getters: {
@@ -198,10 +228,11 @@ export const useMifcLayoutStore = defineStore("mifc-layout", {
       try {
         const raw = localStorage.getItem(storageKey);
         const parsed = raw ? JSON.parse(raw) as { schemaVersion?: number; activeRevisionId?: string; revisions?: LayoutRevision[] } : null;
-        if ([2,3,4,5].includes(parsed?.schemaVersion ?? 0) && Array.isArray(parsed?.revisions) && parsed.revisions.length && typeof parsed.activeRevisionId === "string") {
+        if ([2,3,4,5,6].includes(parsed?.schemaVersion ?? 0) && Array.isArray(parsed?.revisions) && parsed.revisions.length && typeof parsed.activeRevisionId === "string") {
           const labeled = parsed.schemaVersion === 2 ? migrateLegacyProcessLabels(parsed.revisions) : parsed.revisions;
           const beattys = (parsed.schemaVersion ?? 0) < 4 ? migrateBeattyLayout(labeled) : labeled;
-          this.revisions = (parsed.schemaVersion ?? 0) < 5 ? migrateReadableLayout(beattys) : beattys;
+          const readable = (parsed.schemaVersion ?? 0) < 5 ? migrateReadableLayout(beattys) : beattys;
+          this.revisions = (parsed.schemaVersion ?? 0) < 6 ? migrateBeneficiator(readable) : readable;
           this.activeRevisionId = parsed.activeRevisionId;
         }
       } catch { /* baseline local */ }
@@ -237,7 +268,7 @@ export const useMifcLayoutStore = defineStore("mifc-layout", {
     deleteNodes(ids: string[]) { const selected = new Set(ids); if (!selected.size) return; this.beginMutation(); this.activeRevision.nodes = this.activeRevision.nodes.filter((item) => !selected.has(item.id)); this.activeRevision.edges = this.activeRevision.edges.filter((item) => !selected.has(item.sourceNodeId) && !selected.has(item.targetNodeId)); this.selectedNodeId = null; this.selectedEdgeId = null; },
     connectNode(id: string, flowType: MifcFlowType = "material_push") { if (!this.connectSourceId) { this.connectSourceId = id; return; } if (canConnect(this.activeRevision.edges,this.connectSourceId,id,flowType)) { this.beginMutation(); this.activeRevision.edges.push(edge(this.activeRevision.id,makeId("edge"),this.connectSourceId,id,flowType,0)); } this.connectSourceId = null; this.activeTool = "select"; },
     updateSelectedEdge(patch: Partial<Pick<LayoutEdge,"flowType"|"sourceNodeId"|"targetNodeId"|"curveOffset">>) { const item = this.selectedEdge; if (!item) return; this.beginMutation(); Object.assign(item,clone(patch)); },
-    save() { this.activeRevision.savedAt = new Date().toISOString(); const payload: PersistedLayout = { schemaVersion: 5, activeRevisionId: this.activeRevisionId, revisions: this.revisions }; localStorage.setItem(storageKey,JSON.stringify(payload)); this.persistedGraph = JSON.stringify(graphSnapshot(this.activeRevision)); },
+    save() { this.activeRevision.savedAt = new Date().toISOString(); const payload: PersistedLayout = { schemaVersion: 6, activeRevisionId: this.activeRevisionId, revisions: this.revisions }; localStorage.setItem(storageKey,JSON.stringify(payload)); this.persistedGraph = JSON.stringify(graphSnapshot(this.activeRevision)); },
     switchRevision(id: string) { const revision = this.revisions.find((item) => item.id === id); if (!revision || id === this.activeRevisionId) return; if (this.isDirty) this.save(); this.activeRevisionId = id; this.selectedNodeId = revision.nodes[0]?.id ?? null; this.selectedEdgeId = null; this.undoStack = []; this.redoStack = []; this.persistedGraph = JSON.stringify(graphSnapshot(revision)); this.save(); },
     createRevision() { this.save(); const number = Math.max(...this.revisions.map((item) => item.number)) + 1; const revisionId = makeId("layout-rev"); const source = this.activeRevision; const nodeIds = new Map(source.nodes.map((item) => [item.id,`${revisionId}-${item.id}`])); const revision: LayoutRevision = { id:revisionId, number, label:`Rev. ${String(number).padStart(2,"0")} (Rascunho)`, createdAt:new Date().toISOString(), nodes:source.nodes.map((item) => ({...clone(item),id:nodeIds.get(item.id)!,revisionId})), edges:source.edges.map((item) => ({...clone(item),id:makeId("edge"),revisionId,sourceNodeId:nodeIds.get(item.sourceNodeId)!,targetNodeId:nodeIds.get(item.targetNodeId)!})) }; this.revisions.push(revision); this.activeRevisionId = revisionId; this.undoStack = []; this.redoStack = []; this.selectedNodeId = revision.nodes[0]?.id ?? null; this.selectedEdgeId = null; this.persistedGraph = JSON.stringify(graphSnapshot(revision)); this.save(); },
   },

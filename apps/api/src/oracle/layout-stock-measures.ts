@@ -182,6 +182,44 @@ function safeDivide(value: number, divisor: number): number {
   return Number.isFinite(value) && Number.isFinite(divisor) && divisor !== 0 ? value / divisor : 0;
 }
 
+function positiveNumber(row: OracleRow, ...keys: string[]): number | undefined {
+  for (const column of keys) {
+    const value = Number(row[column]);
+    if (Number.isFinite(value) && value > 0) return value;
+  }
+  return undefined;
+}
+
+/** Reproduz a coluna calculada DAX Lotes[MP(m)]. */
+function lotLengthMeters(row: OracleRow): number | undefined {
+  const calculated = positiveNumber(row, "MP(m)", "MP_M", "MP(metros)");
+  if (calculated !== undefined) return calculated;
+  const weightKg = positiveNumber(row, "PESO");
+  const thicknessMm = positiveNumber(row, "ESPESSURA");
+  const widthMm = positiveNumber(row, "LARGURA");
+  if (weightKg === undefined || thicknessMm === undefined || widthMm === undefined) return undefined;
+  return (weightKg / 7850) / ((thicknessMm / 1000) * (widthMm / 1000));
+}
+
+function finishLengthMeters(row: OracleRow): number | undefined {
+  return positiveNumber(row, "FINISH_LENGHT", "FINISH_LENGTH");
+}
+
+function isSlitterLengthRow(row: OracleRow): boolean {
+  const transformedLocal = key(text(row, "local", "Local"));
+  const sourceLocation = key(text(row, "LOCATION", "location"));
+  return transformedLocal === key("Slitter") || sourceLocation === key("Roll Former 3 Input");
+}
+
+type LotClientGroup = "VDB" | "SCA" | "DAF";
+
+function normalizedLotClient(value: string): LotClientGroup | undefined {
+  const suffix = value.trim().toUpperCase().slice(-3);
+  if (suffix === "VDB" || suffix === "SCA" || suffix === "DAF") return suffix;
+  if (suffix === "FH" || suffix === "VM") return "VDB";
+  return undefined;
+}
+
 function clientPairs(rowsToCount: OracleRow[], client: "FH" | "VM" | "SCA" | "DAF"): number {
   if (client === "FH" || client === "VM") return rowsToCount.filter((row) => hasValue(row, "CHASSIS_NUMBER")).length / 2;
   if (client === "SCA") return rowsToCount.reduce((total, row) => total + scaniaPieceUnit(row), 0) / 2;
@@ -410,18 +448,60 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
     values["Q-D-S-T"] = values["Q-D-S-RF2"] + values["Q-D-S-LPP2"] + values["Q-D-S-RF3"] + values["Q-D-S-STJ"] + values["Q-D-S-EMB"];
   }
 
-  const lotes = rowsForDate(input.lotes, input.contextDate, ["DATA", "DATE"]);
-  const producao = rowsForDate(input.producao, input.contextDate, ["DATA", "DATE", "CREATION_DATE"]);
-  const totalLength = lotes.reduce((total, row) => total + numeric(row, "MP(m)", "MP_M", "MP(metros)"), 0);
-  const productionLengths = producao.filter((row) => hasValue(row, "RAIL_ID") && Number.isFinite(Number(row["ITEM(m)"])));
-  const averageProductionLength = safeDivide(productionLengths.reduce((total, row) => total + numeric(row, "ITEM(m)"), 0), productionLengths.length);
-  const averagePieces = Math.floor(safeDivide(totalLength, averageProductionLength));
-  if (input.lotes !== undefined && input.producao !== undefined && averageProductionLength > 0) {
-    values["E-M-P-S"] = averagePieces;
-    if (rates.FH > 0) values["Q-D-FH"] = safeDivide(averagePieces, rates.FH);
-    if (rates.VM > 0) values["Q-D-VM"] = safeDivide(averagePieces, rates.VM);
-    if (rates.SCA > 0) values["Q-D-SCA"] = safeDivide(averagePieces, rates.SCA);
-    if (rates.DAF > 0) values["Q-D-DAF"] = safeDivide(averagePieces, rates.DAF);
+  const baseSlitterLengths = base1
+    .filter((row) => ["FH", "VM", ...(input.scania === undefined ? ["SCA"] : [])].includes(clientFromBase1(row) ?? ""))
+    .filter(isSlitterLengthRow)
+    .map(finishLengthMeters)
+    .filter((value): value is number => value !== undefined);
+  const scaniaSlitterLengths = input.scania === undefined ? [] : scaniaFallback
+    .filter(isSlitterLengthRow)
+    .map(finishLengthMeters)
+    .filter((value): value is number => value !== undefined);
+  const dafSlitterLengths = rowsForDate(input.dafSlitters, input.contextDate, ["SHIP_DATE", "DATA", "DATE"])
+    .map(finishLengthMeters)
+    .filter((value): value is number => value !== undefined);
+  const slitterLengths = [...baseSlitterLengths, ...scaniaSlitterLengths, ...dafSlitterLengths];
+  const averageFinishLength = safeDivide(slitterLengths.reduce((total, value) => total + value, 0), slitterLengths.length);
+
+  const mpGroups = new Map<string, Set<LotClientGroup>>();
+  const registerMp = (sourceRows: OracleRow[], resolveGroup: (row: OracleRow) => LotClientGroup | undefined): void => {
+    for (const row of sourceRows) {
+      const mp = text(row, "MP").toUpperCase();
+      const group = resolveGroup(row);
+      if (!mp || !group) continue;
+      const groups = mpGroups.get(mp) ?? new Set<LotClientGroup>();
+      groups.add(group);
+      mpGroups.set(mp, groups);
+    }
+  };
+  registerMp(allBase1, (row) => {
+    const client = clientFromBase1(row);
+    return client === "SCA" ? "SCA" : client === "FH" || client === "VM" ? "VDB" : undefined;
+  });
+  registerMp(allScaniaFallback, () => "SCA");
+  registerMp(rows(input.dafSlitters), () => "DAF");
+
+  const lotRows = rows(input.lotes).map((row) => {
+    const meters = lotLengthMeters(row);
+    const explicitGroup = normalizedLotClient(text(row, "Cliente", "CLIENTE", "DESCRIPTION"));
+    const inferredGroups = mpGroups.get(text(row, "MP").toUpperCase());
+    const inferredGroup = inferredGroups?.size === 1 ? [...inferredGroups][0] : undefined;
+    return { meters, group: explicitGroup ?? inferredGroup };
+  }).filter((row): row is { meters: number; group: LotClientGroup } => row.meters !== undefined && row.group !== undefined);
+
+  if (input.lotes !== undefined && averageFinishLength > 0) {
+    const totalLength = lotRows.reduce((total, row) => total + row.meters, 0);
+    values["C-T-E"] = totalLength;
+    values["C-P-M-TOTAL"] = averageFinishLength;
+    values["E-M-P-S"] = Math.floor(totalLength / averageFinishLength);
+    const groupForClient: Record<LayoutClient, LotClientGroup> = { FH: "VDB", VM: "VDB", SCA: "SCA", DAF: "DAF" };
+    for (const client of ["FH", "VM", "SCA", "DAF"] as const) {
+      const groupRows = lotRows.filter((row) => row.group === groupForClient[client]);
+      if (!groupRows.length) continue;
+      const pieces = Math.floor(groupRows.reduce((total, row) => total + row.meters, 0) / averageFinishLength);
+      values[`E-M-P-S-${client}`] = pieces;
+      if (rates[client] > 0) values[`Q-D-${client}`] = safeDivide(pieces, rates[client]);
+    }
   }
 
   return {
@@ -440,6 +520,8 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
       "shipping-related-scania": shippingRelated.SCA.length,
       "shipping-related-daf": shippingRelated.DAF.length,
       "shipping-related-daf-slitters": rowsRelatedToSchedule(rows(input.dafSlitters), "DAF", scheduleKeys).length,
+      "slitter-finish-lengths": slitterLengths.length,
+      "slitter-lots-mapped": lotRows.length,
     },
   };
 }

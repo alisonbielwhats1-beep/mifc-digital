@@ -16,6 +16,16 @@ const numeric = (row: OracleRow, key: string): number => {
   return Number.isFinite(value) ? value : 0;
 };
 
+function lotLengthMeters(row: OracleRow): number {
+  const calculated = numeric(row, "MP(m)");
+  if (calculated > 0) return calculated;
+  const weightKg = numeric(row, "PESO");
+  const thicknessMm = numeric(row, "ESPESSURA");
+  const widthMm = numeric(row, "LARGURA");
+  if (weightKg <= 0 || thicknessMm <= 0 || widthMm <= 0) return 0;
+  return (weightKg / 7850) / ((thicknessMm / 1000) * (widthMm / 1000));
+}
+
 function rowsForDate(rows: OracleRow[], contextDate: string, keys: string[]): OracleRow[] {
   return rows.filter((row) => {
     const populated = keys.filter((key) => row[key] !== null && row[key] !== undefined && String(row[key]).trim() !== "");
@@ -111,7 +121,7 @@ export function deriveOperationalMeasures(input: {
     "P-T": distinctCount(producao, "RAIL_ID"),
     "Q-P-T": distinctCount(paradas, "ID_PARADA"),
     "PT-RF3": sumStops(paradas, "ROLLFORMER 3", false),
-    "C-T-E": lotes.reduce((total, row) => total + numeric(row, "MP(m)"), 0),
+    "C-T-E": lotes.reduce((total, row) => total + lotLengthMeters(row), 0),
     "Q-S-E": lotes.filter((row) => text(row, "DESCRIPTION")).length,
     "P-S-T": lotes.reduce((total, row) => total + numeric(row, "PESO"), 0) / 1_000,
     "Q-G-SCA": punchCount(punchScania),

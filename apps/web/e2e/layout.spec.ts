@@ -79,7 +79,7 @@ test("abre a rastreabilidade do total e exibe os buffers documentados", async ({
 test("mostra Beneficiador no início e o valor manual dentro do próprio bloco", async ({ page }) => {
   await page.getByRole("link", { name: "Logística" }).click();
   await page.getByRole("spinbutton", { name: "Dias no beneficiador" }).first().fill("1.5");
-  await page.getByRole("button", { name: "Salvar alterações" }).click();
+  await page.getByRole("button", { name: "Salvar revisão" }).click();
   await page.getByRole("link", { name: "Layout" }).click();
 
   const beneficiator = page.getByTestId("layout-node-node-beneficiator");

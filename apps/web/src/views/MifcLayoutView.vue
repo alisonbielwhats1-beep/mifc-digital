@@ -8,9 +8,11 @@ import MifcNodeCard from "@/components/layout/MifcNodeCard.vue";
 import MifcPropertiesPanel from "@/components/layout/MifcPropertiesPanel.vue";
 import MifcSymbolPalette from "@/components/layout/MifcSymbolPalette.vue";
 import LayoutBufferCard from "@/components/layout/LayoutBufferCard.vue";
+import LayoutMeasureBufferCard from "@/components/layout/LayoutMeasureBufferCard.vue";
 import LayoutValueTracePanel from "@/components/layout/LayoutValueTracePanel.vue";
-import { buildClientProcessPath, clientProcessLanes, mappingForClientStage, positionClientStages, type ClientProcessLane, type ClientStageMapping, type PositionedClientStage } from "@/domain/client-process-matrix";
+import { buildClientProcessPath, clientProcessLanes, clientProcessStages, mappingForClientStage, positionClientStages, type ClientProcessLane, type ClientStageMapping, type PositionedClientStage } from "@/domain/client-process-matrix";
 import { positionLayoutBuffers, type PositionedLayoutBuffer } from "@/domain/layout-buffers";
+import { buildLayoutMeasureBuffers, type LayoutMeasureBufferValue, type PositionedLayoutMeasureBuffer } from "@/domain/layout-measure-buffers";
 import { edgeGeometry } from "@/domain/layout-graph";
 import { beginNodePointerSelection, finishNodePointerSelection } from "@/domain/layout-selection";
 import { calculateLayoutProcessMeasures, formatMeasureValues, formatProcessDays } from "@/domain/layout-process-measures";
@@ -78,7 +80,16 @@ const processMeasureValues = computed<Record<string, number>>(() => calculateLay
   stenhoj: availableMinutes("cap-stenhoj"),
 }));
 const positionedBuffers = computed(() => positionLayoutBuffers(forms.bufferRows, activeRevision.value.nodes));
-const clientTotals = computed(() => Object.fromEntries(clientProcessLanes.map((lane) => [lane.key, calculateClientTotal(lane.key, oracleMeasures.value.values)])) as Record<ClientProcessLane["key"], ReturnType<typeof calculateClientTotal>>);
+const positionedMeasureBuffers = computed(() => buildLayoutMeasureBuffers(activeRevision.value.nodes, oracleMeasures.value.values));
+const clientTotals = computed(() => Object.fromEntries(clientProcessLanes.map((lane) => {
+  const logistics = forms.logisticsRows.find((row) => row.customer === lane.label && row.status === "active");
+  return [lane.key, calculateClientTotal(lane.key, oracleMeasures.value.values, {
+    transportHours: logistics?.transportHours,
+    beneficiatorDays: logistics?.beneficiatorDays,
+    movementMinutes: logistics?.movementMinutes,
+    processValues: processMeasureValues.value,
+  })];
+})) as Record<ClientProcessLane["key"], ReturnType<typeof calculateClientTotal>>);
 const processTraceConfig: Record<string, { capacityId?: string; demandKey?: string; formula: string }> = {
   "T-RF3": { capacityId: "cap-rf3", demandKey: "D-P-RF3", formula: "minutos disponíveis ÷ demanda em peças ÷ 1.440" },
   "T-B1": { capacityId: "cap-beatty", demandKey: "D-P-B1", formula: "minutos disponíveis ÷ demanda em peças ÷ 1.440" },
@@ -141,6 +152,23 @@ function displayNode(node: LayoutNode): LayoutNode {
     },
   };
 }
+function processTimesForNode(node: LayoutNode) {
+  const stage = clientProcessStages.find((item) => node.id === item.layoutNodeId || node.id.endsWith(`-${item.layoutNodeId}`));
+  if (!stage) return [];
+  const keys = new Set<string>();
+  for (const lane of clientProcessLanes) {
+    const mapping = mappingForClientStage(lane, stage);
+    if (mapping?.participates) mapping.processMeasureKeys.forEach((key) => keys.add(key));
+  }
+  return [...keys].map((key) => ({ key, value: processMeasureValues.value[key] }));
+}
+function manualValuesForNode(node: LayoutNode) {
+  if (!(node.id === "node-beneficiator" || node.id.endsWith("-node-beneficiator"))) return [];
+  return clientProcessLanes.map((lane) => ({
+    label: lane.key,
+    value: forms.logisticsRows.find((row) => row.customer === lane.label && row.status === "active")?.beneficiatorDays,
+  }));
+}
 function setTool(tool: LayoutTool) { layout.setTool(tool); showLayers.value = false; }
 function chooseConnect(flow: MifcFlowType) { activeFlow.value = flow; layout.setTool("connect"); }
 function worldCenter() { const rect = canvas.value?.getBoundingClientRect(); return { x:((rect?.width ?? 1000)/2-pan.x)/zoom.value, y:((rect?.height ?? 700)/2-pan.y)/zoom.value }; }
@@ -190,17 +218,55 @@ function totalTrace(lane: ClientProcessLane): LayoutValueTrace {
     displayValue: total.value === undefined ? "—" : formatProcessDays(total.value),
     unit: "dias",
     formula: `${total.measureKey} = ${total.formula}`,
-    simpleExplanation: total.value === undefined ? "O total segue exatamente a medida DAX, mas uma ou mais parcelas não estão disponíveis. Nenhuma soma parcial é apresentada como total." : `O total de ${lane.label} resulta da soma das parcelas logísticas e de estoque definidas pela medida ${total.measureKey}, incluindo transporte e ${total.inputs.find((input) => input.key === "T-M")?.multiplier} movimentações.`,
-    inputs: total.inputs.map((input) => ({ key: input.key, label: input.label, value: input.value * input.multiplier, textValue: input.multiplier > 1 ? `${input.value} × ${input.multiplier}` : undefined, unit: "dias", origin: input.origin === "CONSTANT" ? "Power BI — constante" : "Power BI — medida" })),
-    intermediateResults: total.inputs.map((input) => `${input.key}${input.multiplier > 1 ? ` × ${input.multiplier}` : ""} = ${formatMeasureDetailed(input.value * input.multiplier)} dia`),
-    origin: "MIXED — medidas Power BI reproduzidas localmente",
+    simpleExplanation: total.value === undefined ? "O total funcional exige os três parâmetros manuais, todos os estoques e cada tempo de máquina da rota. Se uma parcela faltar, nenhuma soma parcial é apresentada como total." : `O total de ${lane.label} soma transporte, Beneficiador, ${total.inputs.find((input) => input.key === "T-M")?.multiplier} movimentações, estoques/esperas e cada máquina participante uma única vez. CC, Furação, Pintura e SEE não são somados novamente como subtotais de ENN.`,
+    inputs: total.inputs.map((input) => ({ key: input.key, label: input.label, value: input.value === undefined ? undefined : input.value * input.multiplier, textValue: input.value !== undefined && input.multiplier > 1 ? `${input.value} × ${input.multiplier}` : undefined, unit: "dias", origin: input.origin === "INPUT" ? "INPUT manual" : input.origin === "PROCESS" ? "Tempo de máquina calculado" : "Medida Power BI — estoque/espera" })),
+    intermediateResults: total.inputs.map((input) => `${input.key}${input.multiplier > 1 ? ` × ${input.multiplier}` : ""} = ${input.value === undefined ? "—" : formatMeasureDetailed(input.value * input.multiplier)} dia`),
+    origin: "MIXED — parâmetros manuais + medidas Power BI reproduzidas localmente",
     measureKeys: [total.measureKey, ...total.inputs.map((input) => input.key)],
-    filters: [`Calendar[Date] = ${selectedDate.value}`, `Cliente = ${lane.label}`, "Mesmo contexto do PBIP"],
+    filters: [`Calendar[Date] = ${selectedDate.value}`, `Cliente = ${lane.label}`, "Sem subtotal duplicado de ENN"],
     client: lane.label,
     date: selectedDate.value,
     updatedAt: oracleMeasures.value.updatedAt,
     sourceReference: total.sourceReference,
     missingKeys: total.missingKeys,
+  };
+}
+function measureBufferTrace(buffer: PositionedLayoutMeasureBuffer, entry: LayoutMeasureBufferValue): LayoutValueTrace {
+  const isSlitter = entry.measureKey.startsWith("Q-D-");
+  const piecesKey = `E-M-P-S-${entry.clientKey}`;
+  const rateKey = `P-M-${entry.clientKey}`;
+  const value = entry.value;
+  return {
+    id: `measure-buffer-${buffer.id}-${entry.clientKey}`,
+    title: `${buffer.label} · ${entry.clientLabel}`,
+    displayValue: value === undefined ? "—" : formatProcessDays(value),
+    unit: "dias",
+    formula: isSlitter
+      ? `${entry.measureKey} = [${piecesKey}] ÷ [${rateKey}]; ${piecesKey} = ROUNDDOWN([C-T-E do grupo] ÷ [C-P-M-TOTAL], 0)`
+      : `${entry.measureKey} = estoque/WIP do ponto ÷ cadência diária do cliente, conforme a medida catalogada no Power BI`,
+    simpleExplanation: isSlitter
+      ? "O Slitter converte o peso dos lotes em metros com densidade 7.850 kg/m³, divide pelo comprimento médio ponderado das peças nas quatro fontes de Slitter, arredonda as peças para baixo e divide pela cadência diária do cliente. A tabela Produção não participa."
+      : "Este valor automático permanece no símbolo de buffer da máquina correspondente e não é misturado ao tempo de processamento do card da máquina.",
+    inputs: isSlitter ? [
+      { key: "C-T-E", label: "Comprimento total dos lotes", value: oracleMeasures.value.values?.["C-T-E"], unit: "m", origin: "ORACLE_MES + DAX MP(m)" },
+      { key: "C-P-M-TOTAL", label: "Comprimento médio no Slitter", value: oracleMeasures.value.values?.["C-P-M-TOTAL"], unit: "m/peça", origin: "ORACLE_MES + Power BI" },
+      { key: piecesKey, label: "Estoque médio em peças", value: oracleMeasures.value.values?.[piecesKey], unit: "peças", origin: "CALCULATED" },
+      { key: rateKey, label: "Cadência diária", value: oracleMeasures.value.values?.[rateKey], unit: "peças/dia", origin: "Power BI" },
+    ] : [{ key: entry.measureKey, label: buffer.label, value, unit: "dias", origin: "ORACLE_MES + Power BI" }],
+    intermediateResults: isSlitter ? [
+      "MP(m) = (PESO ÷ 7.850) ÷ ((ESPESSURA ÷ 1.000) × (LARGURA ÷ 1.000))",
+      `${piecesKey} = ${oracleMeasures.value.values?.[piecesKey] === undefined ? "—" : oracleMeasures.value.values[piecesKey].toLocaleString("pt-BR")} peças`,
+      `${entry.measureKey} = ${value === undefined ? "—" : formatMeasureDetailed(value)} dia`,
+    ] : [],
+    origin: "Oracle/MES somente leitura + medida Power BI reproduzida",
+    measureKeys: isSlitter ? [entry.measureKey, piecesKey, "C-T-E", "C-P-M-TOTAL", rateKey] : [entry.measureKey],
+    filters: [`Calendar[Date] = ${selectedDate.value}`, `Cliente = ${entry.clientLabel}`, `Buffer = ${buffer.label}`],
+    client: entry.clientLabel,
+    process: buffer.label,
+    date: selectedDate.value,
+    updatedAt: oracleMeasures.value.updatedAt,
+    sourceReference: "MIFC.SemanticModel/definition/tables/1-Measure.tmdl + Lotes.tmdl",
+    missingKeys: value === undefined ? [entry.measureKey] : [],
   };
 }
 function clientVolumeRow(lane: ClientProcessLane) {
@@ -266,11 +332,12 @@ function bufferTrace(buffer: PositionedLayoutBuffer): LayoutValueTrace {
     missingKeys,
   };
 }
-function nodeMetricTrace(node: LayoutNode, metric: "cycle"|"capacity"|"production") {
+function nodeMetricTrace(node: LayoutNode, metric: "cycle"|"capacity"|"production"|"process") {
   const effective = displayNode(node);
   const metrics = liveMetricsForNode(node);
   if (metric === "cycle") openTrace({ id:`${node.id}-ct`,title:`${node.label} · Tempo de Ciclo`,displayValue:effective.properties.cycleTimeSeconds > 0 ? effective.properties.cycleTimeSeconds.toLocaleString("pt-BR") : "—",unit:"s/peça",formula:"Valor de entrada do cadastro Capacidade; não é recalculado no Layout.",simpleExplanation:"O Tempo de Ciclo é um parâmetro manual/importado da máquina. Alterações na tela Capacidade aparecem aqui imediatamente.",inputs:[{key:"cycleTimeSeconds",label:"Tempo de Ciclo — CT",value:effective.properties.cycleTimeSeconds || undefined,unit:"s/peça",origin:"INPUT"}],intermediateResults:[],origin:"Valor manual / importado",measureKeys:[],filters:[`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:forms.savedAt,sourceReference:"Cadastro Capacidade; docs/excel-manual-automatic-map.md",missingKeys:effective.properties.cycleTimeSeconds > 0 ? [] : ["Tempo de Ciclo"] });
   else if (metric === "capacity") openTrace({ id:`${node.id}-capacity`,title:`${node.label} · Capacidade por dia`,displayValue:effective.properties.capacityPerDay > 0 ? effective.properties.capacityPerDay.toLocaleString("pt-BR") : "—",unit:"peças/dia",formula:"Referência importada do processo. A regra genérica capacity.per_day permanece pendente e não é presumida.",simpleExplanation:"A capacidade exibida é a referência cadastrada. O sistema não inventa uma fórmula única enquanto a regra específica da máquina não estiver validada.",inputs:[{key:"referenceCapacityPerDay",label:"Capacidade de referência",value:effective.properties.capacityPerDay || undefined,unit:"peças/dia",origin:"IMPORT"}],intermediateResults:[],origin:"Importado",measureKeys:[],filters:[`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:forms.savedAt,sourceReference:"Cadastro Capacidade; regra capacity.per_day pendente",missingKeys:effective.properties.capacityPerDay > 0 ? [] : ["Capacidade de referência"] });
+  else if (metric === "process") { const times=processTimesForNode(node);const missing=times.filter((item)=>item.value===undefined).map((item)=>item.key);openTrace({id:`${node.id}-process`,title:`${node.label} · Tempo do processo`,displayValue:formatMeasureValues(times.map((item)=>item.key),processMeasureValues.value),unit:"dias",formula:times.map((item)=>`${item.key} = ${processTraceConfig[item.key]?.formula ?? "regra catalogada"}`).join(" | "),simpleExplanation:"São tempos das máquinas físicas. Os nomes de ENN servem somente para agrupamento e não acrescentam outra parcela ao total do cliente.",inputs:times.map((item)=>({key:item.key,label:`Tempo ${item.key}`,value:item.value,unit:"dias",origin:"CALCULATED"})),intermediateResults:times.map((item)=>`${item.key} = ${item.value===undefined?"—":formatMeasureDetailed(item.value)} dia`),origin:"Demanda Oracle/MES + capacidade local",measureKeys:times.map((item)=>item.key),filters:[`Calendar[Date] = ${selectedDate.value}`,`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:oracleMeasures.value.updatedAt,sourceReference:"MIFC.SemanticModel/definition/tables/1-Measure.tmdl; docs/client-process-matrix.csv",missingKeys:missing}); }
   else openTrace({ id:`${node.id}-production`,title:`${node.label} · Produção e demanda`,displayValue:metrics ? `${metrics.production.toLocaleString("pt-BR")} / ${metrics.demand.toLocaleString("pt-BR")}` : "—",unit:"peças",formula:"Produção observada / demanda filtrada conforme as medidas vinculadas ao processo.",simpleExplanation:"Os dois números usam a mesma data e o mesmo processo. Se o cache de Produção não estiver disponível, a tela mostra ausência em vez de zero.",inputs:[{key:"production",label:"Produção observada",value:metrics?.production,unit:"peças",origin:"ORACLE_MES"},{key:"demand",label:"Demanda",value:metrics?.demand,unit:"peças",origin:"ORACLE_MES"}],intermediateResults:[],origin:"Oracle/MES somente leitura",measureKeys:productionKeys[node.properties.calculationKey] ? [...productionKeys[node.properties.calculationKey].production,...productionKeys[node.properties.calculationKey].demand] : [],filters:[`Calendar[Date] = ${selectedDate.value}`,`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:oracleMeasures.value.updatedAt,sourceReference:"MIFC.SemanticModel/definition/tables/1-Measure.tmdl",missingKeys:metrics ? [] : ["Cache Produção"] });
 }
 function updateBuffer(id: string, patch: Partial<BufferFormRow>) { const row=forms.bufferRows.find((item)=>item.id===id);if(row)Object.assign(row,patch);const positioned=positionedBuffers.value.find((item)=>item.id===id);if(positioned)selectedTrace.value=bufferTrace(positioned); }
@@ -400,10 +467,11 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
             <defs><marker id="arrow-material" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1f2c38"/></marker><marker id="arrow-info" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#526170"/></marker></defs>
             <g v-for="edge in renderedEdges" v-show="isInformationEdge(edge)?visibleLayers.information:visibleLayers.material" :key="edge.id" class="edge-group" :class="[edge.flowType,{selected:selectedEdge?.id===edge.id}]" @click.stop="selectEdge(edge.id)"><path class="edge-hit" :d="edge.geometry.path"/><path class="edge-line" :d="edge.geometry.path" :marker-end="`url(#${isInformationEdge(edge)?'arrow-info':'arrow-material'})`"/><circle v-if="selectedEdge?.id===edge.id" class="curve-handle" :cx="edge.geometry.control.x" :cy="edge.geometry.control.y" r="8" @pointerdown="startCurve($event,edge)"/></g>
           </svg>
-          <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="displayNode(node)" :zoom="zoom" :selected="selectedNodeIds.includes(node.id)" :primary="selectedNode?.id===node.id" :connecting="activeTool==='connect'" :live-metrics="liveMetricsForNode(node)" :action-summary="actionSummaryForNode(node)" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize" @metricselect="nodeMetricTrace"/>
+          <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="displayNode(node)" :zoom="zoom" :selected="selectedNodeIds.includes(node.id)" :primary="selectedNode?.id===node.id" :connecting="activeTool==='connect'" :live-metrics="liveMetricsForNode(node)" :action-summary="actionSummaryForNode(node)" :process-times="processTimesForNode(node)" :manual-values="manualValuesForNode(node)" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize" @metricselect="nodeMetricTrace"/>
           <LayoutBufferCard v-for="buffer in positionedBuffers" v-show="visibleLayers.material" :key="buffer.id" :buffer="buffer" @select="(item) => openTrace(bufferTrace(item), item.id)" />
+          <LayoutMeasureBufferCard v-for="buffer in positionedMeasureBuffers" v-show="visibleLayers.material" :key="`measure-${buffer.id}`" :buffer="buffer" @select="(item, entry) => openTrace(measureBufferTrace(item, entry))" />
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
-            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Somente valores em dias · subida = processo · reta = sem processo</span><em class="parity-warning">Paridade Power BI parcial</em><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Filtro ${selectedDate} · ${filteredRowSummary.toLocaleString('pt-BR')} linhas · Oracle + parâmetros locais · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
+            <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Somente valores em dias · subida = processo · reta = sem processo</span><em class="parity-warning">Fórmulas Power BI + total funcional sem duplicar ENN</em><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Filtro ${selectedDate} · ${filteredRowSummary.toLocaleString('pt-BR')} linhas · Oracle + parâmetros locais · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
             <div v-for="lane in clientLanes" :key="lane.key" class="client-lane" :data-client="lane.key" :data-testid="`client-lane-${lane.key}`">
               <div class="client-lane-label"><button type="button" :aria-label="`Editar parâmetros do cliente ${lane.label}`" @click.stop="openClient(lane)"><strong>{{ lane.label }}</strong><small>Editar parâmetros</small></button></div>
               <svg :viewBox="`0 0 ${WORLD_WIDTH} 56`" :width="WORLD_WIDTH" height="56" role="img" :aria-label="`Linha de processos do cliente ${lane.label}`">
@@ -416,7 +484,7 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
               <div class="client-measure-keys">
                 <button v-for="stage in positionedClientStages" :key="stage.id" type="button" :aria-label="`Abrir origem de ${lane.label}, ${stage.label}`" :class="{ inactive: !mappingFor(lane,stage)?.participates, pending: mappingFor(lane,stage)?.validationStatus === 'pending' }" :style="{ left: `${stage.centerX}px` }" @click.stop="openTrace(stageTrace(lane,stage))">{{ stageMeasureLabel(lane,stage) }}</button>
               </div>
-              <button class="client-total" type="button" :data-testid="`client-total-${lane.key}`" :aria-label="`Abrir tempo total do cliente ${lane.label}`" @click.stop="openTrace(totalTrace(lane))"><small>Tempo total do cliente</small><strong>{{ clientTotalDisplay(lane) }}</strong><em>{{ lane.totalMeasureKey }}</em></button>
+              <button class="client-total" type="button" :data-testid="`client-total-${lane.key}`" :aria-label="`Abrir tempo total do cliente ${lane.label}`" @click.stop="openTrace(totalTrace(lane))"><small>Tempo total do cliente</small><strong>{{ clientTotalDisplay(lane) }}</strong><em>{{ clientTotals[lane.key].measureKey }}</em></button>
             </div>
           </div>
         </div>

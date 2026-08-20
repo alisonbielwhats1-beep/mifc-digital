@@ -122,6 +122,8 @@ Ela não é uma fonte limpa de 2026. Há blocos de 2022, 2023 e 2025; o bloco ma
 
 Campos manuais do resumo: dias de transporte/usina, volume por cliente e eventuais metas. Campos calculados: pares/dia, componentes de WIP, dias por etapa, WIP geral e total.
 
+Na aplicação atual, `Transporte (h)`, `Beneficiador (dias)` e `Movimentação (min)` são entradas manuais explícitas por cliente. O total funcional usa esses valores salvos; não usa mais `4 h`, `0 dia` e `5 min` como constantes invisíveis.
+
 ## Aba `Action Plan 2025_2026`
 
 Os campos de ação são manuais: ID, cor, prioridade, ideia, responsável, ENN, pilar, ganho potencial, status, datas, impacto, facilidade, custo, tempo, progresso e justificativa. A coluna de ordenação/ranking é calculada por concatenação dos quatro critérios. O título menciona 2026, mas as linhas existentes ainda carregam ações históricas de 2024; a migração deve separar ano/revisão dos dados.
@@ -135,6 +137,19 @@ Os campos de ação são manuais: ID, cor, prioridade, ideia, responsável, ENN,
 - tempo de processo por máquina usando disponibilidade planejada e demanda;
 - paradas, produção, segregação e parte da capacidade online;
 - totais de tempo por FH, VM, Scania e DAF.
+
+### Correção aplicada ao Slitter
+
+O Slitter automático da aplicação segue a cadeia do modelo semântico, não a antiga estimativa manual por bobinas do Excel:
+
+- metros de lote: `(PESO/7850) ÷ ((ESPESSURA/1000) × (LARGURA/1000))`;
+- comprimento médio: média ponderada por contagem de `FINISH_LENGTH`/`FINISH_LENGHT` nas linhas `Local = Slitter` de DAF Slitters, FH, Scania e VM;
+- peças: arredondamento para baixo de metros de lote ÷ comprimento médio;
+- dias: peças ÷ cadência diária `P-M-*` do cliente;
+- FH e VM usam o mesmo grupo de lotes `VDB`, como em `Lotes[Cliente]`, mas mantêm cadências distintas;
+- `Produção[ITEM(m)]` não participa do cálculo.
+
+Os símbolos de buffer do Layout mostram estes dias no ponto físico correspondente. O card da máquina mantém separadamente o tempo `T-*`; ENNs não criam outra soma.
 
 O catálogo completo dos cartões está em [layout-card-lineage.csv](./layout-card-lineage.csv), e o DAX das 62 medidas usadas no Layout está em [layout-measure-catalog.csv](./layout-measure-catalog.csv).
 

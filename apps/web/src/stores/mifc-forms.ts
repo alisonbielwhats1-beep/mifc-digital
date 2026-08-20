@@ -41,6 +41,7 @@ export interface LogisticsFormRow {
   shipDate: string;
   plannedTime: string;
   transportHours: number;
+  beneficiatorDays: number;
   movementMinutes: number;
   shipmentFrequency: string;
   shipmentLotSize: number;
@@ -86,7 +87,7 @@ export interface CapacityFormRow {
 }
 
 interface FormsSnapshot {
-  schemaVersion: 2;
+  schemaVersion: 3;
   shiftRows: ShiftRow[];
   volumeRows: VolumeFormRow[];
   logisticsRows: LogisticsFormRow[];
@@ -98,7 +99,7 @@ interface FormsSnapshot {
 const storageKey = "mifc-digital:prompt-3:revision-04";
 
 const defaults: FormsSnapshot = {
-  schemaVersion: 2,
+  schemaVersion: 3,
   shiftRows: [
     { id: "shift-1", label: "1º turno", startTime: "06:00", endTime: "15:36", rolloverMinutes: 0, mealMinutes: 60, meetingMinutes: 5, status: "active" },
     { id: "shift-2", label: "2º turno", startTime: "15:36", endTime: "23:59", rolloverMinutes: 48, mealMinutes: 60, meetingMinutes: 0, status: "active" },
@@ -110,10 +111,10 @@ const defaults: FormsSnapshot = {
     { id: "vol-daf", customer: "DAF", model: "Chassi", vehiclesPerDay: 40, reinforcementPercent: 90, workingDays: 250, shifts: 2, averageLengthMm: 7000, widthMm: 430, thicknessMm: 7, densityKgDm3: 7.85, coilCount: 18, coilWeightKg: 7000, status: "active" },
   ],
   logisticsRows: [
-    { id: "log-fh", customer: "Volvo FH", vehicle: "FH", flatbed: "", plannedDate: "2026-01-05", shipDate: "", plannedTime: "06:00", transportHours: 4, movementMinutes: 5, shipmentFrequency: "Diária", shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES", orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active" },
-    { id: "log-vm", customer: "Volvo VM", vehicle: "VM", flatbed: "", plannedDate: "2026-01-05", shipDate: "", plannedTime: "08:00", transportHours: 4, movementMinutes: 5, shipmentFrequency: "Diária", shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES", orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active" },
-    { id: "log-scania", customer: "Scania", vehicle: "Longarina", flatbed: "", plannedDate: "2026-01-05", shipDate: "", plannedTime: "10:00", transportHours: 4, movementMinutes: 5, shipmentFrequency: "Diária", shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES", orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active" },
-    { id: "log-daf", customer: "DAF", vehicle: "Chassi", flatbed: "", plannedDate: "2026-01-05", shipDate: "", plannedTime: "12:00", transportHours: 4, movementMinutes: 5, shipmentFrequency: "Diária", shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES", orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active" },
+    { id: "log-fh", customer: "Volvo FH", vehicle: "FH", flatbed: "", plannedDate: "2026-01-05", shipDate: "", plannedTime: "06:00", transportHours: 4, beneficiatorDays: 0, movementMinutes: 5, shipmentFrequency: "Diária", shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES", orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active" },
+    { id: "log-vm", customer: "Volvo VM", vehicle: "VM", flatbed: "", plannedDate: "2026-01-05", shipDate: "", plannedTime: "08:00", transportHours: 4, beneficiatorDays: 0, movementMinutes: 5, shipmentFrequency: "Diária", shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES", orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active" },
+    { id: "log-scania", customer: "Scania", vehicle: "Longarina", flatbed: "", plannedDate: "2026-01-05", shipDate: "", plannedTime: "10:00", transportHours: 4, beneficiatorDays: 0, movementMinutes: 5, shipmentFrequency: "Diária", shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES", orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active" },
+    { id: "log-daf", customer: "DAF", vehicle: "Chassi", flatbed: "", plannedDate: "2026-01-05", shipDate: "", plannedTime: "12:00", transportHours: 4, beneficiatorDays: 0, movementMinutes: 5, shipmentFrequency: "Diária", shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES", orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active" },
   ],
   bufferRows: [
     { id: "buf-fh-lct-in", customer: "Volvo FH", point: "LCT", direction: "entrada", type: "processo", quantityPieces: 68, capacityPieces: 120, pairsPerDay: 127.5, inputProcess: "Slitter", outputProcess: "RF2", origin: "INPUT", status: "active" },
@@ -144,12 +145,15 @@ function createId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-type StoredFormsSnapshot = Omit<FormsSnapshot, "schemaVersion"> & { schemaVersion: 1 | 2 };
+type StoredFormsSnapshot = Omit<FormsSnapshot, "schemaVersion" | "logisticsRows"> & {
+  schemaVersion: 1 | 2 | 3;
+  logisticsRows: Array<Omit<LogisticsFormRow, "beneficiatorDays"> & { beneficiatorDays?: number }>;
+};
 
 function isSnapshot(value: unknown): value is StoredFormsSnapshot {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<StoredFormsSnapshot>;
-  return [1, 2].includes(candidate.schemaVersion ?? 0)
+  return [1, 2, 3].includes(candidate.schemaVersion ?? 0)
     && Array.isArray(candidate.volumeRows)
     && Array.isArray(candidate.logisticsRows)
     && Array.isArray(candidate.bufferRows)
@@ -159,6 +163,9 @@ function isSnapshot(value: unknown): value is StoredFormsSnapshot {
 
 function migrateSnapshot(snapshot: StoredFormsSnapshot): FormsSnapshot {
   const migrated = structuredClone(snapshot) as StoredFormsSnapshot;
+  for (const row of migrated.logisticsRows) {
+    if (!Number.isFinite(row.beneficiatorDays) || Number(row.beneficiatorDays) < 0) row.beneficiatorDays = 0;
+  }
   const genericBeatty = migrated.capacityRows.find((row) => row.id === "cap-beatty");
   if (genericBeatty) Object.assign(genericBeatty, { process: "Beatty 1", processCode: "P-002-B1" });
   for (const defaultRow of defaults.capacityRows) {
@@ -173,7 +180,7 @@ function migrateSnapshot(snapshot: StoredFormsSnapshot): FormsSnapshot {
     return (leftIndex < 0 ? Number.MAX_SAFE_INTEGER : leftIndex) - (rightIndex < 0 ? Number.MAX_SAFE_INTEGER : rightIndex);
   });
   migrated.capacityRows.forEach((row, index) => { row.sequence = index + 1; });
-  return { ...migrated, schemaVersion: 2 };
+  return { ...migrated, logisticsRows: migrated.logisticsRows as LogisticsFormRow[], schemaVersion: 3 };
 }
 
 export const useMifcFormsStore = defineStore("mifc-forms", {
@@ -228,7 +235,7 @@ export const useMifcFormsStore = defineStore("mifc-forms", {
     save() {
       this.savedAt = new Date().toISOString();
       const snapshot: FormsSnapshot = {
-        schemaVersion: 2,
+        schemaVersion: 3,
         shiftRows: this.shiftRows,
         volumeRows: this.volumeRows,
         logisticsRows: this.logisticsRows,
@@ -247,7 +254,7 @@ export const useMifcFormsStore = defineStore("mifc-forms", {
       if (source) this.volumeRows.push({ ...structuredClone(source), id: createId("vol"), customer: `${source.customer} — cópia` });
     },
     addLogistics() {
-      this.logisticsRows.push({ id: createId("log"), customer: "Novo cliente", vehicle: "", flatbed: "", plannedDate: "", shipDate: "", plannedTime: "", transportHours: 0, movementMinutes: 5, shipmentFrequency: "", shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES", orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active" });
+      this.logisticsRows.push({ id: createId("log"), customer: "Novo cliente", vehicle: "", flatbed: "", plannedDate: "", shipDate: "", plannedTime: "", transportHours: 0, beneficiatorDays: 0, movementMinutes: 5, shipmentFrequency: "", shipmentLotSize: 0, material: "Aguardando MES", item: "Aguardando MES", location: "Aguardando MES", orderedQuantity: null, finishedQuantity: null, mesOrigin: "ORACLE_MES", status: "active" });
     },
     duplicateLogistics(id: string) {
       const source = this.logisticsRows.find((row) => row.id === id);
