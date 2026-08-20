@@ -76,8 +76,44 @@ function canonicalLocal(value: string): string {
   return value.trim();
 }
 
+/** Reproduz integralmente a coluna Base1[local] do Power Query, inclusive o `else "Slitter"`. */
+function base1PowerBiLocal(row: OracleRow): string {
+  const alreadyTransformed = text(row, "localName", "local", "Local");
+  if (alreadyTransformed) return canonicalLocal(alreadyTransformed);
+
+  const source = key(text(row, "LOCATION", "location"));
+  const mapped: Record<string, string> = {
+    [key("Embalaje 1")]: "Estoque FG",
+    [key("Embalaje 3")]: "Estoque FG",
+    [key("Stenhoj")]: "Stenhoj",
+    [key("Rebitagem")]: "Rebitagem",
+    [key("Beatty Alma Output 1")]: "Beatty Output",
+    [key("Beatty Alma Output 2")]: "Beatty Output",
+    [key("Beatty Alma Input 1")]: "Beatty Output",
+    [key("Beatty Alma Input 2")]: "Beatty Output",
+    [key("Pintura Output 2")]: "Pintura Output 2",
+    [key("Pintura Input 2")]: "Pintura Input 2",
+    [key("Plasma 03 Auto")]: "Cantilever",
+    [key("Plasma CNC 02 Auto")]: "Cantilever",
+    [key("Mesa 04")]: "Cantilever",
+    [key("Marking VIN Output")]: "Cantilever",
+    [key("Marking VIN Input")]: "Cantilever",
+    [key("Beatty ABA Output")]: "P.A Output",
+    [key("Beatty ABA Input")]: "P.A Output",
+    [key("Beatty Alma Output 3")]: "Buffer P.A - B3 e B4",
+    [key("Beatty Alma Output 4")]: "Buffer P.A - B3 e B4",
+    [key("Beatty Alma Input 3")]: "Buffer P.A - B3 e B4",
+    [key("Yoke Punch 3")]: "Buffer P.A - B3 e B4",
+    [key("Beatty Alma Input 4")]: "Buffer P.A",
+    [key("Roll Former 3")]: "Roll Former 3",
+    [key("Roll Former 3 Output")]: "Roll Former 3",
+    [key("Roll Former 3 Input")]: "Slitter",
+  };
+  return mapped[source] ?? "Slitter";
+}
+
 function base1Local(row: OracleRow, client: "FH" | "VM" | "SCA"): string {
-  const location = canonicalLocal(sourceLocal(row));
+  const location = base1PowerBiLocal(row);
   const item = text(row, "ITEM");
   if (client === "FH") {
     if (key(location) === "pintura output 2") return "Ag. Stenhøj";
@@ -206,9 +242,7 @@ function finishLengthMeters(row: OracleRow): number | undefined {
 }
 
 function isSlitterLengthRow(row: OracleRow): boolean {
-  const transformedLocal = key(text(row, "local", "Local"));
-  const sourceLocation = key(text(row, "LOCATION", "location"));
-  return transformedLocal === key("Slitter") || sourceLocation === key("Roll Former 3 Input");
+  return key(base1PowerBiLocal(row)) === key("Slitter");
 }
 
 type LotClientGroup = "VDB" | "SCA" | "DAF";
@@ -449,7 +483,7 @@ export function deriveLayoutStockMeasures(input: LayoutStockMeasureInput): Layou
   }
 
   const baseSlitterLengths = base1
-    .filter((row) => ["FH", "VM", ...(input.scania === undefined ? ["SCA"] : [])].includes(clientFromBase1(row) ?? ""))
+    .filter((row) => ["FH", "VM", "SCA"].includes(clientFromBase1(row) ?? ""))
     .filter(isSlitterLengthRow)
     .map(finishLengthMeters)
     .filter((value): value is number => value !== undefined);

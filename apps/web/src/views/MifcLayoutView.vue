@@ -10,7 +10,7 @@ import MifcSymbolPalette from "@/components/layout/MifcSymbolPalette.vue";
 import LayoutBufferCard from "@/components/layout/LayoutBufferCard.vue";
 import LayoutMeasureBufferCard from "@/components/layout/LayoutMeasureBufferCard.vue";
 import LayoutValueTracePanel from "@/components/layout/LayoutValueTracePanel.vue";
-import { buildClientProcessPath, clientProcessLanes, clientProcessStages, mappingForClientStage, positionClientStages, type ClientProcessLane, type ClientStageMapping, type PositionedClientStage } from "@/domain/client-process-matrix";
+import { buildClientProcessPath, clientProcessLanes, clientProcessStages, mappingForClientStage, positionClientLaneMeasures, positionClientStages, type ClientProcessLane, type ClientStageMapping, type PositionedClientLaneMeasure, type PositionedClientStage } from "@/domain/client-process-matrix";
 import { positionLayoutBuffers, type PositionedLayoutBuffer } from "@/domain/layout-buffers";
 import { buildLayoutMeasureBuffers, type LayoutMeasureBufferValue, type PositionedLayoutMeasureBuffer } from "@/domain/layout-measure-buffers";
 import { edgeGeometry } from "@/domain/layout-graph";
@@ -69,7 +69,17 @@ const renderedEdges = computed(() => activeRevision.value.edges.map((edge) => {
   return source && target ? { ...edge, geometry: edgeGeometry(source,target,edge.curveOffset) } : null;
 }).filter((edge): edge is NonNullable<typeof edge> => Boolean(edge)));
 const positionedClientStages = computed(() => positionClientStages(activeRevision.value.nodes));
-const clientLanes = computed(() => clientProcessLanes.map((lane) => ({ ...lane, path: buildClientProcessPath(lane, positionedClientStages.value,40,10) })));
+const clientLanes = computed(() => {
+  const beneficiator = activeRevision.value.nodes.find((node) => node.id === "node-beneficiator" || node.id.endsWith("-node-beneficiator"));
+  const finished = activeRevision.value.nodes.find((node) => node.id === "node-finished" || node.id.endsWith("-node-finished"));
+  const lineStart = beneficiator ? beneficiator.x + beneficiator.width / 2 : undefined;
+  const lineEnd = finished ? finished.x + finished.width / 2 : undefined;
+  return clientProcessLanes.map((lane) => ({
+    ...lane,
+    path: buildClientProcessPath(lane, positionedClientStages.value, 40, 10, lineStart, lineEnd),
+    measures: positionClientLaneMeasures(lane, positionedClientStages.value, activeRevision.value.nodes),
+  }));
+});
 const availableMinutes = (capacityId: string) => (forms.capacityRows.find((row) => row.id === capacityId)?.availableHoursPerDay ?? 0) * 60;
 const calendarDayMinutes = computed(() => calculateCalendarDayMinutes({ selectedDate: selectedDate.value, now: operationalNow.value }));
 const processMeasureValues = computed<Record<string, number>>(() => calculateLayoutProcessMeasures(oracleMeasures.value.values, {
@@ -517,10 +527,73 @@ function mappingTitle(lane: ClientProcessLane, stage: PositionedClientStage) {
   return `${lane.label} · ${stage.label}\nProcesso: ${process}${observed ? `\nValor: ${observed}` : ""}\nFiltro Calendar[Date]: ${selectedDate.value}\nEstoque/logística: ${stock}${stockObserved ? `\nValor: ${stockObserved}` : ""}\n${mapping.evidence}`;
 }
 function formatMeasureDetailed(value: number) { return value.toLocaleString("pt-BR", { minimumFractionDigits: 6, maximumFractionDigits: 8 }); }
-function stageMeasureLabel(lane: ClientProcessLane, stage: PositionedClientStage) {
-  const mapping = mappingFor(lane, stage);
-  if (!mapping?.participates) return "";
-  return formatMeasureValues(mapping.processMeasureKeys, processMeasureValues.value);
+function laneLogistics(lane: ClientProcessLane) {
+  return forms.logisticsRows.find((row) => row.customer === lane.label && row.status === "active");
+}
+function laneMeasureValue(lane: ClientProcessLane, measure: PositionedClientLaneMeasure): number | undefined {
+  const logistics = laneLogistics(lane);
+  if (measure.measureKey === "T-B") return logistics?.beneficiatorDays;
+  if (measure.measureKey === "T-T") return logistics?.transportHours === undefined ? undefined : logistics.transportHours / 24;
+  if (measure.kind === "process") return processMeasureValues.value[measure.measureKey];
+  return oracleMeasures.value.values?.[measure.measureKey];
+}
+function laneMeasureLabel(lane: ClientProcessLane, measure: PositionedClientLaneMeasure): string {
+  const value = laneMeasureValue(lane, measure);
+  return value === undefined ? "—" : formatProcessDays(value);
+}
+function laneMeasureTrace(lane: ClientProcessLane, measure: PositionedClientLaneMeasure): LayoutValueTrace {
+  const value = laneMeasureValue(lane, measure);
+  const isSlitter = measure.measureKey === `Q-D-${lane.key}`;
+  const isTransport = measure.measureKey === "T-T";
+  const isBeneficiator = measure.measureKey === "T-B";
+  const processConfig = processTraceConfig[measure.measureKey];
+  const piecesKey = `E-M-P-S-${lane.key}`;
+  const rateKey = `P-M-${lane.key}`;
+  const formula = isSlitter
+    ? `${measure.measureKey} = ${piecesKey} ÷ ${rateKey}`
+    : isTransport
+      ? "T-T = horas de transporte ÷ 24"
+      : isBeneficiator
+        ? "T-B = dias informados manualmente para o Beneficiador"
+        : processConfig
+          ? `${measure.measureKey} = ${processConfig.formula}`
+          : `${measure.measureKey} = estoque/WIP do ponto ÷ cadência diária do cliente`;
+  const inputs: LayoutValueTrace["inputs"] = [{
+    key: measure.measureKey,
+    label: measure.kind === "process" ? "Tempo de máquina" : measure.kind === "manual" ? "Parâmetro logístico" : "Buffer em dias",
+    value,
+    unit: "dias",
+    origin: measure.kind === "manual" ? "INPUT" : measure.kind === "process" ? "CALCULATED" : "ORACLE_MES",
+  }];
+  if (isSlitter) {
+    inputs.push(
+      { key: piecesKey, label: "Estoque Slitter", value: oracleMeasures.value.values?.[piecesKey], unit: "peças", origin: "CALCULATED" },
+      { key: rateKey, label: "Cadência diária", value: oracleMeasures.value.values?.[rateKey], unit: "peças/dia", origin: "ORACLE_MES" },
+    );
+  }
+  return {
+    id: `lane-${lane.key}-${measure.measureKey}`,
+    title: `${lane.label} · ${isSlitter ? "Slitter" : measure.measureKey}`,
+    displayValue: value === undefined ? "—" : formatProcessDays(value),
+    unit: "dias",
+    formula,
+    simpleExplanation: value === undefined
+      ? "A medida não foi publicada porque uma entrada necessária não está disponível no mesmo filtro de data. A tela não substitui ausência por zero."
+      : isSlitter
+        ? "Este é o buffer do Slitter em dias, calculado com a mesma transformação de local, comprimento médio, estoque de lotes e cadência diária do Power BI."
+        : "O número fica ligado à posição correspondente do fluxo e permanece separado das demais parcelas.",
+    inputs,
+    intermediateResults: [`${measure.measureKey} = ${value === undefined ? "—" : formatMeasureDetailed(value)} dia`],
+    origin: measure.kind === "manual" ? "Cadastro Logística" : measure.kind === "process" ? "Demanda Oracle/MES + capacidade local" : "Oracle/MES + medida Power BI reproduzida",
+    measureKeys: [measure.measureKey, ...(isSlitter ? [piecesKey, rateKey] : [])],
+    filters: [`Calendar[Date] = ${selectedDate.value}`, `Cliente = ${lane.label}`],
+    client: lane.label,
+    process: measure.stageId,
+    date: selectedDate.value,
+    updatedAt: measure.kind === "manual" ? forms.savedAt : oracleMeasures.value.updatedAt,
+    sourceReference: isSlitter ? "MIFC.SemanticModel/definition/expressions.tmdl; medidas Q-D-*" : "docs/layout-card-lineage.csv; docs/client-process-matrix.csv",
+    missingKeys: value === undefined ? [measure.measureKey] : [],
+  };
 }
 function clientTotalDisplay(lane: ClientProcessLane) { const value=clientTotals.value[lane.key].value;return value===undefined?"—":formatProcessDays(value); }
 async function loadLayoutMeasures() {
@@ -592,7 +665,7 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
                 </g>
               </svg>
               <div class="client-measure-keys">
-                <button v-for="stage in positionedClientStages" :key="stage.id" type="button" :aria-label="`Abrir origem de ${lane.label}, ${stage.label}`" :class="{ inactive: !mappingFor(lane,stage)?.participates, pending: mappingFor(lane,stage)?.validationStatus === 'pending' }" :style="{ left: `${stage.centerX}px` }" @click.stop="openTrace(stageTrace(lane,stage))">{{ stageMeasureLabel(lane,stage) }}</button>
+                <button v-for="measure in lane.measures" :key="measure.id" type="button" :data-testid="`client-lane-measure-${lane.key}-${measure.measureKey}`" :aria-label="`Abrir ${measure.measureKey} de ${lane.label}`" :class="[measure.kind, { slitter: measure.measureKey === `Q-D-${lane.key}` }]" :style="{ left: `${measure.centerX}px` }" @click.stop="openTrace(laneMeasureTrace(lane,measure))">{{ laneMeasureLabel(lane,measure) }}</button>
               </div>
               <button class="client-total" type="button" :data-testid="`client-total-${lane.key}`" :aria-label="`Abrir tempo total do cliente ${lane.label}`" @click.stop="openTrace(totalTrace(lane))"><small>Tempo total do cliente</small><strong>{{ clientTotalDisplay(lane) }}</strong><em>{{ clientTotals[lane.key].measureKey }}</em></button>
             </div>
@@ -671,11 +744,12 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
 .client-stage-marker circle { fill:#fff; stroke:#98a4b4; stroke-width:1.5; }
 .client-stage-marker.active circle { fill:#263746; stroke:#263746; }
 .client-stage-marker.pending circle { fill:#fff4d6; stroke:#c88800; stroke-dasharray:2 1; }
-.client-measure-keys { position:absolute; z-index:2; top:45px; right:0; left:0; height:22px; }
-.client-measure-keys button { position:absolute; width:150px; min-height:20px; padding:1px 4px; border:0; border-radius:4px; background:rgba(255,255,255,.88); color:#263b52; font-size:11px; font-weight:700; line-height:1.15; text-align:center; white-space:normal; transform:translateX(-50%); cursor:pointer; }
+.client-measure-keys { position:absolute; z-index:2; inset:0; pointer-events:none; }
+.client-measure-keys button { position:absolute; top:43px; width:76px; min-height:18px; padding:1px 3px; border:0; border-radius:4px; background:rgba(255,255,255,.94); color:#31536f; font-size:10px; font-weight:800; line-height:1.15; text-align:center; white-space:nowrap; transform:translateX(-50%); cursor:pointer; pointer-events:auto; }
+.client-measure-keys button.process { top:10px; color:#263746; transform:translate(-50%,-50%); }
+.client-measure-keys button.manual { color:#9a6500; }
+.client-measure-keys button.slitter { width:88px; border:1px solid #8bb8a1; background:#f0faf4; color:#087443; font-size:11px; }
 .client-measure-keys button:hover,.client-measure-keys button:focus-visible { outline:0; background:var(--surface-selected); color:var(--brand-blue-strong); box-shadow:0 0 0 2px var(--focus-ring); }
-.client-measure-keys button.inactive { color:#a1aab5; pointer-events:none; }
-.client-measure-keys button.pending { color:#a66f00; }
 .client-total { position:absolute; z-index:4; top:6px; right:22px; display:grid; min-width:158px; min-height:55px; align-content:center; padding:5px 11px; border:1px solid #aeb9c8; border-radius:7px; background:#fff; color:#20344c; text-align:left; box-shadow:0 2px 8px rgba(16,34,62,.08); cursor:pointer; }
 .client-total:hover,.client-total:focus-visible { border-color:var(--brand-blue); outline:0; box-shadow:0 0 0 3px var(--focus-ring); }
 .client-total small { font-size:7px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }

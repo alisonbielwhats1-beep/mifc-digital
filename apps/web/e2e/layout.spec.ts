@@ -84,6 +84,25 @@ test("renderiza as quatro linhas de clientes e gera evidência visual", async ({
   await testInfo.attach("linhas-cliente-processo.png", { body: screenshot, contentType: "image/png" });
 });
 
+test("mostra os dias de buffer do Slitter diretamente nas linhas dos clientes", async ({ page }) => {
+  await page.route("**/api/layout/measures?**", async (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({
+      ready: true,
+      values: { "Q-D-FH": 2.725, "Q-D-VM": 6.727, "Q-D-SCA": 7.676, "Q-D-DAF": 10.323 },
+      diagnostics: { contextDate: "2026-08-20", rows: {} },
+      updatedAt: "2026-08-20T15:30:00.000Z",
+    }),
+  }));
+  await page.reload();
+
+  await expect(page.getByTestId("client-lane-measure-FH-Q-D-FH")).toHaveText("2,725");
+  await expect(page.getByTestId("client-lane-measure-VM-Q-D-VM")).toHaveText("6,727");
+  await expect(page.getByTestId("client-lane-measure-SCA-Q-D-SCA")).toHaveText("7,676");
+  await expect(page.getByTestId("client-lane-measure-DAF-Q-D-DAF")).toHaveText("10,323");
+});
+
 test("abre a rastreabilidade do total e exibe os buffers documentados", async ({ page }) => {
   await expect(page.getByTestId("layout-buffer-buf-fh-lct-in")).toBeVisible();
   await expect(page.getByTestId("layout-measure-buffer-slitter")).toBeVisible();

@@ -122,7 +122,7 @@ describe("medidas Oracle da Roll Former 3", () => {
 
     expect(values["D-E-FH-B"]).toBeCloseTo(0.5);
     expect(values["D-E-FH-P.I"]).toBeCloseTo(0.125);
-    expect(values["D-E-SCA-REB"]).toBeCloseTo(0.5);
+    expect(values["D-E-SCA-P.A"]).toBeCloseTo(0.5);
     expect(values["E-D-P-LCT"]).toBeCloseTo(6);
     expect(values["E-D-P-RF2"]).toBeCloseTo(1);
     expect(values["E-P-D-FH-M3"]).toBeCloseTo(0.5);

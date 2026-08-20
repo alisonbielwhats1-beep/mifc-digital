@@ -31,6 +31,14 @@ export interface PositionedClientStage extends ClientProcessStage {
   width: number;
 }
 
+export interface PositionedClientLaneMeasure {
+  id: string;
+  measureKey: string;
+  kind: "manual" | "stock" | "process";
+  centerX: number;
+  stageId?: string;
+}
+
 export const clientProcessStages: ClientProcessStage[] = [
   { id: "lct-rf2", label: "LCT / RF2", layoutNodeId: "node-cut" },
   { id: "rf3", label: "Roll Former 3", layoutNodeId: "node-stamp" },
@@ -170,14 +178,69 @@ export function positionClientStages(nodes: LayoutNode[]): PositionedClientStage
   });
 }
 
+function layoutNodeCenter(nodes: LayoutNode[], id: string, fallback: number): number {
+  const node = nodes.find((item) => item.id === id || item.id.endsWith(`-${id}`));
+  return node ? node.x + node.width / 2 : fallback;
+}
+
+function spreadMeasureKeys(
+  measureKeys: string[],
+  kind: PositionedClientLaneMeasure["kind"],
+  left: number,
+  right: number,
+  stageId?: string,
+): PositionedClientLaneMeasure[] {
+  if (!measureKeys.length) return [];
+  const width = Math.max(0, right - left);
+  return measureKeys.map((measureKey, index) => ({
+    id: `${kind}-${stageId ?? "intro"}-${measureKey}`,
+    measureKey,
+    kind,
+    centerX: left + width * ((index + 1) / (measureKeys.length + 1)),
+    stageId,
+  }));
+}
+
+/** Posiciona cada cartão numérico na mesma sequência conceitual da faixa Layout do PBIP. */
+export function positionClientLaneMeasures(
+  lane: ClientProcessLane,
+  stages: PositionedClientStage[],
+  nodes: LayoutNode[],
+): PositionedClientLaneMeasure[] {
+  const firstStageCenter = stages[0]?.centerX ?? 650;
+  const beneficiatorCenter = layoutNodeCenter(nodes, "node-beneficiator", firstStageCenter - 430);
+  const rawCenter = layoutNodeCenter(nodes, "node-raw", firstStageCenter - 230);
+  const finishedCenter = layoutNodeCenter(nodes, "node-finished", (stages.at(-1)?.centerX ?? firstStageCenter) + 260);
+  const result: PositionedClientLaneMeasure[] = [
+    { id: `manual-intro-T-B`, measureKey: "T-B", kind: "manual", centerX: beneficiatorCenter },
+    { id: `manual-intro-T-T`, measureKey: "T-T", kind: "manual", centerX: (beneficiatorCenter + rawCenter) / 2 },
+    { id: `stock-intro-Q-D-${lane.key}`, measureKey: `Q-D-${lane.key}`, kind: "stock", centerX: rawCenter },
+  ];
+
+  const participating = stages.filter((stage) => mappingForClientStage(lane, stage)?.participates);
+  for (const [index, stage] of participating.entries()) {
+    const mapping = mappingForClientStage(lane, stage)!;
+    const pulseHalfWidth = Math.min(32, Math.max(18, stage.width * .28));
+    result.push(...spreadMeasureKeys(mapping.processMeasureKeys, "process", stage.centerX - pulseHalfWidth, stage.centerX + pulseHalfWidth, stage.id));
+
+    const nextStage = participating[index + 1];
+    const stockLeft = stage.centerX + pulseHalfWidth + 18;
+    const stockRight = (nextStage?.centerX ?? finishedCenter) - (nextStage ? Math.min(32, Math.max(18, nextStage.width * .28)) : 18);
+    result.push(...spreadMeasureKeys(mapping.stockMeasureKeys, "stock", stockLeft, Math.max(stockLeft, stockRight), stage.id));
+  }
+  return result;
+}
+
 export function buildClientProcessPath(
   lane: ClientProcessLane,
   stages: PositionedClientStage[],
   baseline = 23,
   raised = 7,
+  startX?: number,
+  endX?: number,
 ): string {
   if (!stages.length) return "";
-  const start = Math.max(0, stages[0].centerX - stages[0].width / 2);
+  const start = startX ?? Math.max(0, stages[0].centerX - stages[0].width / 2);
   let path = `M ${start} ${baseline}`;
   for (const stage of stages) {
     const halfPulse = Math.min(32, Math.max(18, stage.width * 0.28));
@@ -191,5 +254,5 @@ export function buildClientProcessPath(
     }
   }
   const last = stages.at(-1)!;
-  return `${path} L ${last.centerX + last.width / 2} ${baseline}`;
+  return `${path} L ${endX ?? last.centerX + last.width / 2} ${baseline}`;
 }
