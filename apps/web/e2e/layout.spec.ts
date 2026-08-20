@@ -7,6 +7,24 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByTestId("client-lead-time-board")).toBeVisible();
 });
 
+test("exibe Calendar Dia_Min em tempo real e 1.440 fora do dia atual", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-08-20T16:38:00.000Z"));
+  await page.reload();
+
+  const clock = page.getByTestId("operational-clock");
+  await expect(clock).toContainText("Calendar[Dia_Min]");
+  await expect(clock).toContainText("818 min");
+
+  await page.locator(".date-context input").fill("2026-08-19");
+  await page.locator(".date-context input").press("Tab");
+  await expect(clock).toContainText("1.440 min");
+
+  await clock.click();
+  const trace = page.getByRole("dialog", { name: "Rastreabilidade do valor" });
+  await expect(trace).toContainText("HOUR(NOW()) × 60 + MINUTE(NOW())");
+  await expect(trace).toContainText("America/Sao_Paulo");
+});
+
 test("renomeia o card imediatamente e mantém o nome após salvar/recarregar", async ({ page }) => {
   const card = page.getByTestId("layout-node-node-stamp");
   await card.getByText("Roll Former 3", { exact: true }).click();
