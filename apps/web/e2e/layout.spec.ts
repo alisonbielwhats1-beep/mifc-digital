@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test("renomeia o card imediatamente e mantém o nome após salvar/recarregar", async ({ page }) => {
   const card = page.getByTestId("layout-node-node-stamp");
-  await card.click();
+  await card.getByText("Roll Former 3", { exact: true }).click();
 
   const input = page.getByTestId("node-name-input");
   await expect(input).toBeFocused();
@@ -95,7 +95,7 @@ test("busca um bloco, navega e abre a ajuda contextual", async ({ page }) => {
 });
 
 test("sincroniza Tempo de Ciclo entre Layout e Capacidade nos dois sentidos", async ({ page }) => {
-  await page.getByTestId("layout-node-node-stamp").click();
+  await page.getByTestId("layout-node-node-stamp").getByText("Roll Former 3", { exact: true }).click();
   await page.getByLabel("Tempo de Ciclo — CT (s/peça)").fill("51");
   await page.getByRole("button", { name: "Aplicar propriedades" }).click();
   await page.getByRole("link", { name: "Capacidade" }).click();
@@ -103,6 +103,9 @@ test("sincroniza Tempo de Ciclo entre Layout e Capacidade nos dois sentidos", as
   await expect(capacityCt).toHaveValue("51");
 
   await capacityCt.fill("52");
+  await expect(capacityCt).toHaveValue("52");
+  await capacityCt.press("Tab");
+  await expect(capacityCt).toHaveAttribute("data-model-value", "52");
   await page.getByRole("link", { name: "Layout" }).click();
   await expect(page.getByTestId("layout-node-node-stamp")).toContainText("52 s/peça");
 });
