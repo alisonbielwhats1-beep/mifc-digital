@@ -93,3 +93,16 @@ test("busca um bloco, navega e abre a ajuda contextual", async ({ page }) => {
   await page.getByRole("button", { name: "Ajuda" }).click();
   await expect(page.getByRole("dialog", { name: "Ajuda desta tela" })).toContainText("Mover tela");
 });
+
+test("sincroniza Tempo de Ciclo entre Layout e Capacidade nos dois sentidos", async ({ page }) => {
+  await page.getByTestId("layout-node-node-stamp").click();
+  await page.getByLabel("Tempo de Ciclo — CT (s/peça)").fill("51");
+  await page.getByRole("button", { name: "Aplicar propriedades" }).click();
+  await page.getByRole("link", { name: "Capacidade" }).click();
+  const capacityCt = page.getByRole("spinbutton", { name: "Tempo de Ciclo — CT (s/peça)" }).first();
+  await expect(capacityCt).toHaveValue("51");
+
+  await capacityCt.fill("52");
+  await page.getByRole("link", { name: "Layout" }).click();
+  await expect(page.getByTestId("layout-node-node-stamp")).toContainText("52 s/peça");
+});
