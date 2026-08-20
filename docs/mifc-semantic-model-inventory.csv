@@ -1,0 +1,818 @@
+kind,table,name,data_type,format,hidden_or_inactive,source_or_target,dependencies_or_definition,status
+TABLE,1-Measure,1-Measure,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\1-Measure.tmdl,1 colunas; 309 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,1-Measure,Column,,0,false,[Column],summarizeBy=sum,INVENTARIADO
+MEASURE,1-Measure,P-RF3,measure,0,false,ALL\Máquinas\0.Roll Former 3,DESCRIPTION; RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D,measure,0,false,ALL\0.0.MIFC\ALL,Dia_Min,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-RF3,measure,0.0000000000,false,ALL\Máquinas\0.Roll Former 3,D-P-RF3; T-P-M-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-RF3,measure,0,false,ALL\Máquinas\0.Roll Former 3,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-RF3,measure,0,false,ALL\Máquinas\0.Roll Former 3,P-T-D,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-RF3,measure,0.0000000000,false,ALL\Máquinas\0.Roll Former 3,P-RF3; T-D-L-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-RF3,measure,0,false,ALL\Máquinas\0.Roll Former 3,T-D-L-RF3; T-P-M-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-RF3,measure,,false,ALL\Máquinas\0.Roll Former 3,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-RF3,measure,,false,ALL\Máquinas\0.Roll Former 3,Dia_Min; F-H; P-P-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-RF3,measure,,false,ALL\Máquinas\0.Roll Former 3,D-P-RF3; P-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-RF3,measure,0.0000000000,false,ALL\Máquinas\0.Roll Former 3,P-R-RF3; T-R-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-B1,measure,0,false,ALL\Máquinas\Beatty 1,DESCRIPTION; RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-B1,measure,,false,ALL\Máquinas\Beatty 1,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-B1,measure,0,false,ALL\Máquinas\Beatty 1,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-B1,measure,,false,ALL\Máquinas\Beatty 1,Dia_Min; F-H; P-P-B1,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-B1,measure,,false,ALL\Máquinas\Beatty 1,T-D-L-B1; T-P-M-B1,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-B1,measure,0,false,ALL\Máquinas\Beatty 1,P-VM-F,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-B1,measure,0.0000000000,false,ALL\Máquinas\Beatty 1,D-P-B1; T-P-M-B1,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-B1,measure,0.0000000000,false,ALL\Máquinas\Beatty 1,P-B1; T-D-L-B1,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-B1,measure,0,false,ALL\Máquinas\Beatty 1,D-P-B1; P-B1,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-B2,measure,0,false,ALL\Máquinas\Beatty 2,P-DAF-S,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-B2,measure,0,false,ALL\Máquinas\Beatty 2,DESCRIPTION; RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-B2,measure,,false,ALL\Máquinas\Beatty 2,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-B2,measure,0,false,ALL\Máquinas\Beatty 2,D-P-B2; P-B2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-B2,measure,,false,ALL\Máquinas\Beatty 2,Dia_Min; F-H; P-P-B2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-B2,measure,0,false,ALL\Máquinas\Beatty 2,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-B2,measure,,false,ALL\Máquinas\Beatty 2,T-D-L-B2; T-P-M-B2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-B2,measure,0.0000000000,false,ALL\Máquinas\Beatty 2,D-P-B2; T-P-M-B2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-B2,measure,0.0000000000,false,ALL\Máquinas\Beatty 2,P-B2; T-D-L-B2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-B3,measure,0,false,ALL\Máquinas\Beatty 3,P-SCA-F,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-B3,measure,0,false,ALL\Máquinas\Beatty 3,DESCRIPTION; RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-B3,measure,,false,ALL\Máquinas\Beatty 3,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-B3,measure,0,false,ALL\Máquinas\Beatty 3,D-P-B3; P-B3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-B3,measure,0.0000000000,false,ALL\Máquinas\Beatty 3,P-B3; T-D-L-B3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-B3,measure,,false,ALL\Máquinas\Beatty 3,Dia_Min; F-H; P-P-B3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-B3,measure,0,false,ALL\Máquinas\Beatty 3,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-B3,measure,,false,ALL\Máquinas\Beatty 3,T-D-L-B3; T-P-M-B3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-B3,measure,0.0000000000,false,ALL\Máquinas\Beatty 3,D-P-B3; T-P-M-B3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-B4,measure,0,false,ALL\Máquinas\Beatty 4,P-FH-F,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-B4,measure,0,false,ALL\Máquinas\Beatty 4,DESCRIPTION; RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-B4,measure,,false,ALL\Máquinas\Beatty 4,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-B4,measure,0,false,ALL\Máquinas\Beatty 4,D-P-B4; P-B4,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-B4,measure,,false,ALL\Máquinas\Beatty 4,Dia_Min; F-H; P-P-B4,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-B4,measure,0,false,ALL\Máquinas\Beatty 4,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-B4,measure,,false,ALL\Máquinas\Beatty 4,T-D-L-B4; T-P-M-B4,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-B4,measure,0.0000000000,false,ALL\Máquinas\Beatty 4,D-P-B4; T-P-M-B4,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-B4,measure,0.0000000000,false,ALL\Máquinas\Beatty 4,P-B4; T-D-L-B4,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-B1,measure,0.0000000000,false,ALL\Máquinas\Beatty 1,P-R-B1; T-R-B1,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-B2,measure,0.0000000000,false,ALL\Máquinas\Beatty 2,P-R-B2; T-R-B2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-B3,measure,0.0000000000,false,ALL\Máquinas\Beatty 3,P-R-B3; T-R-B3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-B4,measure,0.0000000000,false,ALL\Máquinas\Beatty 4,P-R-B4; T-R-B4,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-P.A,measure,0,false,ALL\Máquinas\P.A,P-FH-F; P-SCA-F,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P.A,measure,0,false,ALL\Máquinas\P.A,DESCRIPTION; RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-P.A,measure,,false,ALL\Máquinas\P.A,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-P.A,measure,,false,ALL\Máquinas\P.A,D-P-P.A; P-P.A,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-P.A,measure,0.0000000000,false,ALL\Máquinas\P.A,P-P.A; T-D-L-P.A,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-P.A,measure,,false,ALL\Máquinas\P.A,Dia_Min; F-H; P-P-P.A,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-P.A,measure,0,false,ALL\Máquinas\P.A,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-P.A,measure,0.0000000000,false,ALL\Máquinas\P.A,D-P-P.A; T-P-M-P.A,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-P.A,measure,,false,ALL\Máquinas\P.A,T-D-L-P.A; T-P-M-P.A,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-P.A,measure,0.0000000000,false,ALL\Máquinas\P.A,P-R-P.A; T-R-P.A,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-RF3,measure,0,false,ALL\Máquinas\0.Roll Former 3,Date; T-C-RF3; TKT-C-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-B1,measure,0,false,ALL\Máquinas\Beatty 1,Date; T-C-B1; TKT-C-B1,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-B2,measure,0,false,ALL\Máquinas\Beatty 2,Date; T-C-B2; TKT-C-B2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-B3,measure,0,false,ALL\Máquinas\Beatty 3,Date; T-C-B3; TKT-C-B3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-B4,measure,0,false,ALL\Máquinas\Beatty 4,Date; T-C-B4; TKT-C-B4,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-P.A,measure,0,false,ALL\Máquinas\P.A,Date; T-C-P.A; TKT-C-P.A,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-LPP2,measure,,false,ALL\Máquinas\Pintura,P-T-D,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-LPP2,measure,,false,ALL\Máquinas\Pintura,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-LPP2,measure,0,false,ALL\Máquinas\Pintura,DESCRIPTION; RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-LPP2,measure,,false,ALL\Máquinas\Pintura,D-P-LPP2; P-LPP2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-LPP2,measure,,false,ALL\Máquinas\Pintura,Dia_Min; F-H; P-P-LPP2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-LPP2,measure,0,false,ALL\Máquinas\Pintura,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-LPP2,measure,,false,ALL\Máquinas\Pintura,T-D-L-LPP2; T-P-M-LPP2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-LPP2,measure,0.0000000000,false,ALL\Máquinas\Pintura,D-P-LPP2; T-P-M-LPP2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-LPP2,measure,0.0000000000,false,ALL\Máquinas\Pintura,P-LPP2; T-D-L-LPP2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-LPP2,measure,0,false,ALL\Máquinas\Pintura,Date; T-C-LPP2; TKT-C-LPP2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-LPP2,measure,,false,ALL\Máquinas\Pintura,P-R-LPP2; T-R-LPP2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-STJ,measure,,false,ALL\Máquinas\Stenhoj,P-DAF-S; P-FH-F; P-SCA-F,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-STJ,measure,,false,ALL\Máquinas\Stenhoj,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-STJ,measure,0,false,ALL\Máquinas\Stenhoj,DESCRIPTION; RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-STJ,measure,,false,ALL\Máquinas\Stenhoj,D-P-STJ; P-STJ,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-STJ,measure,,false,ALL\Máquinas\Stenhoj,Dia_Min; F-H; P-P-STJ,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-STJ,measure,0,false,ALL\Máquinas\Stenhoj,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-STJ,measure,0.0000000000,false,ALL\Máquinas\Stenhoj,P-STJ; T-D-L-STJ,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-STJ,measure,0.0000000000,false,ALL\Máquinas\Stenhoj,D-P-STJ; T-P-M-STJ,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-STJ,measure,,false,ALL\Máquinas\Stenhoj,T-D-L-STJ; T-P-M-STJ,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-STJ,measure,0,false,ALL\Máquinas\Stenhoj,Date; T-C-STJ; TKT-C-STJ,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-STJ,measure,,false,ALL\Máquinas\Stenhoj,P-R-STJ; T-R-STJ,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-C-C,measure,0,false,ALL\8.E-Kanban,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-SCA-F,measure,,false,ALL\8.E-Kanban,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-I-FH,measure,0,false,ALL\8.E-Kanban,CHASSIS_NUMBER,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-FH-F,measure,,false,ALL\8.E-Kanban,T-I-FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-I-VM,measure,0,false,ALL\8.E-Kanban,CHASSIS_NUMBER,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-VM-F,measure,,false,ALL\8.E-Kanban,T-I-VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-DAF-S,measure,,false,ALL\8.E-Kanban,Pares Slitter,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-T-D,measure,0,false,ALL\9.Estoque,P-DAF-S; P-FH-F; P-SCA-F; P-VM-F,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,C-T-E,measure,0,false,ALL\9.Estoque,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,C-P-M,measure,0.00000000,false,ALL\9.Estoque,ITEM(m); RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-M-P,measure,0.00000,false,ALL\9.Estoque,C-P-M; C-T-E,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-T,measure,0,false,ALL\9.Estoque,RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Scania,measure,,false,ALL\Scania,Pares_long_ref; Pares_long_simples; Pares_reforço,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Pares_long_ref,measure,,false,ALL\Scania,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Pares_long_simples,measure,,false,ALL\Scania,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Pares_reforço,measure,,false,ALL\Scania,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,FH,measure,,false,ALL\FH,Total Itens FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Total Itens FH,measure,0,false,ALL\FH,CHASSIS_NUMBER,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,VM,measure,,false,ALL\VM,Total Itens VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Total Itens VM,measure,0,false,ALL\VM,CHASSIS_NUMBER,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,DAF,measure,,false,ALL\DAF,Pares Slitter; Total peças,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Total peças,measure,,false,ALL\DAF,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,C-P-M-SCA,measure,0.0,false,ALL\0.0.MIFC\SCANIA,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,C-P-M-FH,measure,0.0,false,ALL\0.0.MIFC\FH,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,C-P-M-VM,measure,0.0,false,ALL\0.0.MIFC\VM,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,C-P-M-DAF,measure,0.0,false,ALL\0.0.MIFC\DAF,FINISH_LENGTH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-M-P-SCA,measure,,false,ALL\0.0.MIFC\SCANIA\Estoque,C-P-M-SCA; C-T-E,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-M-P-FH,measure,,false,ALL\0.0.MIFC\FH\Estoque,C-P-M-FH; C-T-E,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-M-P-VM,measure,,false,ALL\0.0.MIFC\VM\Estoque,C-P-M-VM; C-T-E,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-M-P-DAF,measure,,false,ALL\0.0.MIFC\DAF\Estoque,C-P-M-DAF; C-T-E,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,C-P-M-TOTAL,measure,0.0,false,ALL\0.0.MIFC\ALL,FINISH_LENGTH; Local,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-M-P-S,measure,0,false,ALL\0.0.MIFC\ALL\Estoque,C-P-M-TOTAL; C-T-E,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,C-M-FL,measure,0,false,ALL\0.0.MIFC\Logística,FINISH_LENGTH; LOCAL; Pares Slitter,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-E-FL,measure,0%;-0%;0%,false,ALL\0.0.MIFC\Logística,C-M-FL; C-T-E,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Status_Slitter,measure,,false,ALL\0.0.MIFC\Logística,C-M-FL; C-T-E,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-P-ShipDate,measure,0,false,ALL\0.0.MIFC\Logística,FINISH_LENGTH; LOCAL; Pares Slitter,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-S-E,measure,0,false,ALL\0.0.MIFC\Logística,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-G-SCA,measure,,false,ALL\0.0.MIFC\Golpes,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-N-P-B-M-SCA,measure,,false,ALL\0.0.MIFC\Golpes,Q-G-SCA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-N-P-B-H-SCA,measure,,false,ALL\0.0.MIFC\Golpes,Q-G-SCA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-G-VDB,measure,,false,ALL\0.0.MIFC\Golpes,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-N-P-B-M-VDB,measure,,false,ALL\0.0.MIFC\Golpes,Q-G-VDB,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-N-P-B-H-VDB,measure,,false,ALL\0.0.MIFC\Golpes,Q-G-VDB,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-CNC,measure,0,false,ALL\Máquinas\CNC Plasma,DESCRIPTION; RAIL_ID,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-CNC,measure,,false,ALL\Máquinas\CNC Plasma,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-CNC,measure,,false,ALL\0.0.MIFC\ALL\Demanda,P-DAF-S,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-CNC,measure,,false,ALL\Máquinas\CNC Plasma,D-P-CNC; P-CNC,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-CNC,measure,,false,ALL\Máquinas\CNC Plasma,Dia_Min; F-H; P-P-CNC,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-CNC,measure,,false,ALL\Máquinas\CNC Plasma,P-CNC; T-D-L-CNC,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-CNC,measure,0,false,ALL\Máquinas\CNC Plasma,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-CNC,measure,,false,ALL\Máquinas\CNC Plasma,T-D-L-CNC; T-P-M-CNC,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-CNC,measure,,false,ALL\Máquinas\CNC Plasma,P-R-CNC; T-R-CNC,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-CNC,measure,,false,ALL\Máquinas\CNC Plasma,D-P-CNC; T-P-M-CNC,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-CNC,measure,0,false,ALL\Máquinas\CNC Plasma,Date; T-C-CNC; TKT-C-CNC,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-B,measure,0,false,ALL\0.0.MIFC\ALL\Tempo,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-T,measure,,false,ALL\0.0.MIFC\ALL\Tempo,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-FH,measure,,false,ALL\0.0.MIFC\Logística,Date; E-M-P-S; FH; Q-D-E-FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-SCA,measure,,false,ALL\0.0.MIFC\Logística,E-M-P-S; Q-D-E-SCA; Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-E-SCA,measure,0,false,ALL\0.0.MIFC\Logística,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-E-FH,measure,0,false,ALL\0.0.MIFC\Logística,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-E-VM,measure,0,false,ALL\0.0.MIFC\Logística,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-VM,measure,,false,ALL\0.0.MIFC\Logística,E-M-P-S; Q-D-E-VM; VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-E-DAF,measure,0,false,ALL\0.0.MIFC\Logística,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-DAF,measure,,false,ALL\0.0.MIFC\Logística,DAF; E-M-P-S; Q-D-E-DAF,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação pintura,measure,0,false,ALL\0.0.MIFC\Qualidade,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação Furação,measure,,false,ALL\0.0.MIFC\Qualidade,qtd_segregação f1; qtd_segregação f2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação f1,measure,0,false,ALL\0.0.MIFC\Qualidade,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação f2,measure,0,false,ALL\0.0.MIFC\Qualidade,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação f3,measure,0,false,ALL\0.0.MIFC\Qualidade,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação f4,measure,0,false,ALL\0.0.MIFC\Qualidade,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação see,measure,0,false,ALL\0.0.MIFC\Qualidade,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-M-FH,measure,,false,ALL\0.0.MIFC\FH\Produção,FH; Q-D-E-FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-M-SCA,measure,,false,ALL\0.0.MIFC\SCANIA\Produção,Q-D-E-SCA; Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-M-VM,measure,,false,ALL\0.0.MIFC\VM\Produção,Q-D-E-VM; VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-M-DAF,measure,,false,ALL\0.0.MIFC\DAF\Produção,DAF; Q-D-E-DAF,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Pares Kanban BEATTYS sequenciado,measure,,false,ALL\0.0.MIFC\Logística,DAF; FH; Pares SCA_quadro; Pares Slitter; VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Pares SCA_quadro,measure,,false,ALL\0.0.MIFC\Logística,Pares_long_ref; Pares_long_simples; Pares_reforço,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Pares Kanban Beattys total,measure,,false,ALL\0.0.MIFC\Logística,Pares Kanban BEATTYS sequenciado; Pares RF2; Pares_base,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Pares RF2,measure,,false,ALL\Máquinas\Roll Former 2,Rail id,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Pares_base,measure,,false,ALL\0.0.MIFC\Logística,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-B-VM,measure,,false,ALL\0.0.MIFC\VM\Estoque,VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-VM-B,measure,0.000,false,ALL\0.0.MIFC\VM\Estoque,E-B-VM; P-M-VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-B-SCA,measure,,false,ALL\0.0.MIFC\SCANIA\Estoque,Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-SCA-B,measure,0.000,false,ALL\0.0.MIFC\SCANIA\Estoque,E-B-SCA; P-M-SCA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-B-FH,measure,0,false,ALL\0.0.MIFC\FH\Estoque,FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-FH-B,measure,0.000,false,ALL\0.0.MIFC\FH\Estoque,E-B-FH; P-M-FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-B-DAF,measure,0,false,ALL\0.0.MIFC\DAF\Estoque,DAF_REV2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,DAF_REV2,measure,,false,ALL\0.0.MIFC\Logística,Total peças,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-DAF-B,measure,0.000,false,ALL\0.0.MIFC\DAF\Estoque,E-B-DAF; P-M-DAF,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-B1,measure,0.000,false,ALL\0.0.MIFC\ALL\Tempo,D-P-B1; T-P-M-B1,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-B2,measure,,false,ALL\0.0.MIFC\ALL\Tempo,D-P-B2; T-P-M-B2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-B3,measure,0.000,false,ALL\0.0.MIFC\ALL\Tempo,D-P-B3; T-P-M-B3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-B4,measure,0.00000,false,ALL\0.0.MIFC\ALL\Tempo,D-P-B4; T-P-M-B4,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P.A,measure,0.000,false,ALL\0.0.MIFC\ALL\Tempo,D-P-P.A; T-P-M-P.A,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-CL-DAF,measure,,false,ALL\0.0.MIFC\DAF\Estoque,DAF_REV2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-CL-VM,measure,,false,ALL\0.0.MIFC\VM\Estoque,VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-CL-FH,measure,,false,ALL\0.0.MIFC\FH\Estoque,FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-CL-SCA,measure,,false,ALL\0.0.MIFC\SCANIA\Estoque,Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-VM-CL,measure,0.000,false,ALL\0.0.MIFC\VM\Estoque,E-CL-VM; P-M-VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-SCA-CL,measure,0.000,false,ALL\0.0.MIFC\SCANIA\Estoque,E-CL-SCA; P-M-SCA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-FH-CL,measure,0.000,false,ALL\0.0.MIFC\FH\Estoque,E-CL-FH; P-M-FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-DAF-CL,measure,0.000,false,ALL\0.0.MIFC\DAF\Estoque,E-CL-DAF; P-M-DAF,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-PI-FH,measure,,false,ALL\0.0.MIFC\FH\Buffer,FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-PI-VM,measure,,false,ALL\0.0.MIFC\VM\Estoque,VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-PI-SCA,measure,,false,ALL\0.0.MIFC\SCANIA\Buffer,Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-PI-DAF,measure,,false,ALL\0.0.MIFC\DAF\Buffer,DAF_REV2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-VM-P.I,measure,0.000,false,ALL\0.0.MIFC\VM\Estoque,E-PI-VM; P-M-VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-DAF-P.I,measure,0.000,false,ALL\0.0.MIFC\DAF\Estoque,E-PI-DAF; P-M-DAF,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-FH-P.I,measure,0.000,false,ALL\0.0.MIFC\FH\Estoque,E-PI-FH; P-M-FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-SCA-P.I,measure,0.000,false,ALL\0.0.MIFC\SCANIA\Estoque,E-PI-SCA; P-M-SCA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-LPP2,measure,0.000,false,ALL\0.0.MIFC\ALL\Tempo,D-P-LPP2; T-P-M-LPP2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-STJ,measure,0.000,false,ALL\0.0.MIFC\ALL\Tempo,D-P-STJ; T-P-M-STJ,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-RF3,measure,0.000,false,ALL\0.0.MIFC\ALL\Tempo,D-P-RF3; T-P-M-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-M,measure,0.000,false,ALL\0.0.MIFC\ALL\Tempo,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-CNC,measure,0.000,false,ALL\Máquinas\CNC Plasma,D-P-CNC; T-P-M-CNC,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P.A-FH,measure,,false,ALL\0.0.MIFC\FH\Buffer,FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P.A-SCA,measure,,false,ALL\0.0.MIFC\SCANIA\Buffer,Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-FH-P.A,measure,0.000,false,ALL\0.0.MIFC\FH\Estoque,E-P.A-FH; P-M-FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-SCA-P.A,measure,0.000,false,ALL\0.0.MIFC\SCANIA\Estoque,E-P.A-SCA; P-M-SCA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-REB-SCA,measure,0.000,false,ALL\0.0.MIFC\SCANIA\Buffer,Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-SCA-REB,measure,0.000,false,ALL\0.0.MIFC\SCANIA\Estoque,E-REB-SCA; P-M-SCA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-REB-DAF,measure,,false,ALL\0.0.MIFC\DAF\Buffer,DAF_REV2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-E-DAF-REB,measure,,false,ALL\0.0.MIFC\DAF\Estoque,E-REB-DAF; P-M-DAF,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-RF2,measure,0,false,ALL\Máquinas\Roll Former 2,_VALUE,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-RF2,measure,,false,ALL\Máquinas\Roll Former 2,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-RF2,measure,0,false,ALL\0.0.MIFC\ALL\Demanda,T-I-FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-RF2,measure,,false,ALL\Máquinas\Roll Former 2,Dia_Min; F-H; P-P-RF2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-RF2,measure,,false,ALL\Máquinas\Roll Former 2,P-RF2; T-D-L-RF2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-RF2,measure,0,false,ALL\Máquinas\Roll Former 2,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-RF2,measure,,false,ALL\Máquinas\Roll Former 2,D-P-RF2; T-P-M-RF2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-RF2,measure,0,false,ALL\Máquinas\Roll Former 2,D-P-RF2; P-RF2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-RF2,measure,,false,ALL\Máquinas\Roll Former 2,T-D-L-RF2; T-P-M-RF2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-RF2,measure,,false,ALL\Máquinas\Roll Former 2,P-R-RF2; T-R-RF2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-RF2,measure,0,false,ALL\Máquinas\Roll Former 2,Date; T-C-RF2; TKT-C-RF2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-LCT,measure,0,false,ALL\Máquinas\LCT,_VALUE,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-P-LCT,measure,,false,ALL\Máquinas\LCT,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-P-M-LCT,measure,0,false,ALL\Máquinas\LCT,Máquina; Tempo Disponível (Min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-C-LCT,measure,,false,ALL\Máquinas\LCT,D-P-RF2; T-P-M-LCT,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-D-L-LCT,measure,,false,ALL\Máquinas\LCT,Dia_Min; F-H; P-P-LCT,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-LCT,measure,,false,ALL\Máquinas\LCT,P-LCT; T-D-L-LCT,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-R-LCT,measure,0,false,ALL\Máquinas\LCT,D-P-RF2; P-LCT,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-R-LCT,measure,,false,ALL\Máquinas\LCT,T-D-L-LCT; T-P-M-LCT,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-R-LCT,measure,,false,ALL\Máquinas\LCT,P-R-LCT; T-R-LCT,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-C-LCT,measure,0,false,ALL\Máquinas\LCT,Date; T-C-LCT; TKT-C-LCT,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-LCT/RF2,measure,0.000,false,ALL\Máquinas\LCT,D-P-RF2; T-P-M-LCT,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-LCT,measure,,false,ALL\0.0.MIFC\ALL\Estoque,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-D-P-LCT,measure,0.000,false,ALL\0.0.MIFC\ALL\Estoque,E-P-LCT; P-M-FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-D-P-RF2,measure,0.000,false,ALL\0.0.MIFC\ALL\Estoque,P-M-FH; Pares RF2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-SCA-RF3,measure,0.000,false,ALL\0.0.MIFC\SCANIA\Estoque,P-M-SCA-REV 2; Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-M-SCA-REV 2,measure,,false,ALL\0.0.MIFC\SCANIA\Produção,Date; Q-D-E-SCA; Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-M-VM-REV 2,measure,,false,ALL\0.0.MIFC\VM\Produção,Date; Q-D-E-VM; VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-VM-RF3,measure,0.000,false,ALL\0.0.MIFC\VM\Estoque,P-M-VM-REV 2; VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-M-FH-REV 2,measure,,false,ALL\0.0.MIFC\FH\Produção,Date; FH; Q-D-E-FH,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-FH-RF3,measure,0.000,false,ALL\0.0.MIFC\FH\Estoque,FH; P-M-FH-REV 2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-M-DAF-REV 2,measure,,false,ALL\0.0.MIFC\DAF\Produção,DAF; Date; Q-D-E-DAF,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-DAF-RF3,measure,0.000,false,ALL\0.0.MIFC\DAF\Estoque,DAF; P-M-DAF-REV 2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-SCA-REB,measure,,false,ALL\0.0.MIFC\SCANIA\Demanda,P-SCA-F,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-SCA-REB,measure,0.000,false,ALL\0.0.MIFC\SCANIA\Tempo,D-P-SCA-REB; T-P-M-STJ,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,D-P-DAF-REB,measure,,false,ALL\0.0.MIFC\DAF\Demanda,P-DAF-S,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-DAF-REB,measure,0.000,false,ALL\0.0.MIFC\DAF\Tempo,D-P-DAF-REB; T-P-M-STJ,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-SCA-STJ,measure,,false,ALL\0.0.MIFC\SCANIA\Estoque,P-M-SCA-REV 2; Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-DAF-STJ,measure,,false,ALL\0.0.MIFC\DAF\Estoque,DAF; P-M-DAF-REV 2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-FH-STJ,measure,,false,ALL\0.0.MIFC\FH\Estoque,FH; P-M-FH-REV 2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-EMB-VM,measure,,false,ALL\0.0.MIFC\VM\Tempo,P-M-VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação_fh,measure,0,false,ALL\0.0.MIFC\Qualidade,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-FH-M3,measure,0.000,false,ALL\0.0.MIFC\FH\Estoque,P-M-FH-REV 2; qtd_segregação_fh,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação_scania,measure,0,false,ALL\0.0.MIFC\Qualidade,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-SCA-M3,measure,0.000,false,ALL\0.0.MIFC\SCANIA\Estoque,P-M-SCA-REV 2; qtd_segregação_scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação_daf,measure,0,false,ALL\0.0.MIFC\Qualidade,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-DAF-M3,measure,,false,ALL\0.0.MIFC\DAF\Estoque,P-M-DAF-REV 2; qtd_segregação_daf,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-SCA-EMB,measure,0.000,false,ALL\0.0.MIFC\SCANIA\Estoque,P-M-SCA-REV 2; Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-FH-EMB,measure,0.000,false,ALL\0.0.MIFC\FH\Estoque,FH; P-M-FH-REV 2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-M3,measure,0.000,false,ALL\0.0.MIFC\ALL\Tempo,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,F-H,measure,0,false,ALL\0.0.MIFC\ALL\Fuso Horário,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-DAF-EMB,measure,0.000,false,ALL\0.0.MIFC\DAF\Estoque,DAF; P-M-DAF-REV 2,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,E-P-D-VM-EMB,measure,0.000,false,ALL\0.0.MIFC\VM\Estoque,P-M-VM-REV 2; VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-T-SCA,measure,0.00,false,ALL\0.0.MIFC\SCANIA\Tempo,D-E-SCA-B; D-E-SCA-CL; D-E-SCA-P.A; D-E-SCA-P.I; D-E-SCA-REB; Dados ; Data; E-P-D-SCA-EMB; E-P-D-SCA-M3; E-P-D-SCA-RF3; E-P-D-SCA-STJ; Q-D-SCA; T-M; T-T,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-T-DAF,measure,,false,ALL\0.0.MIFC\DAF\Tempo,D-E-DAF-B; D-E-DAF-CL; D-E-DAF-P.I; D-E-DAF-REB; Dados ; Data; E-P-D-DAF-EMB; E-P-D-DAF-M3; E-P-D-DAF-RF3; E-P-D-DAF-STJ; Q-D-DAF; T-M; T-T,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-T-VM,measure,,false,ALL\0.0.MIFC\VM\Tempo,D-E-VM-B; D-E-VM-CL; D-E-VM-P.I; Dados ; Data; E-P-D-VM-EMB; E-P-D-VM-RF3; Q-D-VM; T-M; T-T,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-T-FH,measure,,false,ALL\0.0.MIFC\FH\Tempo,D-E-FH-B; D-E-FH-CL; D-E-FH-P.A; D-E-FH-P.I; Dados ; Data; Date; E-D-P-LCT; E-D-P-RF2; E-P-D-FH-EMB; E-P-D-FH-M3; E-P-D-FH-RF3; E-P-D-FH-STJ; Q-D-FH; T-M; T-T,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,M-G,measure,,true,ALL\Capacidade-Online,T-N-P-B-M-SCA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-C-H-RF3,measure,,false,ALL\Máquinas\0.Roll Former 3,P-RF3; T-L-H-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,%P-RF3,measure,0.00%;-0.00%;0.00%,false,ALL\Máquinas\0.Roll Former 3,D-P-RF3; P-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-L-H-RF3,measure,,false,ALL\Máquinas\0.Roll Former 3,P-P-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,TKT-H-RF3,measure,0,false,ALL\Máquinas\0.Roll Former 3,T-L-H-RF3; TKT-C-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-P-T,measure,0,false,,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,DT-RF3,measure,,false,ALL\Máquinas\0.Roll Former 3,P-P-RF3,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,PT-RF3,measure,,false,ALL\Máquinas\0.Roll Former 3,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,P-S-T,measure,,false,ALL\Logística,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-E-T,measure,0,false,ALL\Logística,Q-D-E-DAF; Q-D-E-FH; Q-D-E-SCA; Q-D-E-VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-P-ShipDate+Acum,measure,,false,ALL\Logística,Date; FINISH_LENGTH; LOCAL; Pares Slitter,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-L-MP,measure,,false,ALL\Logística,Date; E-M-P-S; Q-P-ShipDate+Acum,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,R-L-COND-MP,measure,,false,ALL\Logística,Date; R-L-MP,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-G-M-SCA,measure,,false,ALL\Capacidade-Online,Q-G-SCA; Scania,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,C-M-E,measure,,false,,FINISH_LENGTH; LOCAL; Pares Slitter,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-P-E,measure,0,false,,DAF; FH; Scania; VM,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-P-R,measure,,false,,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,qtd_segregação cc,measure,0,false,ALL\0.0.MIFC\Qualidade,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-S-RF2,measure,0.000,false,,D-P-RF2; Date; qtd_segregação cc,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-S-LPP2,measure,0.000,false,,D-P-LPP2; Date; qtd_segregação pintura,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-N-E-P,measure,0.0,false,,T-N-E-P-DAF; T-N-E-P-FH; T-N-E-P-SCA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Carros_DAF_CARGA,measure,,false,,Pares Slitter; RAIL_TYPE,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Carros_FH_CARGA,measure,0,false,,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Carros_VM_CARGA,measure,0,false,,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Carros_SCASB_CARGA,measure,0,false,,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Carros_SCASB_CARGA_N-EMB,measure,0,false,,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Carros_VM_CARGA_N-EMB,measure,0,false,,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Carros_FH_CARGA_N-EMB,measure,0,false,,,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-N-E-P-VM,measure,0.0,false,,Carros_VM_CARGA; Cliente; Q-P-R; Tempo de processamento (min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-N-E-P-FH,measure,0.0,false,,Carros_FH_CARGA; Cliente; Q-P-R; Tempo de processamento (min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-N-E-P-SCA,measure,0.0,false,,Carros_SCASB_CARGA; Cliente; Tempo de processamento (min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-N-E-P-DAF,measure,,false,,Carros_DAF_CARGA; Cliente; Tempo de processamento (min),INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Carros_DAF_CARGA_N-EMB,measure,,false,,Pares Slitter; RAIL_TYPE,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,T-N-E-P-H,measure,0.0,false,,T-N-E-P-DAF; T-N-E-P-FH; T-N-E-P-SCA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Carros_Total_N-EMB,measure,,false,,Carros_DAF_CARGA_N-EMB; Carros_FH_CARGA_N-EMB; Carros_SCASB_CARGA_N-EMB,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Carros_Total-EMB,measure,,false,,Carros_DAF_CARGA; Carros_FH_CARGA; Carros_SCASB_CARGA,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-S-RF3,measure,0.000,false,,D-P-RF3; Date; qtd_segregação cc,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-S-STJ,measure,0.000,false,,D-P-STJ; Date; qtd_segregação see,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-S-EMB,measure,0.000,false,,D-P-LPP2; Date; qtd_segregação see,INVENTARIADO — validação funcional nos gates
+MEASURE,1-Measure,Q-D-S-T,measure,0.000,false,,Q-D-S-EMB; Q-D-S-LPP2; Q-D-S-RF2; Q-D-S-RF3; Q-D-S-STJ,INVENTARIADO — validação funcional nos gates
+PARTITION,1-Measure,1-Measure,import,,false,DAX calculado,"partition 1-Measure = calculated mode: import source = Row(""Column"", BLANK())",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Base_Desc_Hora,Base_Desc_Hora,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Base_Desc_Hora.tmdl,4 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Base_Desc_Hora,Hora_Cheia,dateTime,Long Time,false,Hora_Cheia,summarizeBy=none,INVENTARIADO
+COLUMN,Base_Desc_Hora,Descr.,string,,false,Descr.,summarizeBy=none,INVENTARIADO
+COLUMN,Base_Desc_Hora,seq,int64,0,false,seq,summarizeBy=sum,INVENTARIADO
+COLUMN,Base_Desc_Hora,HORA,double,,false,HORA,summarizeBy=sum,INVENTARIADO
+PARTITION,Base_Desc_Hora,Base_Desc_Hora,import,,false,Tabela M embutida,"partition Base_Desc_Hora = m mode: import source = let Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText(""VdJLisNAEATRqwivjVFU6ztXMV74/pdwZW9yEiSRtGL16Pf7sa5/83k8ey7fZaWX3mN99enn2QlOUFK9KpNyUkpGr5HJcDKUbL22TDYnm5J96blns7vZ1Rz6ncnh5FBy9jozOZ2cSq5eVyaXk0vJ3evO5HZyd4LW/LjBvsiX6ZvAGBgBI1xSGAsjYYZsSGNsjIyRL4mMkREy8iWRMTJCRsCkMlZGykiYZMbMiBkRk87YGTkjYxIaQyPo0qqELkOXoEvGldBl6BJ0zZuc0GXoEnSJuNK57FzzLs/1z/nzAw=="", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Hora_Cheia = _t, #""Descr."" = _t, seq = _t, HORA = _t]), #""Changed Type"" = Table.TransformColumnTypes(Source,{{""Hora_Cheia"", type time}, {""seq"", Int64.Type}}), #""Changed Type with Locale"" = Table.TransformColumnTypes(#""Changed Type"", {{""HORA"", type number}}, ""en-US"") in #""Changed Type with Locale""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,BI_MIFC_LCT_POS_STOCK,BI_MIFC_LCT_POS_STOCK,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\BI_MIFC_LCT_POS_STOCK.tmdl,4 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,BI_MIFC_LCT_POS_STOCK,LOCATION,string,,false,LOCATION,summarizeBy=none,INVENTARIADO
+COLUMN,BI_MIFC_LCT_POS_STOCK,TO_PRODUCE,double,,false,TO_PRODUCE,summarizeBy=sum,INVENTARIADO
+COLUMN,BI_MIFC_LCT_POS_STOCK,NON_COMPLIANT,double,,false,NON_COMPLIANT,summarizeBy=sum,INVENTARIADO
+COLUMN,BI_MIFC_LCT_POS_STOCK,TOTAL,double,,false,TOTAL,summarizeBy=sum,INVENTARIADO
+PARTITION,BI_MIFC_LCT_POS_STOCK,BI_MIFC_LCT_POS_STOCK,import,,false,Oracle MESBR,"partition BI_MIFC_LCT_POS_STOCK = m mode: import source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [HierarchicalNavigation=true]), BOMES = Fonte{[Schema=""BOMES""]}[Data], BI_LCT_POS_STOCK1 = BOMES{[Name=""BI_MIFC_LCT_POS_STOCK""]}[Data] in BI_LCT_POS_STOCK1",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,BI_OEE_SCRAP,BI_OEE_SCRAP,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\BI_OEE_SCRAP.tmdl,11 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,RAIL_ID,double,,false,RAIL_ID,summarizeBy=count,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,DESCRIPTION,string,,false,DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,COMMENTS,string,,false,COMMENTS,summarizeBy=none,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,Data,dateTime,Long Date,false,Data,summarizeBy=none,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,ITEM,string,,false,ITEM,summarizeBy=none,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,TIPO,string,,false,TIPO,summarizeBy=none,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,CHASSIS_NUMBER,string,,false,CHASSIS_NUMBER,summarizeBy=none,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,CUSTOMER_CODE,string,,false,CUSTOMER_CODE,summarizeBy=none,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,MODELO,string,,false,MODELO,summarizeBy=none,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,OPERAÇÃO GERADORA SCRAP,string,,false,OPERAÇÃO GERADORA SCRAP,summarizeBy=none,INVENTARIADO
+COLUMN,BI_OEE_SCRAP,RETRABALHO APONTADO,string,,false,RETRABALHO APONTADO,summarizeBy=none,INVENTARIADO
+PARTITION,BI_OEE_SCRAP,BI_OEE_SCRAP,import,,false,Oracle MESBR,"partition BI_OEE_SCRAP = m mode: import queryGroup: 6-Sucatas source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [HierarchicalNavigation=true]), BOMES = Fonte{[Schema=""BOMES""]}[Data], BI_HEATMAP_SCRAP = BOMES{[Name=""BI_HEATMAP_SCRAP""]}[Data], #""Colunas Renomeadas"" = Table.RenameColumns(BI_HEATMAP_SCRAP,{{""DEFEITO"", ""DESCRIPTION""}}), #""Linhas Filtradas"" = Table.SelectRows(#""Colunas Renomeadas"", each ([DESCRIPTION] = ""Metalsa"") and ([DEFEITO] <> ""PECA OBSOLETA"" and [DEFEITO] <> ""TESTE DE MANUTENÇÃO"" and [DEFEITO] <> ""TESTE DE RECORTE"" and [DEFEITO] <> ""TESTE ENGENHARIA"" and [DEFEITO] <> ""TESTE FURACAO"" and [DEFEITO] <> ""TESTE STENHOJ"" and [DEFEITO] <> ""TRY-OUT DE MASCARA PLASMA"")), #""Data Inserida"" = Table.AddColumn(#""Linhas Filtradas"", ""Data"", each DateTime.Date([CREATION_DATE]), type date) in #""Data Inserida""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Calendar,Calendar,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Calendar.tmdl,5 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Calendar,Date,,Short Date,false,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,Calendar,Ano,,0,false,[Ano],summarizeBy=sum,INVENTARIADO
+COLUMN,Calendar,Mês,,0,false,[Mês],summarizeBy=sum,INVENTARIADO
+COLUMN,Calendar,Dia,,0,false,[Dia],summarizeBy=sum,INVENTARIADO
+COLUMN,Calendar,Dia_Min,,0,false,[Dia_Min],summarizeBy=sum,INVENTARIADO
+PARTITION,Calendar,Calendar,import,,false,DAX calculado,"partition Calendar = calculated mode: import source = ADDCOLUMNS( CALENDAR( TODAY()-7,TODAY()+10), ""Ano"", YEAR([Date]), ""Mês"", MONTH([Date]), ""Dia"", DAY([Date]), ""Dia_Min"", IF( [Date] = TODAY(), (HOUR(NOW()) * 60) + MINUTE(NOW()), 1440))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Dados de embarque,Dados de embarque,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Dados de embarque.tmdl,5 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Dados de embarque,Flatbed,string,,false,Flatbed,summarizeBy=none,INVENTARIADO
+COLUMN,Dados de embarque,Data,dateTime,Long Date,false,Data,summarizeBy=none,INVENTARIADO
+COLUMN,Dados de embarque,Horário,dateTime,Long Time,false,Horário,summarizeBy=none,INVENTARIADO
+COLUMN,Dados de embarque,Data__horario,string,,false,Data__horario,summarizeBy=none,INVENTARIADO
+COLUMN,Dados de embarque,Cliente,string,,false,Cliente,summarizeBy=none,INVENTARIADO
+PARTITION,Dados de embarque,Dados de embarque,import,,false,Excel em rede,"partition 'Dados de embarque' = m mode: import source = let Fonte = Excel.Workbook(File.Contents(""\\metbrosawfse01\Publico\GESTÃO INFORMAÇÃO CLIENTES\ANDON LOGÍSTICA\Bi Logística\Dados excel\Programacao_embarque.xlsx""), null, true), #""Data Embarque_Sheet"" = Fonte{[Item=""Data Embarque"",Kind=""Sheet""]}[Data], #""Cabeçalhos Promovidos1"" = Table.PromoteHeaders(#""Data Embarque_Sheet"", [PromoteAllScalars=true]), #""Tipo Alterado1"" = Table.TransformColumnTypes(#""Cabeçalhos Promovidos1"",{{""Flatbed"", type text}, {""Data"", type date}, {""Horário"", type time}}), #""Primeiros Caracteres Inseridos"" = Table.AddColumn(#""Tipo Alterado1"", ""Primeiros caracteres"", each Text.Start([Flatbed], 3), type text), #""Colunas Renomeadas"" = Table.RenameColumns(#""Primeiros Caracteres Inseridos"",{{""Primeiros caracteres"", ""Cliente""}}), #""Índice Adicionado"" = Table.AddIndexColumn(#""Colunas Renomeadas"",""Índice"", 1, 1), #""Colunas Removidas"" = Table.RemoveColumns(#""Índice Adicionado"",{""Índice""}), #""Removed Blank Rows"" = Table.SelectRows(#""Colunas Removidas"", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"""", null}))), #""Removed Blank Rows1"" = Table.SelectRows(#""Removed Blank Rows"", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"""", null}))), #""Removed Bottom Rows"" = Table.RemoveLastN(#""Removed Blank Rows1"",1) in #""Removed Bottom Rows""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,DAF SLITTERS,DAF SLITTERS,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\DAF SLITTERS.tmdl,15 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,DAF SLITTERS,DESCRIPTION,string,,false,DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,DAF SLITTERS,ITEM,string,,false,ITEM,summarizeBy=none,INVENTARIADO
+COLUMN,DAF SLITTERS,JOB_ORACLE,double,,false,JOB_ORACLE,summarizeBy=sum,INVENTARIADO
+COLUMN,DAF SLITTERS,CUSTOMER_CODE,string,,false,CUSTOMER_CODE,summarizeBy=none,INVENTARIADO
+COLUMN,DAF SLITTERS,MP,string,,false,MP,summarizeBy=none,INVENTARIADO
+COLUMN,DAF SLITTERS,SHIP_DATE,dateTime,General Date,false,SHIP_DATE,summarizeBy=none,INVENTARIADO
+COLUMN,DAF SLITTERS,LOCATION,string,,false,LOCATION,summarizeBy=none,INVENTARIADO
+COLUMN,DAF SLITTERS,RAIL_TYPE,string,,false,RAIL_TYPE,summarizeBy=none,INVENTARIADO
+COLUMN,DAF SLITTERS,RAIL_TYPE_DESCRIPTION,string,,false,RAIL_TYPE_DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,DAF SLITTERS,QUANTITY_ORDERED,double,,false,QUANTITY_ORDERED,summarizeBy=sum,INVENTARIADO
+COLUMN,DAF SLITTERS,QUANTITY_FINISHED,double,,false,QUANTITY_FINISHED,summarizeBy=sum,INVENTARIADO
+COLUMN,DAF SLITTERS,Pares Slitter,double,,false,Pares Slitter,summarizeBy=sum,INVENTARIADO
+COLUMN,DAF SLITTERS,Local,string,,false,Local,summarizeBy=none,INVENTARIADO
+COLUMN,DAF SLITTERS,Data,string,,false,Data,summarizeBy=none,INVENTARIADO
+COLUMN,DAF SLITTERS,FINISH_LENGTH,double,,false,FINISH_LENGTH,summarizeBy=sum,INVENTARIADO
+PARTITION,DAF SLITTERS,DAF SLITTERS,import,,false,Oracle MESBR,"partition 'DAF SLITTERS' = m mode: import queryGroup: 1-E-Kanban source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [HierarchicalNavigation=true, Query=""SELECT re.DESCRIPTION,ROUND(i.FINISH_LENGTH*25.4/1000,1)as FINISH_LENGTH, i.ITEM, W.JOB_ORACLE, I.CUSTOMER_CODE, FG_SK_SLITTER_FROM_ITEM(i.ITEM) AS MP,#(lf)TO_CHAR(W.SHIP_DATE, 'DD-MON-YYYY HH24:MI') AS SHIP_DATE, nvl(l.DESCRIPTION, ' ') AS LOCATION#(lf),I.RAIL_TYPE#(lf),RT.DESCRIPTION RAIL_TYPE_DESCRIPTION, W.QUANTITY_ORDERED, W.QUANTITY_FINISHED#(lf)FROM WORK_ORDER w#(lf)INNER JOIN ITEM i ON w.ITEM_ID = i.ITEM_ID #(lf) INNER JOIN RAIL_TYPE RT ON RT.VALUE = I.RAIL_TYPE#(lf)INNER JOIN RESOURCES re ON w.RESOURCE_ID = re.RESOURCE_ID #(lf)INNER JOIN OPERATIONS o ON re.RESOURCE_ID = o.RESOURCE_ID #(lf) LEFT JOIN RAIL ra ON w.JOB_ORACLE = ra.JOB_ORACLE #(lf) AND ra.RAIL_STATUS_ID NOT IN (10, 11) #(lf) LEFT JOIN LOCATIONS l ON ra.LOCATION_ID = l.LOCATION_ID #(lf) LEFT JOIN #(lf) (SELECT DISTINCT WW.JOB_ORACLE, WB.RAIL_ID#(lf) FROM WORK_ORDER WW #(lf) INNER JOIN WORK_ORDER_BASE WB ON WW.WORK_ORDER_ID = WB.WORK_ORDER_ID#(lf) INNER JOIN RAIL R ON R.RAIL_ID = WB.RAIL_ID AND R.CHASSIS_NUMBER IS NULL#(lf) INNER JOIN ITEM I ON R.ITEM_ID = I.ITEM_ID #(lf) WHERE I.ITEM_TYPE = 'BB') WB ON W.JOB_ORACLE = WB.JOB_ORACLE#(lf)WHERE o.OPERATIONS_ID = 9#(lf)AND I.CUSTOMER_CODE = 'DAF'#(lf)AND W.SHIP_DATE BETWEEN (SYSDATE-2) AND (SYSDATE+30) #(lf)AND W.QUANTITY_FINISHED < W.QUANTITY_ORDERED#(lf)AND W.WORK_ORDER_STATUS_ID = 2 #(lf)ORDER BY SHIP_DATE ASC""]), #""Personalização Adicionada"" = Table.AddColumn(Fonte, ""Pares Slitter"", each ([QUANTITY_ORDERED]-[QUANTITY_FINISHED])/2), #""Tipo Alterado"" = Table.TransformColumnTypes(#""Personalização Adicionada"",{{""Pares Slitter"", type number}}), #""Personalização Adicionada1"" = Table.AddColumn(#""Tipo Alterado"", ""Local"", each ""Slitter""), #""Tipo Alterado1"" = Table.TransformColumnTypes(#""Personalização Adicionada1"",{{""SHIP_DATE"", type datetime}}), #""Duplicatas Removidas"" = Table.Distinct(#""Tipo Alterado1"", {""JOB_ORACLE""}), #""Data Inserida"" = Table.AddColumn(#""Duplicatas Removidas"", ""Data"", each DateTime.Date([SHIP_DATE]), type date), #""Tipo Alterado2"" = Table.TransformColumnTypes(#""Data Inserida"",{{""Data"", type text}}) in #""Tipo Alterado2""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,DAF,DAF,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\DAF.tmdl,17 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,DAF,DESCRIPTION,string,,false,DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,ITEM,string,,false,ITEM,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,JOB_ORACLE,string,,false,JOB_ORACLE,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,CUSTOMER_CODE,string,,false,CUSTOMER_CODE,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,MP,string,,false,MP,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,SHIP_DATE,dateTime,Long Date,false,SHIP_DATE,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,LOCATION,string,,false,LOCATION,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,RAIL_TYPE,string,,false,RAIL_TYPE,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,RAIL_TYPE_DESCRIPTION,string,,false,RAIL_TYPE_DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,Cliente,string,,false,Cliente,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,Local,string,,false,Local,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,REFORÇADA?,string,,false,REFORÇADA?,summarizeBy=none,INVENTARIADO
+COLUMN,DAF,QTD long Reforçada,,0,false,,summarizeBy=sum,INVENTARIADO
+COLUMN,DAF,QTD long SIMPLES,,0,false,,summarizeBy=sum,INVENTARIADO
+COLUMN,DAF,QTD REF,,0,false,,summarizeBy=sum,INVENTARIADO
+COLUMN,DAF,FINISH_LENGTH,double,,false,FINISH_LENGTH,summarizeBy=sum,INVENTARIADO
+COLUMN,DAF,Flatbed,string,,false,,summarizeBy=none,INVENTARIADO
+PARTITION,DAF,DAF,import,,false,Power Query M / derivada,"partition DAF = m mode: import queryGroup: 1-E-Kanban source = let Fonte = Base2, #""Linhas Filtradas"" = Table.SelectRows(Fonte, each ([DESCRIPTION] <> ""BEATTY 2"")), #""Consulta Acrescentada"" = Table.Combine({#""Linhas Filtradas"", #""DAF SIMPLES"", #""DAF REFORÇADA""}), #""Linhas Classificadas"" = Table.Sort(#""Consulta Acrescentada"",{{""SHIP_DATE"", Order.Descending}}), #""Tipo Alterado"" = Table.TransformColumnTypes(#""Linhas Classificadas"",{{""SHIP_DATE"", type date}}), #""Linhas Filtradas1"" = Table.SelectRows(#""Tipo Alterado"", each ([Local] <> ""Slitter"")), #""Valor Substituído"" = Table.ReplaceValue(#""Linhas Filtradas1"",""Roll Former 3 Input"",""xxxxx"",Replacer.ReplaceText,{""LOCATION""}), #""Linhas Filtradas2"" = Table.SelectRows(#""Valor Substituído"", each ([LOCATION] <> ""xxxxx"")), #""Tipo Alterado1"" = Table.TransformColumnTypes(#""Linhas Filtradas2"",{{""JOB_ORACLE"", type text}}), #""Linhas Filtradas3"" = Table.SelectRows(#""Tipo Alterado1"", each true) in #""Linhas Filtradas3""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582,import,,true,DAX calculado,"partition DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582 = calculated mode: import source = Calendar(Date(2015,1,1), Date(2015,1,1))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,dOperacao,dOperacao,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\dOperacao.tmdl,3 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,dOperacao,OPERAÇÃO,string,,false,OPERAÇÃO,summarizeBy=none,INVENTARIADO
+COLUMN,dOperacao,Capacidade,double,,false,Capacidade,summarizeBy=sum,INVENTARIADO
+COLUMN,dOperacao,Tempo Abastecimento,double,,false,Tempo Abastecimento,summarizeBy=sum,INVENTARIADO
+PARTITION,dOperacao,dOperacao,import,,false,Tabela M embutida,"partition dOperacao = m mode: import source = let Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText(""i45WcnJ1DAmJNDBU0lEyMtExBVImpkqxOnAJI5CEBRYJY6CIsaEOmDJAljAB6TDXMYPqiAUA"", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Operação = _t, #""Golpes por Minuto"" = _t, #""Tempo Abastecimento"" = _t]), #""Changed Type2"" = Table.TransformColumnTypes(Source,{{""Golpes por Minuto"", type number}}), #""Changed Type"" = Table.TransformColumnTypes(#""Changed Type2"",{{""Operação"", type text}}), #""Renamed Columns"" = Table.RenameColumns(#""Changed Type"",{{""Operação"", ""OPERAÇÃO""}, {""Golpes por Minuto"", ""Capacidade""}}), #""Changed Type1"" = Table.TransformColumnTypes(#""Renamed Columns"",{{""Tempo Abastecimento"", type number}}), #""Valor Substituído"" = Table.ReplaceValue(#""Changed Type1"",""0"","" "",Replacer.ReplaceText,{""OPERAÇÃO""}) in #""Valor Substituído""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Emb Offset,Emb Offset,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Emb Offset.tmdl,3 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Emb Offset,Cliente,string,,false,Cliente,summarizeBy=none,INVENTARIADO
+COLUMN,Emb Offset,Capacidade por hora,int64,0,false,Capacidade por hora,summarizeBy=none,INVENTARIADO
+COLUMN,Emb Offset,Tempo de processamento (min),double,,false,Tempo de processamento (min),summarizeBy=none,INVENTARIADO
+PARTITION,Emb Offset,Emb Offset,import,,false,Excel em rede,"partition 'Emb Offset' = m mode: import source = let Source = Excel.Workbook(File.Contents(""\\metbrosawfse01\ENGPROC\_Comum\120 DocE & A3 & KPI\KPIs\50-POWER BI\ENN\03-Embalagem\00-Embalagem Offset\02-Parâmetros\Capacidade Embalagem.xlsx""), null, true), Emb.Offset_Table = Source{[Item=""Emb.Offset"",Kind=""Table""]}[Data], #""Changed Type"" = Table.TransformColumnTypes(Emb.Offset_Table,{{""Cliente"", type text}, {""Capacidade por hora"", Int64.Type}, {""Tempo de processamento (min)"", type number}}) in #""Changed Type""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Emb Reta,Emb Reta,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Emb Reta.tmdl,3 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Emb Reta,Cliente,string,,false,Cliente,summarizeBy=none,INVENTARIADO
+COLUMN,Emb Reta,Capacidade por hora,int64,0,false,Capacidade por hora,summarizeBy=sum,INVENTARIADO
+COLUMN,Emb Reta,Tempo de processamento (min),int64,0,false,Tempo de processamento (min),summarizeBy=sum,INVENTARIADO
+PARTITION,Emb Reta,Emb Reta,import,,false,Excel em rede,"partition 'Emb Reta' = m mode: import source = let Source = Excel.Workbook(File.Contents(""\\metbrosawfse01\ENGPROC\_Comum\120 DocE & A3 & KPI\KPIs\50-POWER BI\ENN\03-Embalagem\00-Embalagem Offset\02-Parâmetros\Capacidade Embalagem.xlsx""), null, true), Emb.Reta4_Table = Source{[Item=""Emb.Reta4"",Kind=""Table""]}[Data], #""Changed Type"" = Table.TransformColumnTypes(Emb.Reta4_Table,{{""Cliente"", type text}, {""Capacidade por hora"", Int64.Type}, {""Tempo de processamento (min)"", Int64.Type}}) in #""Changed Type""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,FH,FH,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\FH.tmdl,21 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,FH,DESCRIPTION,string,,false,DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,FH,CHASSIS_NUMBER,string,,false,CHASSIS_NUMBER,summarizeBy=none,INVENTARIADO
+COLUMN,FH,ITEM,string,,false,ITEM,summarizeBy=none,INVENTARIADO
+COLUMN,FH,COMPONENT,string,,false,COMPONENT,summarizeBy=none,INVENTARIADO
+COLUMN,FH,CUSTOMER_CODE,string,,false,CUSTOMER_CODE,summarizeBy=none,INVENTARIADO
+COLUMN,FH,MP,string,,false,MP,summarizeBy=none,INVENTARIADO
+COLUMN,FH,SHIP_DATE,dateTime,Long Date,false,SHIP_DATE,summarizeBy=none,INVENTARIADO
+COLUMN,FH,DIA,string,,false,DIA,summarizeBy=none,INVENTARIADO
+COLUMN,FH,ANO,string,,false,ANO,summarizeBy=none,INVENTARIADO
+COLUMN,FH,FLATBED,int64,0,false,FLATBED,summarizeBy=sum,INVENTARIADO
+COLUMN,FH,BUNDLE,int64,0,false,BUNDLE,summarizeBy=sum,INVENTARIADO
+COLUMN,FH,PRODUCT_CLASS,string,,false,PRODUCT_CLASS,summarizeBy=none,INVENTARIADO
+COLUMN,FH,HAND,string,,false,HAND,summarizeBy=none,INVENTARIADO
+COLUMN,FH,LOCATION,string,,false,LOCATION,summarizeBy=none,INVENTARIADO
+COLUMN,FH,REFORÇADA,string,,false,REFORÇADA,summarizeBy=none,INVENTARIADO
+COLUMN,FH,Clientes,string,,false,Clientes,summarizeBy=none,INVENTARIADO
+COLUMN,FH,local,string,,false,local,summarizeBy=none,INVENTARIADO
+COLUMN,FH,Tipo,string,,false,Tipo,summarizeBy=none,INVENTARIADO
+COLUMN,FH,DIVISÃO RF3/RF2,string,,false,DIVISÃO RF3/RF2,summarizeBy=none,INVENTARIADO
+COLUMN,FH,FINISH_LENGHT,double,,false,FINISH_LENGHT,summarizeBy=sum,INVENTARIADO
+COLUMN,FH,FH Flatbed_2,,,false,,summarizeBy=none,INVENTARIADO
+PARTITION,FH,FH,import,,false,Power Query M / derivada,"partition FH = m mode: import queryGroup: 1-E-Kanban source = let Fonte = Base1, #""Linhas Filtradas2"" = Table.SelectRows(Fonte, each ([Clientes] <> ""SCA"" and [Clientes] <> ""VM"")), #""Valor Substituído"" = Table.ReplaceValue(#""Linhas Filtradas2"",""Pintura Output 2"",""Ag. Stenhøj"",Replacer.ReplaceText,{""LOCATION""}), #""Valor Substituído1"" = Table.ReplaceValue(#""Valor Substituído"",""Stenhoj"",""Ag. Emb1"",Replacer.ReplaceText,{""local""}), #""Últimos caracteres inseridos"" = Table.AddColumn(#""Valor Substituído1"", ""Últimos caracteres"", each Text.End(Text.From([SHIP_DATE], ""pt-BR""), 2), type text), #""Colunas Reordenadas"" = Table.ReorderColumns(#""Últimos caracteres inseridos"",{""DESCRIPTION"", ""CHASSIS_NUMBER"", ""ITEM"", ""COMPONENT"", ""CUSTOMER_CODE"", ""MP"", ""SHIP_DATE"", ""Últimos caracteres"", ""FLATBED"", ""BUNDLE"", ""HAND"", ""LOCATION"", ""REFORÇADA"", ""Clientes"", ""local""}), #""Colunas Renomeadas"" = Table.RenameColumns(#""Colunas Reordenadas"",{{""Últimos caracteres"", ""ano""}}), #""Primeiros Caracteres Inseridos"" = Table.AddColumn(#""Colunas Renomeadas"", ""Primeiros caracteres"", each Text.Start(Text.From([SHIP_DATE], ""pt-BR""), 2), type text), #""Colunas Reordenadas1"" = Table.ReorderColumns(#""Primeiros Caracteres Inseridos"",{""DESCRIPTION"", ""CHASSIS_NUMBER"", ""ITEM"", ""COMPONENT"", ""CUSTOMER_CODE"", ""MP"", ""SHIP_DATE"", ""Primeiros caracteres"", ""ano"", ""FLATBED"", ""BUNDLE"", ""HAND"", ""LOCATION"", ""REFORÇADA"", ""Clientes"", ""local""}), #""Colunas Renomeadas1"" = Table.RenameColumns(#""Colunas Reordenadas1"",{{""Primeiros caracteres"", ""DIA""}, {""ano"", ""ANO""}}), #""Valor Substituído2"" = Table.ReplaceValue(#""Colunas Renomeadas1"",""VDB"",""VDBCL"",Replacer.ReplaceText,{""CUSTOMER_CODE""}), #""Coluna Condicional Adicionada"" = Table.AddColumn(#""Valor Substituído2"", ""Tipo"", each if Text.StartsWith([ITEM], ""1-L"") then ""Longarina"" else if Text.StartsWith([ITEM], ""1-R"") then ""Reforço"" else null), #""Tipo Alterado"" = Table.TransformColumnTypes(#""Coluna Condicional Adicionada"",{{""Tipo"", type text}}), #""Colunas Renomeadas2"" = Table.RenameColumns(#""Tipo Alterado"",{{""local"", ""local_1""}}), #""Coluna Condicional Adicionada1"" = Table.AddColumn(#""Colunas Renomeadas2"", ""DIVISÃO RF3/RF2"", each if [MP] = ""2-MP600760SL445-0"" then ""FH - RF2"" else ""FH - RF3""), #""Tipo Alterado1"" = Table.TransformColumnTypes(#""Coluna Condicional Adicionada1"",{{""DIVISÃO RF3/RF2"", type text}}), #""Linhas Filtradas1"" = Table.SelectRows(#""Tipo Alterado1"", each true), #""Valor Substituído3"" = Table.ReplaceValue(#""Linhas Filtradas1"",""Pintura Output 2"",""Ag. Stenhøj"",Replacer.ReplaceText,{""local_1""}), #""Linhas Filtradas"" = Table.SelectRows(#""Valor Substituído3"", each [Clientes] = ""FH""), #""Colunas Renomeadas3"" = Table.RenameColumns(#""Linhas Filtradas"",{{""local_1"", ""local""}}) in #""Colunas Renomeadas3""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114,import,,true,DAX calculado,"partition LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114 = calculated mode: import source = Calendar(Date(Year(MIN('Paradas'[PARADA])), 1, 1), Date(Year(MAX('Paradas'[PARADA])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11,import,,true,DAX calculado,"partition LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11 = calculated mode: import source = Calendar(Date(Year(MIN('Produção'[CREATION_DATE])), 1, 1), Date(Year(MAX('Produção'[CREATION_DATE])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8,import,,true,DAX calculado,"partition LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8 = calculated mode: import source = Calendar(Date(Year(MIN('Calendar'[Date])), 1, 1), Date(Year(MAX('Calendar'[Date])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28,import,,true,DAX calculado,"partition LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28 = calculated mode: import source = Calendar(Date(Year(MIN('Produção'[Data])), 1, 1), Date(Year(MAX('Produção'[Data])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df,import,,true,DAX calculado,"partition LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df = calculated mode: import source = Calendar(Date(Year(MIN('Produção LCT'[_TIMESTAMP])), 1, 1), Date(Year(MAX('Produção LCT'[_TIMESTAMP])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_4c664494-c110-4144-b060-941925149f29,LocalDateTable_4c664494-c110-4144-b060-941925149f29,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_4c664494-c110-4144-b060-941925149f29.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_4c664494-c110-4144-b060-941925149f29,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_4c664494-c110-4144-b060-941925149f29,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_4c664494-c110-4144-b060-941925149f29,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_4c664494-c110-4144-b060-941925149f29,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_4c664494-c110-4144-b060-941925149f29,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_4c664494-c110-4144-b060-941925149f29,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_4c664494-c110-4144-b060-941925149f29,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_4c664494-c110-4144-b060-941925149f29,LocalDateTable_4c664494-c110-4144-b060-941925149f29,import,,true,DAX calculado,"partition LocalDateTable_4c664494-c110-4144-b060-941925149f29 = calculated mode: import source = Calendar(Date(Year(MIN('Relatorio_bases'[Data de fabricação])), 1, 1), Date(Year(MAX('Relatorio_bases'[Data de fabricação])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e,import,,true,DAX calculado,"partition LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e = calculated mode: import source = Calendar(Date(Year(MIN('Produção RF2'[_TIMESTAMP])), 1, 1), Date(Year(MAX('Produção RF2'[_TIMESTAMP])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c,import,,true,DAX calculado,"partition LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c = calculated mode: import source = Calendar(Date(Year(MIN('BI_OEE_SCRAP'[Data])), 1, 1), Date(Year(MAX('BI_OEE_SCRAP'[Data])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd,import,,true,DAX calculado,"partition LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd = calculated mode: import source = Calendar(Date(Year(MIN('Produção'[LOCATION_DATE])), 1, 1), Date(Year(MAX('Produção'[LOCATION_DATE])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0,import,,true,DAX calculado,"partition LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0 = calculated mode: import source = Calendar(Date(Year(MIN('Segregacao'[Data])), 1, 1), Date(Year(MAX('Segregacao'[Data])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c,import,,true,DAX calculado,"partition LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c = calculated mode: import source = Calendar(Date(Year(MIN('Dados de embarque'[Data])), 1, 1), Date(Year(MAX('Dados de embarque'[Data])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0,import,,true,DAX calculado,"partition LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0 = calculated mode: import source = Calendar(Date(Year(MIN('Relatorio_Item RF2'[Data])), 1, 1), Date(Year(MAX('Relatorio_Item RF2'[Data])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4,import,,true,DAX calculado,"partition LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4 = calculated mode: import source = Calendar(Date(Year(MIN('Paradas'[RETORNO])), 1, 1), Date(Year(MAX('Paradas'[RETORNO])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa,import,,true,DAX calculado,"partition LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa = calculated mode: import source = Calendar(Date(Year(MIN('Segregacao'[DATA SEGREGAÇÃO])), 1, 1), Date(Year(MAX('Segregacao'[DATA SEGREGAÇÃO])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616,import,,true,DAX calculado,"partition LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616 = calculated mode: import source = Calendar(Date(Year(MIN('Relatorio_Item RF2'[Data de fabricação])), 1, 1), Date(Year(MAX('Relatorio_Item RF2'[Data de fabricação])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2,import,,true,DAX calculado,"partition LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2 = calculated mode: import source = Calendar(Date(Year(MIN('Lotes'[CREATION_DATE])), 1, 1), Date(Year(MAX('Lotes'[CREATION_DATE])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,table,,true,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66.tmdl,7 colunas; 0 medidas; 1 partições; 1 hierarquias,INVENTARIADO
+COLUMN,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,Date,dateTime,,true,[Date],summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,Ano,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,MonthNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,Mês,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,QuarterNo,int64,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,Trimestre,string,,true,,summarizeBy=none,INVENTARIADO
+COLUMN,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,Dia,int64,,true,,summarizeBy=none,INVENTARIADO
+PARTITION,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66,import,,true,DAX calculado,"partition LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66 = calculated mode: import source = Calendar(Date(Year(MIN('Relatorio_bases'[Data])), 1, 1), Date(Year(MAX('Relatorio_bases'[Data])), 12, 31))",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Lotes,Lotes,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Lotes.tmdl,12 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Lotes,LOTE,string,,false,LOTE,summarizeBy=none,INVENTARIADO
+COLUMN,Lotes,MP,string,,false,MP,summarizeBy=none,INVENTARIADO
+COLUMN,Lotes,DESCRIPTION,string,,false,DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,Lotes,ESPESSURA,double,0.00,false,ESPESSURA,summarizeBy=sum,INVENTARIADO
+COLUMN,Lotes,PESO,double,,false,PESO,summarizeBy=sum,INVENTARIADO
+COLUMN,Lotes,LARGURA,double,,false,LARGURA,summarizeBy=sum,INVENTARIADO
+COLUMN,Lotes,CREATION_DATE,dateTime,General Date,false,CREATION_DATE,summarizeBy=none,INVENTARIADO
+COLUMN,Lotes,Data,dateTime,Long Date,false,Data,summarizeBy=none,INVENTARIADO
+COLUMN,Lotes,MP(m),,,false,,summarizeBy=sum,INVENTARIADO
+COLUMN,Lotes,SLITTERSTATUS,string,,false,SLITTERSTATUS,summarizeBy=none,INVENTARIADO
+COLUMN,Lotes,Cliente,,,false,,summarizeBy=none,INVENTARIADO
+COLUMN,Lotes,teste_cond_coluna,,,false,,summarizeBy=none,INVENTARIADO
+PARTITION,Lotes,Lotes,import,,false,Oracle MESBR,"partition Lotes = m mode: import queryGroup: 5-Slliters source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [HierarchicalNavigation=true]), BOMES = Fonte{[Schema=""BOMES""]}[Data], BI_MFIC_LOTES1 = BOMES{[Name=""BI_MFIC_LOTES""]}[Data], #""Data Inserida"" = Table.AddColumn(BI_MFIC_LOTES1, ""Data"", each DateTime.Date([CREATION_DATE]), type date) in #""Data Inserida""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,MP,MP,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\MP.tmdl,3 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,MP,MP,string,,false,MP,summarizeBy=none,INVENTARIADO
+COLUMN,MP,Tipo,string,,false,Tipo,summarizeBy=none,INVENTARIADO
+COLUMN,MP,Cliente,string,,false,Cliente,summarizeBy=none,INVENTARIADO
+PARTITION,MP,MP,import,,false,Tabela M embutida,"partition MP = m mode: import source = let Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText(""hZHBCoJAFEX/xbXCm5n3ZnRpRLRIiIw24ULCQggFf6oP6ceaGTV0Jm33FofLPfddrwFG2VECKAn5AZEiCMLg0DaPsqubUt+7fVCEc0zIxMMu2Rc7bxinJBGkAxmPUmAOm9/Kpi6/POlYZWKVisDN3aY7C/IBZKhBwX1w0z6fdfOoOq8uMrZmJWKQ1mpMPVX3tnu/2rmVTrMY0mpaL69iK0//5XMCqQwsYFl+tDErIV9ZaVaU/QD9ptIMqnqniblTs4el0RIUD1rLuO6ANJl+Qg4NeO+OyiaCS02FRgyBeQ9yODulfqj3IcsVHw=="", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [MP = _t, Tipo = _t, Cliente = _t]), #""Tipo Alterado"" = Table.TransformColumnTypes(Fonte,{{""MP"", type text}, {""Tipo"", type text}, {""Cliente"", type text}}) in #""Tipo Alterado""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Máquinas,Máquinas,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Máquinas.tmdl,3 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Máquinas,Tempo Disponivel (Hrs),double,,false,Tempo Disponivel (Hrs),summarizeBy=sum,INVENTARIADO
+COLUMN,Máquinas,Tempo Disponível (Min),int64,0,false,Tempo Disponível (Min),summarizeBy=sum,INVENTARIADO
+COLUMN,Máquinas,Máquina,string,,false,Máquina,summarizeBy=none,INVENTARIADO
+PARTITION,Máquinas,Máquinas,import,,false,Excel em rede,"partition Máquinas = m mode: import source = let Fonte = Excel.Workbook(File.Contents(""\\metbrosawfse01\Publico\SOM\MIFC\BI MIFC\Parâmetros.xlsx""), null, true), Máquinas_Table = Fonte{[Item=""Máquinas"",Kind=""Table""]}[Data], #""Tipo Alterado"" = Table.TransformColumnTypes(Máquinas_Table,{{""Tempo Disponivel (Hrs)"", type number}, {""Tempo Disponível (Min)"", Int64.Type}, {""Máquina"", type text}}) in #""Tipo Alterado""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Operações,Operações,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Operações.tmdl,2 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Operações,Dados ,string,,false,"""Dados """,summarizeBy=none,INVENTARIADO
+COLUMN,Operações,Ranking,int64,0,false,Ranking,summarizeBy=sum,INVENTARIADO
+PARTITION,Operações,Operações,import,,false,Tabela M embutida,"partition Operações = m mode: import source = let Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText(""Vc9NDoIwEAXgq0y6ViPg7xIMGBdGo+6IC0gGxABVnJp4M/dezOk0Gt1+76Wdl6ZqX1dE2Kme8tSxl6qdrmtIdNdgBwGrLxqZomDYDkLoQxQAQjTiMHAhZkQP0IYuhlhHora7+dBYaJG1VNV4l+8mrlW1ZLoMVi0XwWef/rl7QYKZuw/zirISG5a5CKwPS75qF0d2xFAsLAewJ2xPr+fZqtsmogX8by1ucs9K8Ct2ued2xDfSV4OQLK3xkOMb"", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#""Dados "" = _t, Ranking = _t]), #""Tipo Alterado"" = Table.TransformColumnTypes(Fonte,{{""Dados "", type text}, {""Ranking"", Int64.Type}}) in #""Tipo Alterado""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Paradas,Paradas,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Paradas.tmdl,10 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Paradas,OPERAÇÃO,string,,false,OPERAÇÃO,summarizeBy=none,INVENTARIADO
+COLUMN,Paradas,AREA,string,,false,AREA,summarizeBy=none,INVENTARIADO
+COLUMN,Paradas,CODIGO,string,,false,CODIGO,summarizeBy=none,INVENTARIADO
+COLUMN,Paradas,DESCRIÇÃO,string,,false,DESCRIÇÃO,summarizeBy=none,INVENTARIADO
+COLUMN,Paradas,COMENTÁRIOS,string,,false,COMENTÁRIOS,summarizeBy=none,INVENTARIADO
+COLUMN,Paradas,PARADA,dateTime,General Date,false,PARADA,summarizeBy=none,INVENTARIADO
+COLUMN,Paradas,RETORNO,dateTime,General Date,false,RETORNO,summarizeBy=none,INVENTARIADO
+COLUMN,Paradas,Data,dateTime,Long Date,false,Data,summarizeBy=none,INVENTARIADO
+COLUMN,Paradas,Início da Hora,dateTime,Long Time,false,Início da Hora,summarizeBy=none,INVENTARIADO
+COLUMN,Paradas,ID_PARADA,string,,false,ID_PARADA,summarizeBy=none,INVENTARIADO
+PARTITION,Paradas,Paradas,import,,false,Oracle MESBR,"partition Paradas = m mode: import queryGroup: 3-Paradas source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [HierarchicalNavigation=true]), BOMES = Fonte{[Schema=""BOMES""]}[Data], BI_MFIC_PARADAS1 = BOMES{[Name=""BI_MFIC_PARADAS""]}[Data], #""Tipo Alterado"" = Table.TransformColumnTypes(BI_MFIC_PARADAS1,{{""PARADA"", type datetime}, {""RETORNO"", type datetime}}), #""Data Inserida"" = Table.AddColumn(#""Tipo Alterado"", ""Data"", each DateTime.Date([PARADA]), type date), #""Início da Hora Inserido"" = Table.AddColumn(#""Data Inserida"", ""Início da Hora"", each Time.StartOfHour([PARADA]), type datetime), #""Tipo Alterado1"" = Table.TransformColumnTypes(#""Início da Hora Inserido"",{{""Início da Hora"", type time}, {""ID_PARADA"", type text}}) in #""Tipo Alterado1""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Produção LCT,Produção LCT,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Produção LCT.tmdl,5 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Produção LCT,_NAME,string,,false,_NAME,summarizeBy=none,INVENTARIADO
+COLUMN,Produção LCT,_VALUE,int64,0,false,_VALUE,summarizeBy=sum,INVENTARIADO
+COLUMN,Produção LCT,_TIMESTAMP,dateTime,General Date,false,_TIMESTAMP,summarizeBy=none,INVENTARIADO
+COLUMN,Produção LCT,Data,dateTime,Long Date,false,Data,summarizeBy=none,INVENTARIADO
+COLUMN,Produção LCT,Início da Hora,dateTime,Long Time,false,Início da Hora,summarizeBy=none,INVENTARIADO
+PARTITION,Produção LCT,Produção LCT,import,,false,SQL Server DT_LOGGER,"partition 'Produção LCT' = m mode: import queryGroup: 4-Produção source = let Fonte = Sql.Database(""METBROSAWAPP03"", ""DT_LOGGER""), dbo_GOLPES_LCT = Fonte{[Schema=""dbo"",Item=""GOLPES_LCT""]}[Data], #""Colunas Removidas"" = Table.RemoveColumns(dbo_GOLPES_LCT,{""id""}), #""Linhas Filtradas"" = Table.SelectRows(#""Colunas Removidas"", each ([_NAME] = ""LCT.PLC_1215C.PRODUÇÃO.CICLOS_POR_HORA"")), #""Colunas Removidas1"" = Table.RemoveColumns(#""Linhas Filtradas"",{""_NUMERICID""}), #""Tipo Alterado"" = Table.TransformColumnTypes(#""Colunas Removidas1"",{{""_VALUE"", Int64.Type}}), #""Data Inserida"" = Table.AddColumn(#""Tipo Alterado"", ""Data"", each DateTime.Date([_TIMESTAMP]), type date), #""Início da Hora Inserido"" = Table.AddColumn(#""Data Inserida"", ""Início da Hora"", each Time.StartOfHour([_TIMESTAMP]), type datetime), #""Tipo Alterado1"" = Table.TransformColumnTypes(#""Início da Hora Inserido"",{{""Início da Hora"", type time}}), #""Colunas Removidas2"" = Table.RemoveColumns(#""Tipo Alterado1"",{""_QUALITY""}) in #""Colunas Removidas2""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Produção RF2,Produção RF2,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Produção RF2.tmdl,5 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Produção RF2,_NAME,string,,false,_NAME,summarizeBy=none,INVENTARIADO
+COLUMN,Produção RF2,_VALUE,int64,0,false,_VALUE,summarizeBy=sum,INVENTARIADO
+COLUMN,Produção RF2,_TIMESTAMP,dateTime,General Date,false,_TIMESTAMP,summarizeBy=none,INVENTARIADO
+COLUMN,Produção RF2,Data,dateTime,Long Date,false,Data,summarizeBy=none,INVENTARIADO
+COLUMN,Produção RF2,Início da Hora,dateTime,Long Time,false,Início da Hora,summarizeBy=none,INVENTARIADO
+PARTITION,Produção RF2,Produção RF2,import,,false,SQL Server DT_LOGGER,"partition 'Produção RF2' = m mode: import queryGroup: 4-Produção source = let Fonte = Sql.Database(""METBROSAWAPP03"", ""DT_LOGGER""), dbo_GOLPES_RF2 = Fonte{[Schema=""dbo"",Item=""GOLPES_RF2""]}[Data], #""Colunas Removidas"" = Table.RemoveColumns(dbo_GOLPES_RF2,{""id"", ""_NUMERICID""}), #""Tipo Alterado"" = Table.TransformColumnTypes(#""Colunas Removidas"",{{""_VALUE"", Int64.Type}}), #""Colunas Removidas1"" = Table.RemoveColumns(#""Tipo Alterado"",{""_QUALITY""}), #""Data Inserida"" = Table.AddColumn(#""Colunas Removidas1"", ""Data"", each DateTime.Date([_TIMESTAMP]), type date), #""Início da Hora Inserido"" = Table.AddColumn(#""Data Inserida"", ""Início da Hora"", each Time.StartOfHour([_TIMESTAMP]), type datetime), #""Tipo Alterado1"" = Table.TransformColumnTypes(#""Início da Hora Inserido"",{{""Início da Hora"", type time}}), #""Linhas Filtradas"" = Table.SelectRows(#""Tipo Alterado1"", each [Data] >= #date(2024, 5, 3)) in #""Linhas Filtradas""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Produção,Produção,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Produção.tmdl,14 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Produção,RAIL_ID,string,,false,RAIL_ID,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,CUSTOMER_CODE,string,,false,CUSTOMER_CODE,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,RAIL_TYPE,string,,false,RAIL_TYPE,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,ITEM,string,,false,ITEM,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,FINISH_LENGTH,double,,false,FINISH_LENGTH,summarizeBy=sum,INVENTARIADO
+COLUMN,Produção,CREATION_DATE,dateTime,General Date,false,CREATION_DATE,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,DESCRIPTION,string,,false,DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,Data,dateTime,Long Date,false,Data,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,MP,string,,false,MP,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,ITEM(m),,,false,,summarizeBy=sum,INVENTARIADO
+COLUMN,Produção,LOCATION_DATE,dateTime,General Date,false,LOCATION_DATE,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,Data_Processada,dateTime,Long Date,false,Data_Processada,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,Início da Hora,dateTime,Long Time,false,Início da Hora,summarizeBy=none,INVENTARIADO
+COLUMN,Produção,CHASSIS_NUMBER,string,,false,CHASSIS_NUMBER,summarizeBy=none,INVENTARIADO
+PARTITION,Produção,Produção,import,,false,Oracle MESBR,"partition Produção = m mode: import queryGroup: 4-Produção source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [HierarchicalNavigation=true]), BOMES = Fonte{[Schema=""BOMES""]}[Data], BI_MFIC_PROD1 = BOMES{[Name=""BI_MFIC_PROD""]}[Data], #""Data Inserida"" = Table.AddColumn(BI_MFIC_PROD1, ""Data"", each DateTime.Date([CREATION_DATE]), type date), #""Data Inserida1"" = Table.AddColumn(#""Data Inserida"", ""Data.1"", each DateTime.Date([LOCATION_DATE]), type date), #""Colunas Renomeadas"" = Table.RenameColumns(#""Data Inserida1"",{{""Data.1"", ""Data_Processada""}}), #""Início da Hora Inserido"" = Table.AddColumn(#""Colunas Renomeadas"", ""Início da Hora"", each Time.StartOfHour([LOCATION_DATE]), type datetime), #""Tipo Alterado"" = Table.TransformColumnTypes(#""Início da Hora Inserido"",{{""Início da Hora"", type time}}), #""Reordered Columns"" = Table.ReorderColumns(#""Tipo Alterado"",{""CHASSIS_NUMBER"", ""RAIL_ID"", ""CUSTOMER_CODE"", ""RAIL_TYPE"", ""ITEM"", ""MP"", ""FINISH_LENGTH"", ""LOCATION_DATE"", ""CREATION_DATE"", ""DESCRIPTION"", ""Data"", ""Data_Processada"", ""Início da Hora""}) in #""Reordered Columns""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Relatorio_bases,Relatorio_bases,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Relatorio_bases.tmdl,8 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Relatorio_bases,Rail id,string,,false,Rail id,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_bases,Item,string,,false,Item,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_bases,Slitter,string,,false,Slitter,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_bases,Lote,string,,false,Lote,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_bases,Rail type,string,,false,Rail type,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_bases,Data de fabricação,dateTime,General Date,false,Data de fabricação,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_bases,Status,string,,false,Status,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_bases,Data,dateTime,Long Date,false,Data,summarizeBy=none,INVENTARIADO
+PARTITION,Relatorio_bases,Relatorio_bases,import,,false,Oracle MESBR,"partition Relatorio_bases = m mode: import source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [HierarchicalNavigation=true, Query=""SELECT DISTINCT R.RAIL_ID as """"Rail id"""", I2.ITEM AS """"Item"""", I.ITEM as """"Slitter"""", R.LOT_ID as """"Lote"""",#(lf) RT.DESCRIPTION as """"Rail type"""", R.CREATION_DATE AS """"Data de fabricação"""",#(lf) CASE WHEN R.RAIL_STATUS_ID IN (8,9) THEN 'Segregada' ELSE 'OK' END AS """"Status""""#(lf) FROM RAIL R #(lf) INNER JOIN ITEM I2 ON R.ITEM_ID = I2.ITEM_ID #(lf) INNER JOIN LOT L ON R.LOT_ID = L.LOT_ID #(lf) INNER JOIN ITEM I ON L.ITEM_ID = I.ITEM_ID #(lf) INNER JOIN RAIL_PROCESS_ATTRIBUTES RP ON R.RAIL_ID = RP.RAIL_ID #(lf) INNER JOIN ROLL_FORMER_SETUP RF ON RP.VALUE = RF.NAME #(lf) INNER JOIN RAIL_TYPE RT ON RF.RAIL_TYPE = RT.VALUE#(lf) WHERE I2.ITEM_TYPE = 'BB' #(lf) AND R.RAIL_STATUS_ID NOT IN (10,11) #(lf) AND RP.PROCESS_ATTRIBUTES_ID = 4#(lf) AND R.CREATION_DATE > SYSDATE-365""]), #""Tipo Alterado"" = Table.TransformColumnTypes(Fonte,{{""Rail id"", type text}}), #""Data Inserida"" = Table.AddColumn(#""Tipo Alterado"", ""Data"", each DateTime.Date([Data de fabricação]), type date), #""Linhas Filtradas"" = Table.SelectRows(#""Data Inserida"", each ([Status] = ""OK"")) in #""Linhas Filtradas""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Relatorio_Item RF2,Relatorio_Item RF2,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Relatorio_Item RF2.tmdl,8 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Relatorio_Item RF2,Rail id,string,,false,Rail id,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_Item RF2,Item,string,,false,Item,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_Item RF2,Slitter,string,,false,Slitter,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_Item RF2,Lote,string,,false,Lote,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_Item RF2,Comprimento,double,,false,Comprimento,summarizeBy=sum,INVENTARIADO
+COLUMN,Relatorio_Item RF2,Data de fabricação,dateTime,General Date,false,Data de fabricação,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_Item RF2,Data,dateTime,Long Date,false,Data,summarizeBy=none,INVENTARIADO
+COLUMN,Relatorio_Item RF2,Hora,dateTime,Long Time,false,Hora,summarizeBy=none,INVENTARIADO
+PARTITION,Relatorio_Item RF2,Relatorio_Item RF2,import,,false,Oracle MESBR,"partition 'Relatorio_Item RF2' = m mode: import source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [HierarchicalNavigation=true, Query=""SELECT DISTINCT R.RAIL_ID as """"Rail id"""", I2.ITEM AS """"Item"""", I.ITEM as """"Slitter"""", R.LOT_ID as """"Lote"""",#(lf) ROUND(R.PROCESS_LENGTH * 25.4, 1) AS """"Comprimento"""", --RT.DESCRIPTION as """"Rail type"""",#(lf) R.PROCESS_WEIGTH as """"Peso"""", TO_CHAR(R.CREATION_DATE, 'DD-MON-YYYY HH24:MI') AS """"Data de fabricação"""" #(lf) FROM RAIL R #(lf) INNER JOIN ITEM I2 ON R.ITEM_ID = I2.ITEM_ID #(lf) INNER JOIN LOT L ON R.LOT_ID = L.LOT_ID #(lf) INNER JOIN ITEM I ON L.ITEM_ID = I.ITEM_ID #(lf) WHERE R.RAIL_ID NOT IN (SELECT RAIL_ID FROM SCRAP)#(lf) AND I.ITEM IN ('2-MP600760SL411-0','2-MP600760SL445-0','4-MP600760SL411-0','4-MP600760SL445-0')#(lf) AND R.LOCATION_ID = 185 AND R.RAIL_STATUS_ID IN (6,7)#(lf) AND R.CREATION_DATE BETWEEN (SYSDATE-180) AND (SYSDATE)#(lf) ORDER BY R.RAIL_ID ASC""]), #""Tipo Alterado"" = Table.TransformColumnTypes(Fonte,{{""Rail id"", type text}}), #""Colunas Removidas"" = Table.RemoveColumns(#""Tipo Alterado"",{""Peso""}), #""Tipo Alterado com Localidade"" = Table.TransformColumnTypes(#""Colunas Removidas"", {{""Data de fabricação"", type datetime}}, ""pt-BR""), #""Data Inserida"" = Table.AddColumn(#""Tipo Alterado com Localidade"", ""Data"", each DateTime.Date([Data de fabricação]), type date), #""Hora Inserida"" = Table.AddColumn(#""Data Inserida"", ""Hora"", each DateTime.Time([Data de fabricação]), type time) in #""Hora Inserida""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,SCANIA,SCANIA,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\SCANIA.tmdl,29 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,SCANIA,ITEM,string,,false,ITEM,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,CHASSIS_NUMBER,string,,false,CHASSIS_NUMBER,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,CUSTOMER_CODE,string,,false,CUSTOMER_CODE,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,SHIP_DATE,dateTime,Long Date,false,SHIP_DATE,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,PLATAFORMA,string,,false,PLATAFORMA,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,BUNDLE,double,,false,BUNDLE,summarizeBy=sum,INVENTARIADO
+COLUMN,SCANIA,LOCATION,string,,false,LOCATION,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,REFORÇADA,string,,false,REFORÇADA,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,DESCRIPTION,string,,false,DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,COMPONENT,string,,false,COMPONENT,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,MP,string,,false,MP,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,DIA,string,,false,DIA,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,ANO,string,,false,ANO,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,FLATBED,int64,0,false,FLATBED,summarizeBy=sum,INVENTARIADO
+COLUMN,SCANIA,PRODUCT_CLASS,string,,false,PRODUCT_CLASS,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,HAND,string,,false,HAND,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,Clientes,string,,false,Clientes,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,local,string,,false,local,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,CDG ITEM,string,,false,CDG ITEM,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,TIPO,string,,false,TIPO,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,local_revisado,,,false,,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,REPETIÇÃO,,0,false,,summarizeBy=sum,INVENTARIADO
+COLUMN,SCANIA,local_revisado stenhoj,,,false,,summarizeBy=none,INVENTARIADO
+COLUMN,SCANIA,QTD LONG REF,,0,false,,summarizeBy=sum,INVENTARIADO
+COLUMN,SCANIA,QTD long SIMPLES,,0,false,,summarizeBy=sum,INVENTARIADO
+COLUMN,SCANIA,QTD CARROS REF,,0,false,,summarizeBy=sum,INVENTARIADO
+COLUMN,SCANIA,QTD REF,,0,false,,summarizeBy=sum,INVENTARIADO
+COLUMN,SCANIA,FINISH_LENGHT,double,,false,FINISH_LENGHT,summarizeBy=sum,INVENTARIADO
+COLUMN,SCANIA,Flatbed_2,,,false,,summarizeBy=none,INVENTARIADO
+PARTITION,SCANIA,SCANIA,import,,false,Oracle MESBR,"partition SCANIA = m mode: import queryGroup: 1-E-Kanban source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [Query=""SELECT distinct i.ITEM,w.CHASSIS_NUMBER,I.CUSTOMER_CODE,#(lf)HT.TRAFFIC_PLAN_DATE AS SHIP_DATE, F.PLATAFORMA, R.BUNDLE,nvl(l.DESCRIPTION, ' ') AS LOCATION,#(lf)CASE #(lf)#(tab)#(tab)WHEN EXISTS (#(lf)#(tab)#(tab)#(tab)#(tab)SELECT 1#(lf)#(tab)#(tab)#(tab)#(tab)FROM OCHASSIS OC#(lf)#(tab)#(tab)#(tab)#(tab)INNER JOIN ORAIL ORR ON OC.CHASSIS_ID = ORR.CHASSIS_ID#(lf)#(tab)#(tab)#(tab)#(tab)INNER JOIN ITEM II ON II.ITEM IN (#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)ORR.LEFT_PART_NUMBER#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab),ORR.RIGHT_PART_NUMBER#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab))#(lf)#(tab)#(tab)#(tab)#(tab)WHERE OC.CHASSIS_NUMBER = C.CHASSIS_NUMBER#(tab)#(tab)#(tab)#(tab)#(tab)#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)AND II.RAIL_TYPE <> 'M'#(lf)#(tab)#(tab)#(tab)#(tab))#(lf)#(tab)#(tab)#(tab)THEN 'Reforçada'#(lf)#(tab)#(tab)ELSE 'Simples'#(lf)#(tab)#(tab)END AS REFORÇADA#(lf)FROM WORK_ORDER w#(lf)INNER JOIN ITEM i ON w.ITEM_ID = i.ITEM_ID#(lf)INNER JOIN RESOURCES re ON w.RESOURCE_ID = re.RESOURCE_ID#(lf)INNER JOIN OPERATIONS o ON re.RESOURCE_ID = o.RESOURCE_ID#(lf)INNER JOIN OCHASSIS c ON w.CHASSIS_NUMBER = c.CHASSIS_NUMBER#(lf)#(tab)AND w.SHIP_TO = c.SHIP_TO_LOC_ID#(lf)INNER JOIN FLATBED F ON C.CHASSIS_ID = F.CHASSIS_ID#(lf)INNER JOIN HT_SHIP_FLATBED@XMFG_PRODMET HT ON HT.FLATBED_CODE = F.PLATAFORMA#(lf)INNER JOIN ORAIL r ON c.CHASSIS_ID = r.CHASSIS_ID#(lf)LEFT JOIN RAIL ra ON w.JOB_ORACLE = ra.JOB_ORACLE#(lf)#(tab)AND ra.RAIL_STATUS_ID NOT IN (10,11)#(lf)LEFT JOIN LOCATIONS l ON ra.LOCATION_ID = l.LOCATION_ID#(lf)LEFT JOIN (#(lf)#(tab)SELECT DISTINCT WW.JOB_ORACLE#(lf)#(tab)#(tab),WB.RAIL_ID#(lf)#(tab)FROM WORK_ORDER WW#(lf)#(tab)INNER JOIN WORK_ORDER_BASE WB ON WW.WORK_ORDER_ID = WB.WORK_ORDER_ID#(lf)#(tab)INNER JOIN RAIL R ON R.RAIL_ID = WB.RAIL_ID#(lf)#(tab)INNER JOIN ITEM I ON R.ITEM_ID = I.ITEM_ID#(lf)#(tab)WHERE I.ITEM_TYPE = 'BB'#(lf)#(tab)) WB ON W.JOB_ORACLE = WB.JOB_ORACLE#(lf)WHERE#(lf) r.SHIP_DATE BETWEEN (SYSDATE - 2) AND (SYSDATE + 30)#(lf)#(tab)AND W.WORK_ORDER_STATUS_ID = 2#(lf)#(lf)ORDER BY SHIP_DATE asc"", CreateNavigationProperties=false]), #""Linhas Classificadas1"" = Table.Sort(Fonte,{{""SHIP_DATE"", Order.Descending}}), #""Linhas Filtradas2"" = Table.SelectRows(#""Linhas Classificadas1"", each ([CUSTOMER_CODE] = ""SCA"")), #""Linhas Filtradas"" = Table.SelectRows(#""Linhas Filtradas2"", each Text.StartsWith([ITEM], ""1-F"")), #""Linhas Filtradas1"" = Table.SelectRows(#""Linhas Filtradas"", each ([LOCATION] = ""Embalaje 1"")), #""Valor Substituído"" = Table.ReplaceValue(#""Linhas Filtradas1"",""Embalaje 1"",""Estoque FG"",Replacer.ReplaceText,{""LOCATION""}), #""Consulta Acrescentada"" = Table.Combine({#""Valor Substituído"", #""SCANIA SIMPLES"", #""SCANIA REFORÇADA""}), #""Valor Substituído1"" = Table.ReplaceValue(#""Consulta Acrescentada"",null,""Estoque FG"",Replacer.ReplaceValue,{""local""}), #""Tipo Alterado"" = Table.TransformColumnTypes(#""Valor Substituído1"",{{""SHIP_DATE"", type date}}), #""Primeiros Caracteres Inseridos"" = Table.AddColumn(#""Tipo Alterado"", ""Primeiros caracteres"", each Text.Start([ITEM], 3), type text), #""Colunas Renomeadas"" = Table.RenameColumns(#""Primeiros Caracteres Inseridos"",{{""Primeiros caracteres"", ""CDG ITEM""}}), #""Coluna Condicional Adicionada"" = Table.AddColumn(#""Colunas Renomeadas"", ""Personalizar"", each if Text.Contains([CDG ITEM], ""1-F"") then ""Conjunto"" else if Text.Contains([CDG ITEM], ""2-R"") then ""Reforço"" else if not Text.StartsWith([CDG ITEM], ""2-R"") then ""Longarina "" else if not Text.StartsWith([CDG ITEM], ""1-F"") then ""Longarina "" else null), #""Colunas Renomeadas1"" = Table.RenameColumns(#""Coluna Condicional Adicionada"",{{""Personalizar"", ""TIPO""}}), #""Linhas Classificadas"" = Table.Sort(#""Colunas Renomeadas1"",{{""SHIP_DATE"", Order.Descending}}) in #""Linhas Classificadas""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,Segregacao,Segregacao,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\Segregacao.tmdl,15 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,Segregacao,RAIL_ID,string,,false,RAIL_ID,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,CHASSIS_NUMBER,string,,false,CHASSIS_NUMBER,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,LOCATION,string,,false,LOCATION,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,ITEM,string,,false,ITEM,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,STATUS ATUAL,string,,false,STATUS ATUAL,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,LOT_ID,string,,false,LOT_ID,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,DATA SEGREGAÇÃO,dateTime,General Date,false,DATA SEGREGAÇÃO,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,MOTIVO,string,,false,MOTIVO,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,USERNAME,string,,false,USERNAME,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,CUSTOMER_CODE,string,,false,CUSTOMER_CODE,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,Hora segregação,dateTime,Long Time,false,Hora segregação,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,Data,dateTime,Long Date,false,Data,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,Quantidade,int64,0,false,Quantidade,summarizeBy=sum,INVENTARIADO
+COLUMN,Segregacao,Processos e ENNs.ENN,string,,false,Processos e ENNs.ENN,summarizeBy=none,INVENTARIADO
+COLUMN,Segregacao,Cliente,,,false,,summarizeBy=none,INVENTARIADO
+PARTITION,Segregacao,Segregacao,import,,false,Oracle MESBR,"partition Segregacao = m mode: import source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [HierarchicalNavigation=true, Query=""SELECT R.RAIL_ID, R.CHASSIS_NUMBER,L.DESCRIPTION AS LOCATION,I.ITEM, RS.DESCRIPTION AS """"STATUS ATUAL"""", #(lf)R.LOT_ID, NCD.CREATION_DATE AS """"DATA SEGREGAÇÃO"""", D.DESCRIPTION AS MOTIVO, MU.USERNAME, I.CUSTOMER_CODE#(lf)FROM NON_COMPLIANT_DETAIL NCD#(lf)INNER JOIN NON_COMPLIANT NC ON NCD.NON_COMPLIANT_ID = NC.NON_COMPLIANT_ID#(lf)INNER JOIN RAIL R ON R.RAIL_ID = NC.RAIL_ID#(lf)INNER JOIN ITEM I ON R.ITEM_ID = I.ITEM_ID#(lf)INNER JOIN DEFECTS D ON NCD.DEFECT_ID = D.DEFECT_ID#(lf)INNER JOIN RAIL_STATUS RS ON R.RAIL_STATUS_ID = RS.RAIL_STATUS_ID#(lf)INNER JOIN LOCATIONS L ON R.LOCATION_ID = L.LOCATION_ID#(lf)INNER JOIN M_USERS MU ON MU.M_USER_NUM = NCD.USER_ID_REGISTER #(lf)WHERE R.RAIL_STATUS_ID IN (8,9)#(lf)AND NCD.CREATION_DATE BETWEEN TO_DATE(SYSDATE-60) AND TO_DATE(SYSDATE+1)#(lf)AND NCD.NON_COMPLIANT_STATUS_ID = 2#(lf)ORDER BY NCD.CREATION_DATE DESC#(lf)""]), #""Linhas Filtradas1"" = Table.SelectRows(Fonte, each true), #""Hora Inserida"" = Table.AddColumn(#""Linhas Filtradas1"", ""Hora"", each DateTime.Time([DATA SEGREGAÇÃO]), type time), #""Colunas Renomeadas"" = Table.RenameColumns(#""Hora Inserida"",{{""Hora"", ""Hora segregação""}}), #""Data Inserida"" = Table.AddColumn(#""Colunas Renomeadas"", ""Data"", each DateTime.Date([DATA SEGREGAÇÃO]), type date), #""Personalização Adicionada"" = Table.AddColumn(#""Data Inserida"", ""Quantidade"", each 1), #""Tipo Alterado"" = Table.TransformColumnTypes(#""Personalização Adicionada"",{{""Quantidade"", Int64.Type}}), #""Consultas Mescladas"" = Table.NestedJoin(#""Tipo Alterado"", {""LOCATION""}, #""Processos e ENNs"", {""Description""}, ""Processos e ENNs"", JoinKind.LeftOuter), #""Processos e ENNs Expandido"" = Table.ExpandTableColumn(#""Consultas Mescladas"", ""Processos e ENNs"", {""ENN""}, {""Processos e ENNs.ENN""}), #""Tipo Alterado1"" = Table.TransformColumnTypes(#""Processos e ENNs Expandido"",{{""RAIL_ID"", type text}}), #""Linhas Filtradas"" = Table.SelectRows(#""Tipo Alterado1"", each true), #""Linhas Classificadas"" = Table.Sort(#""Linhas Filtradas"",{{""DATA SEGREGAÇÃO"", Order.Ascending}}), #""Linhas Filtradas2"" = Table.SelectRows(#""Linhas Classificadas"", each ([RAIL_ID] <> ""1896038"")) in #""Linhas Filtradas2""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,SHIPDATE,SHIPDATE,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\SHIPDATE.tmdl,15 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,SHIPDATE,DESCRIPTION,string,,false,DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,CHASSIS_NUMBER,string,,false,CHASSIS_NUMBER,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,ITEM,string,,false,ITEM,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,COMPONENT,string,,false,COMPONENT,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,CUSTOMER_CODE,string,,false,CUSTOMER_CODE,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,MP,string,,false,MP,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,SHIP_DATE,dateTime,Long Date,false,SHIP_DATE,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,FLATBED,int64,0,false,FLATBED,summarizeBy=sum,INVENTARIADO
+COLUMN,SHIPDATE,BUNDLE,int64,0,false,BUNDLE,summarizeBy=sum,INVENTARIADO
+COLUMN,SHIPDATE,HAND,string,,false,HAND,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,LOCATION,string,,false,LOCATION,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,PRODUCT_CLASS,string,,false,PRODUCT_CLASS,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,REFORÇADA,string,,false,REFORÇADA,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,Clientes,string,,false,Clientes,summarizeBy=none,INVENTARIADO
+COLUMN,SHIPDATE,local,string,,false,local,summarizeBy=none,INVENTARIADO
+PARTITION,SHIPDATE,SHIPDATE,import,,false,Oracle MESBR,"partition SHIPDATE = m mode: import source = let Fonte = Oracle.Database(""10.44.34.68:1522/MESBR"", [HierarchicalNavigation=true, Query=""SELECT re.DESCRIPTION, w.CHASSIS_NUMBER, i.ITEM, cc.ITEM AS COMPONENT, I.CUSTOMER_CODE, FG_SK_SLITTER_FROM_ITEM(cc.ITEM) AS #(lf) MP, TO_CHAR(r.SHIP_DATE, 'DD-MON-YYYY HH24:MI') AS SHIP_DATE, #(lf) r.FLATBED, r.BUNDLE, i.HAND, nvl(l.DESCRIPTION, ' ') AS LOCATION,C.PRODUCT_CLASS,#(lf) CASE #(lf) WHEN EXISTS(#(lf) SELECT 1#(lf) FROM OCHASSIS OC INNER JOIN ORAIL ORR ON#(lf) OC.CHASSIS_ID = ORR.CHASSIS_ID INNER JOIN ITEM II ON#(lf) II.ITEM IN (ORR.LEFT_PART_NUMBER, ORR.RIGHT_PART_NUMBER)#(lf) WHERE OC.CHASSIS_NUMBER = C.CHASSIS_NUMBER AND#(lf) I.ITEM NOT IN (ORR.LEFT_PART_NUMBER, ORR.RIGHT_PART_NUMBER) AND#(lf) II.RAIL_TYPE <> 'M'#(lf) ) THEN 'Reforçada'#(lf) ELSE ' '#(lf) END AS REFORÇADA#(lf)FROM WORK_ORDER w INNER JOIN ITEM i ON#(lf) w.ITEM_ID = i.ITEM_ID INNER JOIN RESOURCES re ON#(lf) w.RESOURCE_ID = re.RESOURCE_ID INNER JOIN OPERATIONS o ON#(lf) re.RESOURCE_ID = o.RESOURCE_ID INNER JOIN OCHASSIS c ON#(lf) w.CHASSIS_NUMBER = c.CHASSIS_NUMBER AND#(lf) w.SHIP_TO = c.SHIP_TO_LOC_ID INNER JOIN ORAIL r ON#(lf) c.CHASSIS_ID = r.CHASSIS_ID AND#(lf) I.ITEM IN (R.LEFT_PART_NUMBER, R.RIGHT_PART_NUMBER) INNER JOIN#(lf) (SELECT DISTINCT it.ITEM,#(lf) ROUND((NVL(it.BLANK_LENGTH, 0) * 25.4), 3) AS BLANK_LENGTH,#(lf) WW.ITEM_ID AS ASSEMBLY_ITEM_ID,#(lf) WW.JOB_ORACLE#(lf) FROM WORK_ORDER WW INNER JOIN WIP_REQUIREMENT_OPERATIONS WIP ON#(lf) WW.WIP_ENTITY_ID = WIP.WIP_ENTITY_ID INNER JOIN ITEM IT ON#(lf) WIP.INVENTORY_ITEM_ID = IT.ITEM_ID#(lf) WHERE IT.ITEM_TYPE IN ('SA', 'SAS') AND#(lf) WIP.QUANTITY_PER_ASSEMBLY > 0) cc ON#(lf) i.ITEM_ID = cc.ASSEMBLY_ITEM_ID AND#(lf) W.JOB_ORACLE = CC.JOB_ORACLE LEFT JOIN RAIL ra ON#(lf) w.JOB_ORACLE = ra.JOB_ORACLE AND #(lf) ra.RAIL_STATUS_ID NOT IN (10, 11) LEFT JOIN LOCATIONS l ON#(lf) ra.LOCATION_ID = l.LOCATION_ID LEFT JOIN #(lf) (SELECT DISTINCT WW.JOB_ORACLE, WB.RAIL_ID#(lf) FROM WORK_ORDER WW #(lf) INNER JOIN WORK_ORDER_BASE WB ON WW.WORK_ORDER_ID = WB.WORK_ORDER_ID#(lf) INNER JOIN RAIL R ON R.RAIL_ID = WB.RAIL_ID#(lf) INNER JOIN ITEM I ON R.ITEM_ID = I.ITEM_ID#(lf) WHERE I.ITEM_TYPE = 'BB') WB ON#(lf) W.JOB_ORACLE = WB.JOB_ORACLE#(lf)WHERE o.OPERATIONS_ID IN (4,5,6,7) AND#(lf) r.SHIP_DATE BETWEEN (SYSDATE-0) AND (SYSDATE+1) #(lf) AND W.WORK_ORDER_STATUS_ID = 2 #(lf) --and w.quantity_ordered > (w.quantity_finished - w.quantity_scrap)#(lf)ORDER BY SHIP_DATE, r.FLATBED, cc.ITEM, cc.BLANK_LENGTH, r.BUNDLE, w.CHASSIS_NUMBER, i.HAND""]), #""Linhas Filtradas"" = Table.SelectRows(Fonte, each true), #""Tipo Alterado"" = Table.TransformColumnTypes(#""Linhas Filtradas"",{{""SHIP_DATE"", type datetime}, {""FLATBED"", Int64.Type}, {""BUNDLE"", Int64.Type}}), #""Coluna Condicional Adicionada"" = Table.AddColumn(#""Tipo Alterado"", ""Clientes"", each if [PRODUCT_CLASS] = ""NC"" then ""SCA"" else if [PRODUCT_CLASS] = ""NR"" then ""SCA"" else if [PRODUCT_CLASS] = ""WD"" then ""SCA"" else if [PRODUCT_CLASS] = ""06"" then ""VM"" else if [PRODUCT_CLASS] = ""04"" then ""FH"" else if [PRODUCT_CLASS] = ""24"" then ""FH"" else if [PRODUCT_CLASS] = ""16"" then ""B8"" else if [PRODUCT_CLASS] = ""15"" then ""B13"" else null), #""Linhas Filtradas3"" = Table.SelectRows(#""Coluna Condicional Adicionada"", each true), #""Linhas Filtradas2"" = Table.SelectRows(#""Linhas Filtradas3"", each true), #""Coluna Condicional Adicionada1"" = Table.AddColumn(#""Linhas Filtradas2"", ""local"", each if [LOCATION] = ""Embalaje 1"" then ""Estoque FG"" else if [LOCATION] = ""Stenhoj"" then ""Stenhoj "" else if [LOCATION] = ""Rebitagem"" then ""Rebitagem"" else if [LOCATION] = ""Embalaje 3"" then ""Estoque FG"" else if [LOCATION] = ""Beatty Alma Output 1"" then ""Beatty output"" else if [LOCATION] = ""Pintura Output 2"" then ""Pintura Output 2"" else if [LOCATION] = ""Pintura Input 2"" then ""Pintura Input 2 "" else if [LOCATION] = ""Plasma 03 Auto"" then ""Cantilever"" else if [LOCATION] = ""Beatty ABA Output"" then ""P.A Output"" else if [LOCATION] = ""Beatty Alma Output 4"" then ""Buffer P.A - B3 e B4"" else if [LOCATION] = ""Mesa 04"" then ""Cantilever"" else if [LOCATION] = ""Marking VIN Output"" then ""Cantilever"" else if [LOCATION] = ""Marking VIN Input"" then ""Cantilever"" else if [LOCATION] = ""Roll Former 3"" then ""Roll Former 3"" else if [LOCATION] = ""Beatty Alma Output 2"" then ""Beatty output"" else if [LOCATION] = ""Beatty Alma Output 3"" then ""Buffer P.A - B3 e B4"" else if [LOCATION] = ""Roll Former 3 Input"" then ""Slitter"" else if [LOCATION] = ""Beatty Alma Input 4"" then ""Buffer P.A"" else if [LOCATION] = ""Roll Former 3 Output "" then ""Roll Former 3"" else if [LOCATION] = ""Beatty ABA Input"" then ""P.A Output"" else if [LOCATION] = ""Plasma CNC 02 Auto"" then ""Cantilever"" else if [LOCATION] = ""Beatty Alma Input 3"" then ""Buffer P.A - B3 e B4"" else if [LOCATION] = ""Beatty Alma Input 2"" then ""Beatty output"" else if [LOCATION] = ""Beatty Alma Input 1"" then ""Beatty output"" else if [LOCATION] = ""Yoke Punch 3"" then ""Buffer P.A - B3 e B4"" else ""Slitter""), #""Tipo Alterado1"" = Table.TransformColumnTypes(#""Coluna Condicional Adicionada1"",{{""SHIP_DATE"", type date}}), #""Linhas Filtradas1"" = Table.SelectRows(#""Tipo Alterado1"", each true) in #""Linhas Filtradas1""",INVENTARIADO — atualização e credenciais fora do modelo
+TABLE,VM,VM,table,,false,C:\Users\Alison.Silva02\Downloads\MIFC.SemanticModel\definition\tables\VM.tmdl,20 colunas; 0 medidas; 1 partições; 0 hierarquias,INVENTARIADO
+COLUMN,VM,DESCRIPTION,string,,false,DESCRIPTION,summarizeBy=none,INVENTARIADO
+COLUMN,VM,CHASSIS_NUMBER,string,,false,CHASSIS_NUMBER,summarizeBy=none,INVENTARIADO
+COLUMN,VM,ITEM,string,,false,ITEM,summarizeBy=none,INVENTARIADO
+COLUMN,VM,COMPONENT,string,,false,COMPONENT,summarizeBy=none,INVENTARIADO
+COLUMN,VM,CUSTOMER_CODE,string,,false,CUSTOMER_CODE,summarizeBy=none,INVENTARIADO
+COLUMN,VM,MP,string,,false,MP,summarizeBy=none,INVENTARIADO
+COLUMN,VM,SHIP_DATE,dateTime,Long Date,false,SHIP_DATE,summarizeBy=none,INVENTARIADO
+COLUMN,VM,DIA,string,,false,DIA,summarizeBy=none,INVENTARIADO
+COLUMN,VM,ano,string,,false,ano,summarizeBy=none,INVENTARIADO
+COLUMN,VM,FLATBED,int64,0,false,FLATBED,summarizeBy=sum,INVENTARIADO
+COLUMN,VM,PRODUCT_CLASS,string,,false,PRODUCT_CLASS,summarizeBy=none,INVENTARIADO
+COLUMN,VM,BUNDLE,int64,0,false,BUNDLE,summarizeBy=sum,INVENTARIADO
+COLUMN,VM,HAND,string,,false,HAND,summarizeBy=none,INVENTARIADO
+COLUMN,VM,LOCATION,string,,false,LOCATION,summarizeBy=none,INVENTARIADO
+COLUMN,VM,REFORÇADA,string,,false,REFORÇADA,summarizeBy=none,INVENTARIADO
+COLUMN,VM,Clientes,string,,false,Clientes,summarizeBy=none,INVENTARIADO
+COLUMN,VM,local,string,,false,local,summarizeBy=none,INVENTARIADO
+COLUMN,VM,FINISH_LENGHT,double,,false,FINISH_LENGHT,summarizeBy=sum,INVENTARIADO
+COLUMN,VM,Flatbed_2,,,false,,summarizeBy=none,INVENTARIADO
+COLUMN,VM,Tipo,string,,false,Tipo,summarizeBy=none,INVENTARIADO
+PARTITION,VM,VM,import,,false,Power Query M / derivada,"partition VM = m mode: import queryGroup: 1-E-Kanban source = let Fonte = Base1, #""Linhas Filtradas"" = Table.SelectRows(Fonte, each [Clientes] <> ""FH"" and [Clientes] <> ""SCA"" and [Clientes] <> ""B8"" and [Clientes] <> ""P2566""), #""Valor Substituído"" = Table.ReplaceValue(#""Linhas Filtradas"",""Pintura Output 2"",""Ag. Emb3"",Replacer.ReplaceText,{""local""}), #""Valor Substituído1"" = Table.ReplaceValue(#""Valor Substituído"",""VDB"",""VDBCL"",Replacer.ReplaceText,{""CUSTOMER_CODE""}), #""Ano Inserido"" = Table.AddColumn(#""Valor Substituído1"", ""Ano"", each Date.Year([SHIP_DATE]), Int64.Type), #""Colunas Reordenadas"" = Table.ReorderColumns(#""Ano Inserido"",{""DESCRIPTION"", ""CHASSIS_NUMBER"", ""ITEM"", ""COMPONENT"", ""CUSTOMER_CODE"", ""MP"", ""SHIP_DATE"", ""Ano"", ""FLATBED"", ""BUNDLE"", ""HAND"", ""LOCATION"", ""REFORÇADA"", ""Clientes"", ""local""}), #""Últimos caracteres inseridos"" = Table.AddColumn(#""Colunas Reordenadas"", ""Últimos caracteres"", each Text.End(Text.From([Ano], ""pt-BR""), 2), type text), #""Colunas Reordenadas1"" = Table.ReorderColumns(#""Últimos caracteres inseridos"",{""DESCRIPTION"", ""CHASSIS_NUMBER"", ""ITEM"", ""COMPONENT"", ""CUSTOMER_CODE"", ""MP"", ""SHIP_DATE"", ""Ano"", ""Últimos caracteres"", ""FLATBED"", ""BUNDLE"", ""HAND"", ""LOCATION"", ""REFORÇADA"", ""Clientes"", ""local""}), #""Colunas Removidas"" = Table.RemoveColumns(#""Colunas Reordenadas1"",{""Ano""}), #""Colunas Renomeadas"" = Table.RenameColumns(#""Colunas Removidas"",{{""Últimos caracteres"", ""ano""}}), #""Primeiros Caracteres Inseridos"" = Table.AddColumn(#""Colunas Renomeadas"", ""Primeiros caracteres"", each Text.Start(Text.From([SHIP_DATE], ""pt-BR""), 2), type text), #""Colunas Reordenadas2"" = Table.ReorderColumns(#""Primeiros Caracteres Inseridos"",{""DESCRIPTION"", ""CHASSIS_NUMBER"", ""ITEM"", ""COMPONENT"", ""CUSTOMER_CODE"", ""MP"", ""SHIP_DATE"", ""Primeiros caracteres"", ""ano"", ""FLATBED"", ""BUNDLE"", ""HAND"", ""LOCATION"", ""REFORÇADA"", ""Clientes"", ""local""}), #""Colunas Renomeadas1"" = Table.RenameColumns(#""Colunas Reordenadas2"",{{""Primeiros caracteres"", ""DIA""}}), #""Linhas Filtradas1"" = Table.SelectRows(#""Colunas Renomeadas1"", each true), #""Added Conditional Column"" = Table.AddColumn(#""Linhas Filtradas1"", ""Tipo"", each if Text.StartsWith([ITEM], ""1-L"") then ""Longarina"" else if Text.StartsWith([ITEM], ""1-R"") then ""Reforço"" else null), #""Changed Type"" = Table.TransformColumnTypes(#""Added Conditional Column"",{{""Tipo"", type text}}) in #""Changed Type""",INVENTARIADO — atualização e credenciais fora do modelo
+RELATIONSHIP,Produção,6fc339a1-2544-409e-b5ed-f01b27e91792,relationship,,false,Produção.CREATION_DATE -> LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,Paradas,ef46a15f-5e12-4803-be92-73a73714dc7a,relationship,,false,Paradas.PARADA -> LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,Paradas,0141b489-a46a-4b27-824e-7a6ed785c881,relationship,,false,Paradas.RETORNO -> LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,Lotes,75ee6e3a-63a6-4d7b-97a7-b1968e698631,relationship,,false,Lotes.CREATION_DATE -> LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,Produção,6a470b2d-5237-4a0e-9d80-70de1da17d6c,relationship,,false,Produção.LOCATION_DATE -> LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,DAF,45931c34-0cc3-4049-8c8e-bb08763b0219,relationship,,false,DAF.Local -> Operações.'Dados ',active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,'DAF SLITTERS',d8c7c6e8-eb59-46e3-8132-511f48e3dff0,relationship,,false,'DAF SLITTERS'.Local -> Operações.'Dados ',active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,FH,b8a42566-93fe-42ad-a283-88f850b2f4ea,relationship,,false,FH.local -> Operações.'Dados ',active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,VM,bf5fa38d-a959-4e86-ab54-e797a96b859e,relationship,,false,VM.local -> Operações.'Dados ',active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,SCANIA,1cf917d2-c14f-438d-bafb-f5c0acd769c9,relationship,,false,SCANIA.local -> Operações.'Dados ',active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,Produção,a79b598f-2a19-4d08-b45b-7071b2c7672f,relationship,,false,Produção.Data -> LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,SCANIA,b05ed5f6-92c6-4edc-83d3-ea0c0573ed96,relationship,,false,SCANIA.MP -> MP.MP,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,FH,79a5c206-f9e3-4b68-8d65-4664e7215326,relationship,,false,FH.MP -> MP.MP,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,DAF,e50f8880-4d2f-4ce9-8cf8-fec6a757de7f,relationship,,false,DAF.MP -> MP.MP,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,VM,e1740009-7cd9-46b8-93e8-8b872221a45d,relationship,,false,VM.MP -> MP.MP,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,'DAF SLITTERS',4c5a02ff-a4e0-4609-bc02-67d0ed87f650,relationship,,false,'DAF SLITTERS'.MP -> MP.MP,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,Lotes,df328491-265e-4d23-b645-03d9f0bf1f80,relationship,,false,Lotes.MP -> MP.MP,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,BI_OEE_SCRAP,334faf92-93aa-4811-a321-a7126f04b30a,relationship,,false,BI_OEE_SCRAP.Data -> LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,SCANIA,8f979a11-c951-46b6-9ebe-3c0e9a7ed93f,relationship,,false,SCANIA.DESCRIPTION -> dOperacao.OPERAÇÃO,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,FH,b726428e-27e6-4efb-9830-dfb6edcf1acd,relationship,,false,FH.DESCRIPTION -> dOperacao.OPERAÇÃO,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,VM,120cdc8c-bd49-40aa-b5cc-b8b480996220,relationship,,false,VM.DESCRIPTION -> dOperacao.OPERAÇÃO,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,DAF,36a65f56-492c-45a8-8cc9-a4d0057ac9dd,relationship,,false,DAF.DESCRIPTION -> dOperacao.OPERAÇÃO,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,'Produção RF2',8fd16a17-b9b3-471f-b2ed-26db4fce97a7,relationship,,false,'Produção RF2'._TIMESTAMP -> LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,'Produção LCT',8f219c27-5684-47ed-945d-ba91f4f7d3c7,relationship,,false,'Produção LCT'._TIMESTAMP -> LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,Segregacao,0ac784f3-1c6e-477a-9fea-1235ccdd5321,relationship,,false,Segregacao.'DATA SEGREGAÇÃO' -> LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,Segregacao,0d7f1ad0-f7c4-4a82-b4b9-580ec453665f,relationship,,false,Segregacao.Data -> LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,'Relatorio_Item RF2',c0e128f7-362e-43bb-a709-d04462395f5f,relationship,,false,'Relatorio_Item RF2'.'Data de fabricação' -> LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,'Relatorio_Item RF2',c65d5d13-25e1-42be-96b6-03c5003713d3,relationship,,false,'Relatorio_Item RF2'.Data -> LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,Relatorio_bases,a0eff1f4-036a-409b-aa75-ad59119f6206,relationship,,false,Relatorio_bases.'Data de fabricação' -> LocalDateTable_4c664494-c110-4144-b060-941925149f29.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,Relatorio_bases,c55939e7-6612-4a7a-84f5-449758d05a9e,relationship,,false,Relatorio_bases.Data -> LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,'Dados de embarque',92b9924d-d858-4d53-ab6e-e746ef25e4b3,relationship,,false,'Dados de embarque'.Data -> LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,DAF,9d40fe06-d6b2-7863-96d3-ee143f55ea29,relationship,,false,DAF.Flatbed -> 'Dados de embarque'.Flatbed,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,FH,7f83b21d-bb70-20be-ae29-7df8b3f2bb70,relationship,,false,FH.'FH Flatbed_2' -> 'Dados de embarque'.Flatbed,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,VM,7b54fd34-995a-aa39-513c-6e1bae7e83e9,relationship,,false,VM.Flatbed_2 -> 'Dados de embarque'.Flatbed,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,Produção,385a99f3-16e5-610a-799f-5b8f3fdd169d,relationship,,false,Produção.'Início da Hora' -> Base_Desc_Hora.Hora_Cheia,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,Paradas,25a4dc40-5d85-cf87-3dbd-0fce8037a719,relationship,,false,Paradas.'Início da Hora' -> Base_Desc_Hora.Hora_Cheia,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,Calendar,d165c557-2e2d-4c9f-9eac-aaf0c8214a85,relationship,,false,Calendar.Date -> LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=datePartOnly,INVENTARIADO
+RELATIONSHIP,Paradas,fdd7cb51-13a8-44b5-b1c3-1e981bcd9182,relationship,,false,Paradas.Data -> Calendar.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,SCANIA,0d491fd7-ab51-4255-8e44-c22d3c09cf7d,relationship,,false,SCANIA.SHIP_DATE -> Calendar.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,FH,70683530-e69e-4a6f-afe2-264319ed415b,relationship,,false,FH.SHIP_DATE -> Calendar.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,DAF,12fb323a-0f67-4043-926c-709fe0a79337,relationship,,false,DAF.SHIP_DATE -> Calendar.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,SHIPDATE,baf1ba55-31e4-4597-be65-33a57b0a89d1,relationship,,false,SHIPDATE.SHIP_DATE -> Calendar.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,VM,fb0525d3-76cc-47f8-8ffd-9e65173729bb,relationship,,false,VM.SHIP_DATE -> Calendar.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,'DAF SLITTERS',35588c83-cd5e-4f2b-bb9f-481c262d8824,relationship,,false,'DAF SLITTERS'.SHIP_DATE -> Calendar.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,Lotes,653e0a6e-514f-4296-9df4-28e88e261066,relationship,,true,Lotes.Data -> Calendar.Date,active=false; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO — relação inativa
+RELATIONSHIP,Produção,558c203e-2a69-4233-b617-75c8deb3b1fe,relationship,,false,Produção.Data_Processada -> Calendar.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,'Produção RF2',79b09866-a878-4eb9-b128-9e73f7844c36,relationship,,false,'Produção RF2'.Data -> Calendar.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,'Produção LCT',b34df5c2-5a34-4461-8f86-67804926cceb,relationship,,false,'Produção LCT'.Data -> Calendar.Date,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,DAF,AutoDetected_98e7477c-f288-4883-a851-4c5f75b64462,relationship,,false,DAF.Cliente -> 'Emb Offset'.Cliente,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,MP,AutoDetected_cd29d147-13ab-4b46-9cb1-61dc23b930aa,relationship,,true,MP.Cliente -> 'Emb Offset'.Cliente,active=false; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO — relação inativa
+RELATIONSHIP,SCANIA,2b6204a8-fd1a-61f9-58d3-eba901c06c2d,relationship,,false,SCANIA.Flatbed_2 -> 'Dados de embarque'.Flatbed,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,'DAF SLITTERS',7453c601-46c4-363b-b5b3-fee772d4ddce,relationship,,false,'DAF SLITTERS'.Data -> 'Dados de embarque'.Flatbed,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO
+RELATIONSHIP,Produção,ae1f128b-962c-f711-52ba-8d84a727efc4,relationship,,false,Produção.MP -> MP.MP,active=true; crossFiltering=default; securityFiltering=default; joinOnDate=,INVENTARIADO

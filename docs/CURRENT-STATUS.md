@@ -225,6 +225,19 @@ Este modo é **quase em tempo real e incremental na memória local**. As consult
 - a auditoria em `docs/power-bi-parity-audit.md` registra a cobertura atual e as lacunas de filtros, relacionamentos, parâmetros e medidas;
 - o TMDL recebido contém 309 medidas e o Layout catalogado usa 62 medidas únicas; não há declaração de paridade integral nesta revisão.
 
+### Gate 0.5 — contrato e validação documental (2026-08-20)
+
+- os quatro anexos do gate foram localizados e inspecionados integralmente: manual de 20 páginas, treinamento de 75 slides e dois workbooks;
+- o Semantic Model foi inventariado em 817 registros: 44 tabelas, 367 colunas, 309 medidas, 44 partições e 53 relacionamentos;
+- `docs/MIFC-DATA-CONTRACT.md` fixa unidades, granularidades, calendário, timezone, produção×capacidade, Beattys, rotas, Lead Time e estados de ausência;
+- `docs/MIFC-SOURCE-MATRIX.md` registra todas as fontes físicas/lógicas, objetos Oracle/SQL Server, arquivos Excel, 26 tabelas visíveis, workbooks, rotas e buffers;
+- `docs/MIFC-VALIDATION-GATES.md` contém 30 gates: 7 `VALIDADO`, 10 `PARCIAL`, 6 `DIVERGENTE` e 7 `PENDENTE`, além de seis Golden Cases sem números inventados;
+- `docs/MIFC-SYMBOL-MATRIX.md` confronta os 31 símbolos oficiais com a biblioteca atual;
+- `docs/MIFC-OPEN-QUESTIONS.md` registra 30 decisões humanas, com owners sugeridos e impacto;
+- nenhuma regra de negócio, fórmula DAX, workbook, UI ou consulta Oracle foi alterada para aproximar resultados;
+- a separação estrutural das Beattys 1–4 foi validada; a paridade numérica MES↔Power BI↔Digital continua pendente;
+- divergências principais: reunião do segundo turno ignorada pela fórmula, `E-B-SCA` sem ramo falso, conversões `×2/÷2` inconsistentes, zeros-placeholder e composição de Lead Time diferente da metodologia.
+
 ## Validação executada
 
 - `npm run typecheck`: aprovado;
@@ -308,7 +321,7 @@ npm run test:e2e
 npm run dev
 ```
 
-Em seguida, abrir o Layout, selecionar a mesma data exibida/filtrada no Power BI e comparar `T-RF3`, `T-B1`, `T-B2`, `T-B3`, `T-B4`, `T-LCT/RF2`, `T-P.A` e `T-CNC`. Se houver divergência numérica, conferir na tela Capacidade se os minutos disponíveis das máquinas são iguais aos da planilha de parâmetros usada pelo Power BI.
+Em seguida, responder primeiro `OQ01`–`OQ12` e `OQ30` de `docs/MIFC-OPEN-QUESTIONS.md`. Dentro da rede autorizada, escolher um snapshot fechado e executar `GC01`–`GC06` de `docs/MIFC-VALIDATION-GATES.md`, registrando para cada valor a fonte, unidade, filtros, timestamp e resultado bruto. Não ajustar fórmula para compensar divergência.
 
 ## Prompt para retomada
 
