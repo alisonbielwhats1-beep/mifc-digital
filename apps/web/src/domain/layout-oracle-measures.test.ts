@@ -193,4 +193,45 @@ describe("medidas Oracle da Roll Former 3", () => {
     expect(result.values["C-P-M-TOTAL"]).toBe(10);
     expect(result.values["Q-D-FH"]).toBe(10);
   });
+
+  it("aplica a dimensão MP do PBIP para separar os lotes FH e VM", () => {
+    const values = deriveLayoutStockMeasures({
+      contextDate: "2026-08-19",
+      todayDate: "2026-08-19",
+      base1: [
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-1", MP: "4-MP600760SL445-0", FINISH_LENGHT: 10, LOCATION: " ", SHIP_DATE: "19-AUG-2026" },
+        { PRODUCT_CLASS: "04", CHASSIS_NUMBER: "fh-2", MP: "4-MP600760SL445-0", FINISH_LENGHT: 10, LOCATION: " ", SHIP_DATE: "19-AUG-2026" },
+        { PRODUCT_CLASS: "06", CHASSIS_NUMBER: "vm-1", MP: "4-MP600760SL369-0", FINISH_LENGHT: 5, LOCATION: " ", SHIP_DATE: "19-AUG-2026" },
+        { PRODUCT_CLASS: "06", CHASSIS_NUMBER: "vm-2", MP: "4-MP600760SL369-0", FINISH_LENGHT: 5, LOCATION: " ", SHIP_DATE: "19-AUG-2026" },
+      ],
+      base2: [],
+      dafSlitters: [],
+      lotes: [
+        { MP: "4-MP600760SL445-0", DESCRIPTION: "BOBINA VDB", "MP(m)": 100 },
+        { MP: "4-MP600760SL369-0", DESCRIPTION: "BOBINA VDB", "MP(m)": 100 },
+      ],
+      demand: {},
+    }).values;
+
+    expect(values["E-M-P-S-FH"]).toBe(10);
+    expect(values["E-M-P-S-VM"]).toBe(20);
+    expect(values["Q-D-FH"]).toBe(10);
+    expect(values["Q-D-VM"]).toBe(20);
+  });
+
+  it("recompõe a DAF simples/reforçada antes de excluir a origem Beatty 2", () => {
+    const values = deriveLayoutStockMeasures({
+      contextDate: "2026-08-19",
+      todayDate: "2026-08-19",
+      base1: [],
+      base2: [
+        { CUSTOMER_CODE: "DAF", DESCRIPTION: "BEATTY 2", ITEM: "1-2184071-02", RAIL_TYPE_DESCRIPTION: "Longarina", LOCATION: "Embalaje 1", SHIP_DATE: "19-AUG-2026" },
+      ],
+      dafSlitters: [],
+      demand: {},
+    }).values;
+
+    expect(values["Q-D-E-DAF"]).toBe(1);
+    expect(values["P-M-DAF"]).toBe(1);
+  });
 });
