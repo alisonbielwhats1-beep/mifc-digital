@@ -17,6 +17,7 @@ import { edgeGeometry } from "@/domain/layout-graph";
 import { beginNodePointerSelection, finishNodePointerSelection } from "@/domain/layout-selection";
 import { calculateLayoutProcessMeasures, formatMeasureValues, formatProcessDays } from "@/domain/layout-process-measures";
 import { calculateClientTotal, type LayoutValueTrace } from "@/domain/layout-value-lineage";
+import { OPERATIONAL_TIME_ZONE, POWER_BI_TIMEZONE_OFFSET_MINUTES, calculateCalendarDayMinutes, calculateNetAvailableMinutes } from "@/domain/operational-clock";
 import { useMifcFormsStore, type BufferFormRow, type LogisticsFormRow, type VolumeFormRow } from "@/stores/mifc-forms";
 import { LAYOUT_WORLD_HEIGHT, LAYOUT_WORLD_WIDTH, useMifcLayoutStore, type LayoutEdge, type LayoutNode, type LayoutNodeProperties, type LayoutNodeType, type LayoutTool } from "@/stores/mifc-layout";
 import { useUiStore } from "@/stores/ui";
@@ -56,8 +57,10 @@ type MeasureDiagnostics = {
 };
 const todayKey = () => { const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`; };
 const selectedDate = ref(todayKey());
+const operationalNow = ref(new Date());
 const oracleMeasures = ref<{ ready: boolean; values: Record<string, number> | null; diagnostics?: MeasureDiagnostics; updatedAt: string | null }>({ ready: false, values: null, updatedAt: null });
 let layoutMeasuresTimer: ReturnType<typeof setInterval> | undefined;
+let operationalClockTimer: ReturnType<typeof setInterval> | undefined;
 const interaction = reactive({ mode: "" as ""|"drag"|"resize"|"curve"|"pan", id: "", pointerId: -1, startX: 0, startY: 0, originX: 0, originY: 0, originWidth: 0, originHeight: 0, originCurve: 0, horizontal: true, recorded: false, toggleOffOnClick: false, groupOrigins: {} as Record<string,{x:number;y:number}> });
 
 const nodesById = computed(() => new Map(activeRevision.value.nodes.map((node) => [node.id,node])));
@@ -68,6 +71,7 @@ const renderedEdges = computed(() => activeRevision.value.edges.map((edge) => {
 const positionedClientStages = computed(() => positionClientStages(activeRevision.value.nodes));
 const clientLanes = computed(() => clientProcessLanes.map((lane) => ({ ...lane, path: buildClientProcessPath(lane, positionedClientStages.value,40,10) })));
 const availableMinutes = (capacityId: string) => (forms.capacityRows.find((row) => row.id === capacityId)?.availableHoursPerDay ?? 0) * 60;
+const calendarDayMinutes = computed(() => calculateCalendarDayMinutes({ selectedDate: selectedDate.value, now: operationalNow.value }));
 const processMeasureValues = computed<Record<string, number>>(() => calculateLayoutProcessMeasures(oracleMeasures.value.values, {
   rf3: availableMinutes("cap-rf3"),
   beatty1: availableMinutes("cap-beatty"),
@@ -117,14 +121,29 @@ const productionKeys: Record<string, { production: string[]; demand: string[]; s
   "T-LPP2": { production: ["P-LPP2"], demand: ["D-P-LPP2"], stops: ["P-P-LPP2"] },
   "T-STJ/T-EMB-VM": { production: ["P-STJ"], demand: ["D-P-STJ"], stops: ["P-P-STJ"] },
 };
+const netAvailableMeasureKeys: Record<string, string> = {
+  "T-RF3": "T-D-L-RF3",
+  "T-B1": "T-D-L-B1",
+  "T-B2": "T-D-L-B2",
+  "T-B3": "T-D-L-B3",
+  "T-B4": "T-D-L-B4",
+  "T-LPP2": "T-D-L-LPP2",
+  "T-STJ/T-EMB-VM": "T-D-L-STJ",
+};
 function sumMeasureKeys(keys: string[]): number { return keys.reduce((total, key) => total + Number(oracleMeasures.value.values?.[key] ?? 0), 0); }
 function liveMetricsForNode(node: LayoutNode) {
   const keys = productionKeys[node.properties.calculationKey];
   if (!keys || !oracleMeasures.value.diagnostics?.operationalReady?.producao) return undefined;
+  const stopsReady = Boolean(oracleMeasures.value.diagnostics.operationalReady.paradas);
+  const stopMinutes = stopsReady ? sumMeasureKeys(keys.stops) : undefined;
   return {
     production: sumMeasureKeys(keys.production),
     demand: sumMeasureKeys(keys.demand),
-    stopMinutes: oracleMeasures.value.diagnostics.operationalReady.paradas ? sumMeasureKeys(keys.stops) : undefined,
+    calendarMinutes: calendarDayMinutes.value,
+    stopMinutes,
+    netAvailableMinutes: keys.stops.length === 1
+      ? calculateNetAvailableMinutes({ calendarMinutes: calendarDayMinutes.value, programmedStopMinutes: stopMinutes })
+      : undefined,
   };
 }
 function actionSummaryForNode(node: LayoutNode) {
@@ -178,6 +197,32 @@ function addSymbol(type: LayoutNodeType, label?: string) { const point = worldCe
 function clearSelection() { selectedNodeIds.value=[]; selectedTrace.value=null; selectedBufferId.value=null; selectedVolumeId.value=null; selectedLogisticsId.value=null; layout.selectNode(null); layout.selectEdge(null); panelOpen.value=false; }
 function closePanel() { clearSelection(); }
 function openTrace(trace: LayoutValueTrace, bufferId?: string) { selectedTrace.value=trace;selectedBufferId.value=bufferId??null;selectedVolumeId.value=null;selectedLogisticsId.value=null;panelOpen.value=true; }
+function operationalClockTrace(): LayoutValueTrace {
+  const isToday = calendarDayMinutes.value !== 1_440;
+  const currentTime = operationalNow.value.toLocaleString("pt-BR", { timeZone: OPERATIONAL_TIME_ZONE });
+  return {
+    id: "calendar-dia-min",
+    title: "Relógio operacional — Calendar[Dia_Min]",
+    displayValue: calendarDayMinutes.value.toLocaleString("pt-BR"),
+    unit: "min",
+    formula: "Calendar[Dia_Min] = IF(Date = TODAY(), HOUR(NOW()) × 60 + MINUTE(NOW()), 1.440)",
+    simpleExplanation: isToday
+      ? "Para o dia atual, o relógio avança automaticamente conforme o horário da planta. Esta medida é separada dos minutos planejados da tabela Máquinas."
+      : "Como a data selecionada não é hoje, a regra do Power BI considera o dia completo com 1.440 minutos.",
+    inputs: [
+      { key: "Calendar[Date]", label: "Data selecionada", textValue: selectedDate.value, unit: "data", origin: "INPUT" },
+      { key: "NOW()", label: "Relógio da planta", textValue: currentTime, unit: OPERATIONAL_TIME_ZONE, origin: "CALCULATED" },
+    ],
+    intermediateResults: [`Calendar[Dia_Min] = ${calendarDayMinutes.value.toLocaleString("pt-BR")} min`],
+    origin: "CALCULATED — relógio local no fuso da planta",
+    measureKeys: ["Calendar[Dia_Min]", "T-D"],
+    filters: [`Calendar[Date] = ${selectedDate.value}`, `Fuso = ${OPERATIONAL_TIME_ZONE}`],
+    date: selectedDate.value,
+    updatedAt: operationalNow.value.toISOString(),
+    sourceReference: "MIFC.SemanticModel/definition/tables/Calendar.tmdl",
+    missingKeys: [],
+  };
+}
 function stageTrace(lane: ClientProcessLane, stage: PositionedClientStage): LayoutValueTrace {
   const mapping = mappingFor(lane, stage);
   const processKeys = mapping?.processMeasureKeys ?? [];
@@ -340,13 +385,60 @@ function bufferTrace(buffer: PositionedLayoutBuffer): LayoutValueTrace {
     missingKeys,
   };
 }
+function productionMetricTrace(node: LayoutNode, metrics: ReturnType<typeof liveMetricsForNode>): LayoutValueTrace {
+  const keys = productionKeys[node.properties.calculationKey];
+  const netMeasureKey = netAvailableMeasureKeys[node.properties.calculationKey];
+  const stopKey = keys?.stops.length === 1 ? keys.stops[0] : undefined;
+  const inputs: LayoutValueTrace["inputs"] = [
+    { key: "production", label: "Produção observada", value: metrics?.production, unit: "peças", origin: "ORACLE_MES" },
+    { key: "demand", label: "Demanda", value: metrics?.demand, unit: "peças", origin: "ORACLE_MES" },
+  ];
+  if (netMeasureKey) {
+    inputs.push(
+      { key: "Calendar[Dia_Min]", label: "Relógio operacional", value: calendarDayMinutes.value, unit: "min", origin: "CALCULATED" },
+      { key: stopKey ?? "P-P-*", label: "Paradas programadas", value: metrics?.stopMinutes, unit: "min", origin: "ORACLE_MES" },
+      { key: "F-H", label: "Ajuste de fuso Power BI", value: POWER_BI_TIMEZONE_OFFSET_MINUTES, unit: "min", origin: "CONSTANT" },
+      { key: netMeasureKey, label: "Tempo disponível líquido", value: metrics?.netAvailableMinutes, unit: "min", origin: "CALCULATED" },
+    );
+  }
+  const missingKeys = metrics
+    ? netMeasureKey && metrics.stopMinutes === undefined ? ["Cache Paradas"] : []
+    : ["Cache Produção"];
+  return {
+    id: `${node.id}-production`,
+    title: `${node.label} · Produção, demanda e relógio operacional`,
+    displayValue: metrics ? `${metrics.production.toLocaleString("pt-BR")} / ${metrics.demand.toLocaleString("pt-BR")}` : "—",
+    unit: "peças",
+    formula: netMeasureKey
+      ? `Produção observada / demanda filtrada | ${netMeasureKey} = Calendar[Dia_Min] - ${stopKey} - F-H`
+      : "Produção observada / demanda filtrada conforme as medidas vinculadas ao processo.",
+    simpleExplanation: metrics
+      ? "Produção e demanda usam a mesma data. O disponível líquido combina o relógio Calendar[Dia_Min] com as paradas programadas do OMES e o ajuste F-H do modelo Power BI."
+      : "Se o cache de Produção não estiver disponível, a tela mostra ausência em vez de zero.",
+    inputs,
+    intermediateResults: netMeasureKey ? [
+      `Calendar[Dia_Min] = ${calendarDayMinutes.value.toLocaleString("pt-BR")} min`,
+      `${stopKey} = ${metrics?.stopMinutes === undefined ? "—" : metrics.stopMinutes.toLocaleString("pt-BR")} min`,
+      `F-H = ${POWER_BI_TIMEZONE_OFFSET_MINUTES} min`,
+      `${netMeasureKey} = ${metrics?.netAvailableMinutes === undefined ? "—" : metrics.netAvailableMinutes.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} min`,
+    ] : [],
+    origin: "Oracle/MES somente leitura + relógio operacional calculado",
+    measureKeys: keys ? [...keys.production, ...keys.demand, ...keys.stops, "Calendar[Dia_Min]", ...(netMeasureKey ? [netMeasureKey] : [])] : ["Calendar[Dia_Min]"],
+    filters: [`Calendar[Date] = ${selectedDate.value}`, `Processo = ${node.label}`, `Fuso = ${OPERATIONAL_TIME_ZONE}`],
+    process: node.label,
+    date: selectedDate.value,
+    updatedAt: oracleMeasures.value.updatedAt,
+    sourceReference: "MIFC.SemanticModel/definition/tables/Calendar.tmdl; 1-Measure.tmdl; OMES Paradas somente leitura",
+    missingKeys,
+  };
+}
 function nodeMetricTrace(node: LayoutNode, metric: "cycle"|"capacity"|"production"|"process") {
   const effective = displayNode(node);
   const metrics = liveMetricsForNode(node);
   if (metric === "cycle") openTrace({ id:`${node.id}-ct`,title:`${node.label} · Tempo de Ciclo`,displayValue:effective.properties.cycleTimeSeconds > 0 ? effective.properties.cycleTimeSeconds.toLocaleString("pt-BR") : "—",unit:"s/peça",formula:"Valor de entrada do cadastro Capacidade; não é recalculado no Layout.",simpleExplanation:"O Tempo de Ciclo é um parâmetro manual/importado da máquina. Alterações na tela Capacidade aparecem aqui imediatamente.",inputs:[{key:"cycleTimeSeconds",label:"Tempo de Ciclo — CT",value:effective.properties.cycleTimeSeconds || undefined,unit:"s/peça",origin:"INPUT"}],intermediateResults:[],origin:"Valor manual / importado",measureKeys:[],filters:[`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:forms.savedAt,sourceReference:"Cadastro Capacidade; docs/excel-manual-automatic-map.md",missingKeys:effective.properties.cycleTimeSeconds > 0 ? [] : ["Tempo de Ciclo"] });
   else if (metric === "capacity") openTrace({ id:`${node.id}-capacity`,title:`${node.label} · Capacidade por dia`,displayValue:effective.properties.capacityPerDay > 0 ? effective.properties.capacityPerDay.toLocaleString("pt-BR") : "—",unit:"peças/dia",formula:"Referência importada do processo. A regra genérica capacity.per_day permanece pendente e não é presumida.",simpleExplanation:"A capacidade exibida é a referência cadastrada. O sistema não inventa uma fórmula única enquanto a regra específica da máquina não estiver validada.",inputs:[{key:"referenceCapacityPerDay",label:"Capacidade de referência",value:effective.properties.capacityPerDay || undefined,unit:"peças/dia",origin:"IMPORT"}],intermediateResults:[],origin:"Importado",measureKeys:[],filters:[`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:forms.savedAt,sourceReference:"Cadastro Capacidade; regra capacity.per_day pendente",missingKeys:effective.properties.capacityPerDay > 0 ? [] : ["Capacidade de referência"] });
   else if (metric === "process") { const times=processTimesForNode(node);const missing=times.filter((item)=>item.value===undefined).map((item)=>item.key);openTrace({id:`${node.id}-process`,title:`${node.label} · Tempo do processo`,displayValue:formatMeasureValues(times.map((item)=>item.key),processMeasureValues.value),unit:"dias",formula:times.map((item)=>`${item.key} = ${processTraceConfig[item.key]?.formula ?? "regra catalogada"}`).join(" | "),simpleExplanation:"São tempos das máquinas físicas. Os nomes de ENN servem somente para agrupamento e não acrescentam outra parcela ao total do cliente.",inputs:times.map((item)=>({key:item.key,label:`Tempo ${item.key}`,value:item.value,unit:"dias",origin:"CALCULATED"})),intermediateResults:times.map((item)=>`${item.key} = ${item.value===undefined?"—":formatMeasureDetailed(item.value)} dia`),origin:"Demanda Oracle/MES + capacidade local",measureKeys:times.map((item)=>item.key),filters:[`Calendar[Date] = ${selectedDate.value}`,`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:oracleMeasures.value.updatedAt,sourceReference:"MIFC.SemanticModel/definition/tables/1-Measure.tmdl; docs/client-process-matrix.csv",missingKeys:missing}); }
-  else openTrace({ id:`${node.id}-production`,title:`${node.label} · Produção e demanda`,displayValue:metrics ? `${metrics.production.toLocaleString("pt-BR")} / ${metrics.demand.toLocaleString("pt-BR")}` : "—",unit:"peças",formula:"Produção observada / demanda filtrada conforme as medidas vinculadas ao processo.",simpleExplanation:"Os dois números usam a mesma data e o mesmo processo. Se o cache de Produção não estiver disponível, a tela mostra ausência em vez de zero.",inputs:[{key:"production",label:"Produção observada",value:metrics?.production,unit:"peças",origin:"ORACLE_MES"},{key:"demand",label:"Demanda",value:metrics?.demand,unit:"peças",origin:"ORACLE_MES"}],intermediateResults:[],origin:"Oracle/MES somente leitura",measureKeys:productionKeys[node.properties.calculationKey] ? [...productionKeys[node.properties.calculationKey].production,...productionKeys[node.properties.calculationKey].demand] : [],filters:[`Calendar[Date] = ${selectedDate.value}`,`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:oracleMeasures.value.updatedAt,sourceReference:"MIFC.SemanticModel/definition/tables/1-Measure.tmdl",missingKeys:metrics ? [] : ["Cache Produção"] });
+  else openTrace(productionMetricTrace(node, metrics));
 }
 function updateBuffer(id: string, patch: Partial<BufferFormRow>) { const row=forms.bufferRows.find((item)=>item.id===id);if(row)Object.assign(row,patch);const positioned=positionedBuffers.value.find((item)=>item.id===id);if(positioned)selectedTrace.value=bufferTrace(positioned); }
 function updateVolume(id: string, patch: Partial<VolumeFormRow>) { const row=forms.volumeRows.find((item)=>item.id===id);if(!row)return;Object.assign(row,patch);const pairsPerDay=row.vehiclesPerDay*(1+row.reinforcementPercent/100);for(const buffer of forms.bufferRows.filter((item)=>item.customer===row.customer))buffer.pairsPerDay=pairsPerDay;const lane=clientProcessLanes.find((item)=>item.label===row.customer);if(lane)selectedTrace.value=clientParameterTrace(lane); }
@@ -454,14 +546,14 @@ function switchRevision(id: string) { forms.switchRevision(id);layout.switchRevi
 async function createRevision() { const sourceRevisionId=layout.activeRevisionId;layout.createRevision();forms.cloneRevision(sourceRevisionId,layout.activeRevisionId);clearSelection();await ui.saveDemoRevision({revisionId:activeRevision.value.id,kind:"mifc-layout-new-revision"}); }
 function onKeydown(event: KeyboardEvent) { if(event.key==="Escape"&&isFullscreen.value){event.preventDefault();void document.exitFullscreen();return;}const target=event.target as HTMLElement; if (["INPUT","TEXTAREA","SELECT"].includes(target.tagName)) return; if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="z") { event.preventDefault(); event.shiftKey?layout.redo():layout.undo(); } else if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="y") { event.preventDefault(); layout.redo(); } else if ((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="d") { event.preventDefault(); duplicate(); } else if (["Delete","Backspace"].includes(event.key)) removeSelected(); }
 
-onMounted(async()=>{layout.hydrate();forms.hydrate(layout.activeRevisionId);operations.hydrate();clearSelection();window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);await loadLayoutMeasures();layoutMeasuresTimer=setInterval(()=>void loadLayoutMeasures(),30_000);await nextTick();fitView(true);if(typeof route.query.focus==="string")focusNode(route.query.focus);});
-onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);window.removeEventListener("pointerup",endInteraction);window.removeEventListener("keydown",onKeydown);document.removeEventListener("fullscreenchange",onFullscreenChange);if(layoutMeasuresTimer)clearInterval(layoutMeasuresTimer);});
+onMounted(async()=>{layout.hydrate();forms.hydrate(layout.activeRevisionId);operations.hydrate();clearSelection();window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);operationalNow.value=new Date();operationalClockTimer=setInterval(()=>{operationalNow.value=new Date();},15_000);await loadLayoutMeasures();layoutMeasuresTimer=setInterval(()=>void loadLayoutMeasures(),30_000);await nextTick();fitView(true);if(typeof route.query.focus==="string")focusNode(route.query.focus);});
+onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);window.removeEventListener("pointerup",endInteraction);window.removeEventListener("keydown",onKeydown);document.removeEventListener("fullscreenchange",onFullscreenChange);if(layoutMeasuresTimer)clearInterval(layoutMeasuresTimer);if(operationalClockTimer)clearInterval(operationalClockTimer);});
 watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;await nextTick();focusNode(focus);});
 </script>
 
 <template>
   <div ref="layoutPage" class="layout-page" :class="{ 'is-fullscreen': isFullscreen }">
-    <section class="layout-heading"><div class="breadcrumb"><strong>MIFC</strong><span>›</span><b>Layout</b><select class="revision-select" :value="activeRevision.id" @change="switchRevision(($event.target as HTMLSelectElement).value)"><option v-for="revision in layout.revisions" :key="revision.id" :value="revision.id">{{ revision.label }}</option></select><span v-if="isDirty || forms.isDirty" class="dirty-dot">Alterações não salvas</span></div><div class="heading-actions"><label class="date-context"><span>Calendar[Date]</span><input v-model="selectedDate" type="date" @change="loadLayoutMeasures"/></label><button class="button button-secondary" type="button" @click="createRevision"><Plus :size="16"/>Nova revisão</button><button class="button button-primary" type="button" @click="saveLayout"><Save :size="16"/>Salvar layout<ChevronDown :size="14"/></button></div></section>
+    <section class="layout-heading"><div class="breadcrumb"><strong>MIFC</strong><span>›</span><b>Layout</b><select class="revision-select" :value="activeRevision.id" @change="switchRevision(($event.target as HTMLSelectElement).value)"><option v-for="revision in layout.revisions" :key="revision.id" :value="revision.id">{{ revision.label }}</option></select><span v-if="isDirty || forms.isDirty" class="dirty-dot">Alterações não salvas</span></div><div class="heading-actions"><label class="date-context"><span>Calendar[Date]</span><input v-model="selectedDate" type="date" @change="loadLayoutMeasures"/></label><button class="operational-clock" data-testid="operational-clock" type="button" aria-label="Abrir origem do relógio operacional Calendar Dia Min" @click="openTrace(operationalClockTrace())"><small>Calendar[Dia_Min]</small><strong>{{ calendarDayMinutes.toLocaleString('pt-BR') }} min</strong><em>{{ OPERATIONAL_TIME_ZONE }}</em></button><button class="button button-secondary" type="button" @click="createRevision"><Plus :size="16"/>Nova revisão</button><button class="button button-primary" type="button" @click="saveLayout"><Save :size="16"/>Salvar layout<ChevronDown :size="14"/></button></div></section>
     <nav class="layout-toolbar" aria-label="Ferramentas do layout">
       <button :class="{active:activeTool==='select'}" @click="setTool('select')"><MousePointer2 :size="16"/>Selecionar</button><button :class="{active:activeTool==='connect'}" @click="chooseConnect('material_push')"><Waypoints :size="16"/>Conectar</button>
       <select v-model="activeFlow" aria-label="Tipo da conexão" @change="setTool('connect')"><option value="material_push">Material</option><option value="material_pull">Material puxado</option><option value="information">Informação</option><option value="electronic_information">Eletrônica</option></select>
@@ -520,6 +612,10 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
 .heading-actions .button { min-height:36px; padding:0 13px; font-size:11px; }
 .date-context { display:grid; gap:2px; color:var(--text-tertiary); font-size:8px; }
 .date-context input { height:30px; padding:0 8px; border:1px solid var(--border-subtle); border-radius:5px; color:var(--text-secondary); font:inherit; font-size:10px; }
+.operational-clock { display:grid; min-width:126px; min-height:38px; align-content:center; padding:3px 9px; border:1px solid #b9e5c8; border-radius:7px; background:#effaf3; color:#146c36; text-align:left; cursor:pointer; }
+.operational-clock:hover,.operational-clock:focus-visible { border-color:#28a85b; outline:0; box-shadow:0 0 0 3px rgba(40,168,91,.15); }
+.operational-clock small,.operational-clock em { font-size:7px; font-style:normal; line-height:1.1; }
+.operational-clock strong { font-size:13px; line-height:1.1; }
 .layout-toolbar { position:relative; z-index:60; display:flex; min-height:48px; align-items:center; gap:3px; padding:0 14px; border-bottom:1px solid var(--border-subtle); background:#fff; }
 .layout-toolbar button { display:flex; min-height:32px; align-items:center; gap:6px; padding:0 10px; border:1px solid transparent; border-radius:5px; background:transparent; color:#52627a; font-size:10px; }
 .layout-toolbar button:hover:not(:disabled),.layout-toolbar button.active { border-color:#cfdbfb; background:var(--brand-blue-soft); color:var(--brand-blue-strong); }
