@@ -20,7 +20,7 @@ export interface LayoutEdge {
 }
 export interface LayoutRevision { id: string; number: number; label: string; createdAt: string; savedAt?: string; nodes: LayoutNode[]; edges: LayoutEdge[] }
 interface GraphSnapshot { nodes: LayoutNode[]; edges: LayoutEdge[] }
-interface PersistedLayout { schemaVersion: 10; activeRevisionId: string; revisions: LayoutRevision[] }
+interface PersistedLayout { schemaVersion: 9; activeRevisionId: string; revisions: LayoutRevision[] }
 
 export const LAYOUT_WORLD_WIDTH = 3500;
 export const LAYOUT_WORLD_HEIGHT = 1600;
@@ -55,28 +55,28 @@ function initialRevision(): LayoutRevision {
     node(r,"node-usiminas","customer_supplier","USIMINAS",24,470,120,78,properties("EXT-001")),
     node(r,"node-csn","customer_supplier","CSN",24,615,120,78,properties("EXT-002")),
     node(r,"node-gerdau","customer_supplier","GERDAU",24,760,120,78,properties("EXT-003")),
-    node(r,"node-beneficiator","customer_supplier","Beneficiador",190,550,150,110,properties("EXT-BEN",0,0,0,2,95,"Tempo manual por cliente no cadastro Logística.","T-B")),
-    node(r,"node-raw","storage","Almox.\nMatéria-prima",400,550,150,110,properties("BUF-001",0,250,100,2,95,"Estoque de matéria-prima.","D-E-MP")),
-    node(r,"node-cut","process","LCT",620,550,178,132,properties("P-005",0,0,0,2,90,"Máquina LCT. O PBIP mantém o tempo agregado LCT/RF2 na rota FH; a produção automática desta fonte ainda não está homologada.","T-LCT/RF2"),"cap-lct"),
-    node(r,"node-rf2","process","Roll Former 2",830,550,178,132,properties("P-005-RF2",0,0,0,2,90,"Máquina independente. O estoque RF2 é separado no PBIP; a conversão do contador para peça ainda está pendente.",""),"cap-rf2"),
-    node(r,"node-stamp","process","Roll Former 3",1040,550,178,132,properties("P-001",48,68,1200,2,85,"Etapa identificada no PBIP.","T-RF3"),"cap-rf3"),
-    node(r,"node-weld-1","process","Mesa 3",1280,550,178,132,properties("P-003",0,0,0,2,90,"T-M3 é placeholder zero no PBIP; validar operacionalmente.","T-M3")),
-    node(r,"node-beatty-3","process","Beatty 3",1500,330,178,132,properties("P-002-B3",62,132,928,2,82,"Scania conforme o PBIP.","T-B3"),"cap-beatty-3"),
-    node(r,"node-beatty-4","process","Beatty 4",1500,480,178,132,properties("P-002-B4",62,132,928,2,82,"Volvo FH conforme o PBIP.","T-B4"),"cap-beatty-4"),
-    node(r,"node-beatty-2","process","Beatty 2",1500,630,178,132,properties("P-002-B2",62,132,928,2,82,"DAF conforme o PBIP.","T-B2"),"cap-beatty-2"),
-    node(r,"node-weld-2","process","Beatty 1",1500,780,178,132,properties("P-002-B1",62,132,928,2,82,"Volvo VM conforme o PBIP.","T-B1"),"cap-beatty"),
-    node(r,"node-weld-3","process","P.A",1700,480,178,132,properties("P-006",0,0,0,2,90,"Máquina P.A. FH e Scania usam esta etapa; o CNC é uma máquina separada.","T-P.A"),"cap-pa"),
-    node(r,"node-cnc","process","CNC Plasma",1700,630,178,132,properties("P-007",0,0,0,2,90,"Máquina CNC. VM e DAF usam esta etapa; a P.A é uma máquina separada.","T-CNC"),"cap-cnc"),
-    node(r,"node-assembly","process","Pintura",1940,480,178,132,properties("P-003",110,150,528,2,60,"Linha de pintura comum. Rebitagem fica em máquina/processo separado.","T-LPP2"),"cap-paint"),
-    node(r,"node-rework","process","Rebitagem",1940,630,178,132,properties("P-008",0,0,0,2,90,"Etapa adicional para Scania e DAF, conforme medidas T-SCA-REB e T-DAF-REB.")),
-    node(r,"node-inspection","process","Stenhoj",2180,480,178,132,properties("P-004",60,110,960,2,90,"Máquina Stenhoj. Embalagem fica separada.","T-STJ"),"cap-stenhoj"),
-    node(r,"node-packaging","process","Embalagem",2180,630,178,132,properties("P-009",0,0,0,2,90,"Embalagem final. Para VM, o PBIP usa T-EMB-VM; a unidade é derivada da cadência média.")),
-    node(r,"node-finished","storage","Armazém\nProduto acabado",2420,550,150,118,properties("BUF-002",0,100,720,2,95,"","D-E-PA")),
-    node(r,"node-shipping","truck","Expedição",2640,570,120,90,properties("LOG-001")),
-    node(r,"node-volvo","customer_supplier","VOLVO",2840,430,120,78,properties("CLI-001")),
-    node(r,"node-scania","customer_supplier","SCANIA",2840,570,120,78,properties("CLI-002")),
-    node(r,"node-daf","customer_supplier","DAF",2840,710,120,78,properties("CLI-003")),
-    node(r,"node-renault","customer_supplier","RENAULT",2840,850,120,78,properties("CLI-004")),
+    node(r,"node-beneficiator","customer_supplier","Beneficiador",190,610,150,110,properties("EXT-BEN",0,0,0,2,95,"Tempo manual por cliente no cadastro Logística.","T-B")),
+    node(r,"node-raw","storage","Almox.\nMatéria-prima",400,610,150,110,properties("BUF-001",0,250,100,2,95,"Estoque de matéria-prima.","D-E-MP")),
+    node(r,"node-cut","process","LCT",620,470,178,132,properties("P-005",0,0,0,2,90,"Máquina LCT. O PBIP mantém o tempo agregado LCT/RF2 na rota FH; a produção automática desta fonte ainda não está homologada.","T-LCT/RF2"),"cap-lct"),
+    node(r,"node-rf2","process","Roll Former 2",620,720,178,132,properties("P-005-RF2",0,0,0,2,90,"Máquina independente. O estoque RF2 é separado no PBIP; a conversão do contador para peça ainda está pendente.",""),"cap-rf2"),
+    node(r,"node-stamp","process","Roll Former 3",870,585,178,132,properties("P-001",48,68,1200,2,85,"Etapa identificada no PBIP.","T-RF3"),"cap-rf3"),
+    node(r,"node-weld-1","process","Mesa 3",1120,585,178,132,properties("P-003",0,0,0,2,90,"T-M3 é placeholder zero no PBIP; validar operacionalmente.","T-M3")),
+    node(r,"node-beatty-3","process","Beatty 3",1310,340,178,132,properties("P-002-B3",62,132,928,2,82,"Scania conforme o PBIP.","T-B3"),"cap-beatty-3"),
+    node(r,"node-beatty-4","process","Beatty 4",1310,520,178,132,properties("P-002-B4",62,132,928,2,82,"Volvo FH conforme o PBIP.","T-B4"),"cap-beatty-4"),
+    node(r,"node-beatty-2","process","Beatty 2",1310,700,178,132,properties("P-002-B2",62,132,928,2,82,"DAF conforme o PBIP.","T-B2"),"cap-beatty-2"),
+    node(r,"node-weld-2","process","Beatty 1",1310,880,178,132,properties("P-002-B1",62,132,928,2,82,"Volvo VM conforme o PBIP.","T-B1"),"cap-beatty"),
+    node(r,"node-weld-3","process","P.A",1570,500,178,132,properties("P-006",0,0,0,2,90,"Máquina P.A. FH e Scania usam esta etapa; o CNC é uma máquina separada.","T-P.A"),"cap-pa"),
+    node(r,"node-cnc","process","CNC Plasma",1570,720,178,132,properties("P-007",0,0,0,2,90,"Máquina CNC. VM e DAF usam esta etapa; a P.A é uma máquina separada.","T-CNC"),"cap-cnc"),
+    node(r,"node-assembly","process","Pintura",1810,500,178,132,properties("P-003",110,150,528,2,60,"Linha de pintura comum. Rebitagem fica em máquina/processo separado.","T-LPP2"),"cap-paint"),
+    node(r,"node-rework","process","Rebitagem",1810,720,178,132,properties("P-008",0,0,0,2,90,"Etapa adicional para Scania e DAF, conforme medidas T-SCA-REB e T-DAF-REB.")),
+    node(r,"node-inspection","process","Stenhoj",2050,500,178,132,properties("P-004",60,110,960,2,90,"Máquina Stenhoj. Embalagem fica separada.","T-STJ"),"cap-stenhoj"),
+    node(r,"node-packaging","process","Embalagem",2050,720,178,132,properties("P-009",0,0,0,2,90,"Embalagem final. Para VM, o PBIP usa T-EMB-VM; a unidade é derivada da cadência média.")),
+    node(r,"node-finished","storage","Armazém\nProduto acabado",2310,610,150,118,properties("BUF-002",0,100,720,2,95,"","D-E-PA")),
+    node(r,"node-shipping","truck","Expedição",2530,620,120,90,properties("LOG-001")),
+    node(r,"node-volvo","customer_supplier","VOLVO",2740,430,120,78,properties("CLI-001")),
+    node(r,"node-scania","customer_supplier","SCANIA",2740,570,120,78,properties("CLI-002")),
+    node(r,"node-daf","customer_supplier","DAF",2740,710,120,78,properties("CLI-003")),
+    node(r,"node-renault","customer_supplier","RENAULT",2740,850,120,78,properties("CLI-004")),
     node(r,"node-toolroom","information","Ferramentaria",720,1140,180,72,properties("SUP-001")),
     node(r,"node-maintenance","information","Manutenção",990,1140,180,72,properties("SUP-002")),
     node(r,"node-lab","information","Laboratório",1260,1140,180,72,properties("SUP-003")),
@@ -355,14 +355,14 @@ export const useMifcLayoutStore = defineStore("mifc-layout", {
       try {
         const raw = localStorage.getItem(storageKey);
         const parsed = raw ? JSON.parse(raw) as { schemaVersion?: number; activeRevisionId?: string; revisions?: LayoutRevision[] } : null;
-        if ([2,3,4,5,6,7,8,9,10].includes(parsed?.schemaVersion ?? 0) && Array.isArray(parsed?.revisions) && parsed.revisions.length && typeof parsed.activeRevisionId === "string") {
+        if ([2,3,4,5,6,7,8,9].includes(parsed?.schemaVersion ?? 0) && Array.isArray(parsed?.revisions) && parsed.revisions.length && typeof parsed.activeRevisionId === "string") {
           const labeled = parsed.schemaVersion === 2 ? migrateLegacyProcessLabels(parsed.revisions) : parsed.revisions;
           const beattys = (parsed.schemaVersion ?? 0) < 4 ? migrateBeattyLayout(labeled) : labeled;
           const readable = (parsed.schemaVersion ?? 0) < 5 ? migrateReadableLayout(beattys) : beattys;
           const beneficiated = (parsed.schemaVersion ?? 0) < 6 ? migrateBeneficiator(readable) : readable;
           const expanded = (parsed.schemaVersion ?? 0) < 7 ? migrateExpandedLayout(beneficiated) : beneficiated;
           const separated = (parsed.schemaVersion ?? 0) < 8 ? migrateMachineSeparation(expanded) : expanded;
-          this.revisions = (parsed.schemaVersion ?? 0) < 10 ? migrateOperationalLayout(separated) : separated;
+          this.revisions = (parsed.schemaVersion ?? 0) < 9 ? migrateOperationalLayout(separated) : separated;
           this.activeRevisionId = parsed.activeRevisionId;
         }
       } catch { /* baseline local */ }
@@ -399,7 +399,7 @@ export const useMifcLayoutStore = defineStore("mifc-layout", {
     deleteNodes(ids: string[]) { const selected = new Set(ids); if (!selected.size) return; this.beginMutation(); this.activeRevision.nodes = this.activeRevision.nodes.filter((item) => !selected.has(item.id)); this.activeRevision.edges = this.activeRevision.edges.filter((item) => !selected.has(item.sourceNodeId) && !selected.has(item.targetNodeId)); this.selectedNodeId = null; this.selectedEdgeId = null; },
     connectNode(id: string, flowType: MifcFlowType = "material_push") { if (!this.connectSourceId) { this.connectSourceId = id; return; } if (canConnect(this.activeRevision.edges,this.connectSourceId,id,flowType)) { this.beginMutation(); this.activeRevision.edges.push(edge(this.activeRevision.id,makeId("edge"),this.connectSourceId,id,flowType,0)); } this.connectSourceId = null; this.activeTool = "select"; },
     updateSelectedEdge(patch: Partial<Pick<LayoutEdge,"flowType"|"sourceNodeId"|"targetNodeId"|"curveOffset">>) { const item = this.selectedEdge; if (!item) return; this.beginMutation(); Object.assign(item,clone(patch)); },
-    save() { this.activeRevision.savedAt = new Date().toISOString(); const payload: PersistedLayout = { schemaVersion: 10, activeRevisionId: this.activeRevisionId, revisions: this.revisions }; localStorage.setItem(storageKey,JSON.stringify(payload)); this.persistedGraph = JSON.stringify(graphSnapshot(this.activeRevision)); },
+    save() { this.activeRevision.savedAt = new Date().toISOString(); const payload: PersistedLayout = { schemaVersion: 9, activeRevisionId: this.activeRevisionId, revisions: this.revisions }; localStorage.setItem(storageKey,JSON.stringify(payload)); this.persistedGraph = JSON.stringify(graphSnapshot(this.activeRevision)); },
     switchRevision(id: string) { const revision = this.revisions.find((item) => item.id === id); if (!revision || id === this.activeRevisionId) return; if (this.isDirty) this.save(); this.activeRevisionId = id; this.selectedNodeId = revision.nodes[0]?.id ?? null; this.selectedEdgeId = null; this.undoStack = []; this.redoStack = []; this.persistedGraph = JSON.stringify(graphSnapshot(revision)); this.save(); },
     createRevision() { this.save(); const number = Math.max(...this.revisions.map((item) => item.number)) + 1; const revisionId = makeId("layout-rev"); const source = this.activeRevision; const nodeIds = new Map(source.nodes.map((item) => [item.id,`${revisionId}-${item.id}`])); const revision: LayoutRevision = { id:revisionId, number, label:`Rev. ${String(number).padStart(2,"0")} (Rascunho)`, createdAt:new Date().toISOString(), nodes:source.nodes.map((item) => ({...clone(item),id:nodeIds.get(item.id)!,revisionId})), edges:source.edges.map((item) => ({...clone(item),id:makeId("edge"),revisionId,sourceNodeId:nodeIds.get(item.sourceNodeId)!,targetNodeId:nodeIds.get(item.targetNodeId)!})) }; this.revisions.push(revision); this.activeRevisionId = revisionId; this.undoStack = []; this.redoStack = []; this.selectedNodeId = revision.nodes[0]?.id ?? null; this.selectedEdgeId = null; this.persistedGraph = JSON.stringify(graphSnapshot(revision)); this.save(); },
   },
