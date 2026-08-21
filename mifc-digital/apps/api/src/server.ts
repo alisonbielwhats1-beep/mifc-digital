@@ -1,9 +1,11 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { randomUUID } from "node:crypto";
 import { assertSafeOracleConfig, getOracleConfig } from "./config.js";
-import { executeAllowlistedSelect, testOracleConnection } from "./oracle/read-only-client.js";
+import { forgetStoredOracleCredentials, saveStoredOracleCredentials } from "./oracle/credentials-store.js";
+import { loadLayoutMeasureLineage } from "./oracle/measure-lineage.js";
+import { executeAllowlistedSelect, getOracleConnectionStatus, testOracleConnection, type OracleCredentials } from "./oracle/read-only-client.js";
 import { loadQueryCatalog } from "./oracle/query-catalog.js";
-import { getCachedProductCatalog, getTableSyncStatus, startAutomaticRefresh, syncApprovedTables } from "./oracle/table-sync.js";
+import { getCachedProductCatalog, getCachedTable, getTableSyncStatus, startAutomaticRefresh, syncApprovedTables } from "./oracle/table-sync.js";
 import { getCachedLayoutMeasures } from "./oracle/layout-measures.js";
 import {
   getShippingScheduleStatus,
@@ -111,6 +113,40 @@ function publicCatalogEntry(entry: Awaited<ReturnType<typeof loadQueryCatalog>>[
   };
 }
 
+function requestCredentials(body: Record<string, unknown>, config: ReturnType<typeof getOracleConfig>): OracleCredentials {
+  const suppliedUser = typeof body.user === "string" ? body.user.trim() : "";
+  const suppliedPassword = typeof body.password === "string" ? body.password : "";
+  if (Boolean(suppliedUser) !== Boolean(suppliedPassword)) throw new Error("Informe usuário e senha Oracle juntos.");
+  return suppliedUser && suppliedPassword
+    ? { user: suppliedUser, password: suppliedPassword }
+    : { user: config.user, password: config.password };
+}
+
+function normalizeTableRows(rows: unknown[]): Array<Record<string, unknown>> {
+  return rows.filter((row): row is Record<string, unknown> => Boolean(row) && typeof row === "object" && !Array.isArray(row));
+}
+
+async function bootstrapOracleReadOnly(): Promise<void> {
+  const config = getOracleConfig();
+  if (!config.liveReadsEnabled) {
+    console.log("Oracle somente leitura aguardando ativação das leituras live.");
+    return;
+  }
+  if (!config.user || !config.password) {
+    console.log("Oracle live ativo, mas aguardando credencial local para a conexão automática.");
+    return;
+  }
+
+  console.log(`Conexão Oracle automática preparada (${config.credentialsSource}); carregando tabelas aprovadas...`);
+  try {
+    const result = await syncApprovedTables({ user: config.user, password: config.password });
+    const automaticRefresh = result.tables.length > 0 ? startAutomaticRefresh() : getTableSyncStatus().automaticRefresh;
+    console.log(`${result.message} Atualização automática ${automaticRefresh.active ? "ativa" : "aguardando"}.`);
+  } catch (error: unknown) {
+    console.warn(`Conexão Oracle automática indisponível; a tela de Integrações permitirá tentar novamente. ${error instanceof Error ? error.message : ""}`);
+  }
+}
+
 async function route(request: IncomingMessage, response: ServerResponse): Promise<void> {
   const config = getOracleConfig();
   assertSafeOracleConfig(config);
@@ -127,13 +163,15 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
         readOnly: config.readOnly,
         liveReadsEnabled: config.liveReadsEnabled,
         credentialsConfigured: Boolean(config.user && config.password),
+        credentialsSource: config.credentialsSource,
+        poolActive: getOracleConnectionStatus().poolActive,
       },
       catalog: {
         total: catalog.length,
         enabled: catalog.filter((entry) => entry.enabled).length,
         pending: catalog.filter((entry) => !entry.enabled).length,
       },
-      connectionTested: false,
+      connectionTested: getOracleConnectionStatus().poolActive,
     });
     return;
   }
@@ -144,8 +182,42 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
     return;
   }
 
+  if (method === "GET" && url.pathname === "/api/layout/lineage") {
+    sendJson(response, 200, { measures: await loadLayoutMeasureLineage() });
+    return;
+  }
+
   if (method === "GET" && url.pathname === "/api/oracle/sync-status") {
     sendJson(response, 200, getTableSyncStatus());
+    return;
+  }
+
+  const tableRowsMatch = method === "GET" && url.pathname.match(/^\/api\/oracle\/tables\/([^/]+)\/rows$/);
+  if (tableRowsMatch) {
+    const queryId = decodeURIComponent(tableRowsMatch[1]);
+    const cached = getCachedTable(queryId);
+    if (!cached) throw new Error("Esta tabela ainda não foi carregada na conexão atual.");
+    const sourceRows = normalizeTableRows(cached.rows);
+    const requestedPage = Number(url.searchParams.get("page") ?? "1");
+    const requestedPageSize = Number(url.searchParams.get("pageSize") ?? "50");
+    const pageSize = Number.isInteger(requestedPageSize) ? Math.min(100, Math.max(10, requestedPageSize)) : 50;
+    const page = Number.isInteger(requestedPage) ? Math.max(1, requestedPage) : 1;
+    const search = (url.searchParams.get("search") ?? "").trim().toLocaleLowerCase("pt-BR");
+    const filteredRows = search
+      ? sourceRows.filter((row) => Object.values(row).some((value) => String(value ?? "").toLocaleLowerCase("pt-BR").includes(search)))
+      : sourceRows;
+    const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
+    const safePage = Math.min(page, totalPages);
+    sendJson(response, 200, {
+      queryId,
+      powerBiObject: getTableSyncStatus().tables.find((table) => table.queryId === queryId)?.powerBiObject ?? queryId,
+      columns: cached.columns,
+      rows: filteredRows.slice((safePage - 1) * pageSize, safePage * pageSize),
+      page: safePage,
+      pageSize,
+      totalRows: filteredRows.length,
+      totalPages,
+    });
     return;
   }
 
@@ -186,21 +258,32 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
   }
 
   if (method === "POST" && url.pathname === "/api/oracle/test-connection") {
+    assertAllowedLocalOrigin(request);
     const body = await readJsonBody(request);
-    const user = typeof body.user === "string" ? body.user : "";
-    const password = typeof body.password === "string" ? body.password : "";
-    await testOracleConnection({ user, password });
-    sendJson(response, 200, { ok: true, message: "Conexão Oracle validada em modo somente leitura. Nenhuma consulta foi executada." });
+    const credentials = requestCredentials(body, config);
+    await testOracleConnection(credentials);
+    const remembered = body.remember === true;
+    if (remembered) saveStoredOracleCredentials(credentials);
+    sendJson(response, 200, { ok: true, message: remembered ? "Conexão validada e lembrada neste computador em modo somente leitura." : "Conexão Oracle validada em modo somente leitura. Nenhuma consulta foi executada." });
     return;
   }
 
   if (method === "POST" && url.pathname === "/api/oracle/sync-approved") {
+    assertAllowedLocalOrigin(request);
     const body = await readJsonBody(request);
-    const user = typeof body.user === "string" ? body.user : "";
-    const password = typeof body.password === "string" ? body.password : "";
-    const result = await syncApprovedTables({ user, password });
+    const credentials = requestCredentials(body, config);
+    const result = await syncApprovedTables(credentials);
+    const remembered = body.remember === true && result.tables.length > 0;
+    if (remembered) saveStoredOracleCredentials(credentials);
     const automaticRefresh = result.tables.length > 0 ? startAutomaticRefresh() : getTableSyncStatus().automaticRefresh;
     sendJson(response, 200, { ...result, automaticRefresh });
+    return;
+  }
+
+  if (method === "POST" && url.pathname === "/api/oracle/credentials/forget") {
+    assertAllowedLocalOrigin(request);
+    forgetStoredOracleCredentials();
+    sendJson(response, 200, { ok: true, message: "Credencial local removida." });
     return;
   }
 
@@ -238,7 +321,8 @@ const server = createServer(async (request, response) => {
 
 server.listen(config.apiPort, "127.0.0.1", () => {
   console.log(`MIFC API local em http://127.0.0.1:${config.apiPort}`);
-  console.log("Oracle somente leitura ativo; nenhuma conexão é aberta automaticamente.");
+  console.log("Oracle somente leitura ativo; a conexão automática usa apenas credenciais locais e consultas aprovadas.");
+  void bootstrapOracleReadOnly();
   void refreshShippingScheduleFromNetwork()
     .then((result) => console.log(`Programação de embarque carregada da rede: ${result.rowCount} linhas.`))
     .catch((error: unknown) => console.warn(`Programação de embarque indisponível na rede; use o anexo no app. ${error instanceof Error ? error.message : ""}`));

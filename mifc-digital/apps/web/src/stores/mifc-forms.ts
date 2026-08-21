@@ -1,5 +1,6 @@
 import type { DataOrigin } from "@mifc/domain";
 import { defineStore } from "pinia";
+import type { CycleTimeMode } from "@/domain/cycle-time";
 
 export type RowStatus = "active" | "inactive";
 export type BufferDirection = "entrada" | "saída";
@@ -75,6 +76,7 @@ export interface CapacityFormRow {
   sequence: number;
   processCode: string;
   process: string;
+  cycleTimeMode: CycleTimeMode;
   cycleTimeSeconds: number;
   nominalCapacityPerHour: number;
   referenceCapacityPerDay: number | null;
@@ -125,16 +127,17 @@ const defaults: FormsSnapshot = {
     { id: "buf-daf-paint", customer: "DAF", point: "Pintura Pós-Rebitagem", direction: "entrada", type: "estagnação", quantityPieces: 0, capacityPieces: 150, pairsPerDay: 76, inputProcess: "Montagem", outputProcess: "Pintura", origin: "INPUT", status: "active" },
   ],
   capacityRows: [
-    { id: "cap-rf3", sequence: 1, processCode: "P-001", process: "Roll Former 3", cycleTimeSeconds: 48, nominalCapacityPerHour: 75, referenceCapacityPerDay: 1200, shifts: 2, availableHoursPerDay: 16.7, efficiencyPercent: 85, targetWipPieces: 68, speedUnit: "peças/h", status: "active" },
-    { id: "cap-beatty", sequence: 2, processCode: "P-002-B1", process: "Beatty 1", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
-    { id: "cap-beatty-2", sequence: 3, processCode: "P-002-B2", process: "Beatty 2", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
-    { id: "cap-beatty-3", sequence: 4, processCode: "P-002-B3", process: "Beatty 3", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
-    { id: "cap-beatty-4", sequence: 5, processCode: "P-002-B4", process: "Beatty 4", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
-    { id: "cap-lct", sequence: 6, processCode: "P-005", process: "LCT", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 0, speedUnit: "peças/h", status: "active" },
-    { id: "cap-pa", sequence: 7, processCode: "P-006", process: "P.A", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 0, speedUnit: "peças/h", status: "active" },
-    { id: "cap-cnc", sequence: 8, processCode: "P-007", process: "CNC Plasma", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 0, speedUnit: "peças/h", status: "active" },
-    { id: "cap-paint", sequence: 9, processCode: "P-003", process: "Pintura", cycleTimeSeconds: 110, nominalCapacityPerHour: 33, referenceCapacityPerDay: 528, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 60, targetWipPieces: 150, speedUnit: "peças/h", status: "active" },
-    { id: "cap-stenhoj", sequence: 10, processCode: "P-004", process: "Stenhoj", cycleTimeSeconds: 60, nominalCapacityPerHour: 60, referenceCapacityPerDay: 960, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 110, speedUnit: "peças/h", status: "active" },
+    { id: "cap-rf3", sequence: 1, processCode: "P-001", process: "Roll Former 3", cycleTimeMode: "automatic", cycleTimeSeconds: 48, nominalCapacityPerHour: 75, referenceCapacityPerDay: 1200, shifts: 2, availableHoursPerDay: 16.7, efficiencyPercent: 85, targetWipPieces: 68, speedUnit: "peças/h", status: "active" },
+    { id: "cap-beatty", sequence: 2, processCode: "P-002-B1", process: "Beatty 1", cycleTimeMode: "automatic", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
+    { id: "cap-beatty-2", sequence: 3, processCode: "P-002-B2", process: "Beatty 2", cycleTimeMode: "automatic", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
+    { id: "cap-beatty-3", sequence: 4, processCode: "P-002-B3", process: "Beatty 3", cycleTimeMode: "automatic", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
+    { id: "cap-beatty-4", sequence: 5, processCode: "P-002-B4", process: "Beatty 4", cycleTimeMode: "automatic", cycleTimeSeconds: 62, nominalCapacityPerHour: 58, referenceCapacityPerDay: 928, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 82, targetWipPieces: 132, speedUnit: "peças/h", status: "active" },
+    { id: "cap-lct", sequence: 6, processCode: "P-005", process: "LCT", cycleTimeMode: "manual", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 0, speedUnit: "peças/h", status: "active" },
+    { id: "cap-rf2", sequence: 7, processCode: "P-005-RF2", process: "Roll Former 2", cycleTimeMode: "manual", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 0, speedUnit: "peças/h", status: "active" },
+    { id: "cap-pa", sequence: 8, processCode: "P-006", process: "P.A", cycleTimeMode: "automatic", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 0, speedUnit: "peças/h", status: "active" },
+    { id: "cap-cnc", sequence: 9, processCode: "P-007", process: "CNC Plasma", cycleTimeMode: "automatic", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 0, speedUnit: "peças/h", status: "active" },
+    { id: "cap-paint", sequence: 10, processCode: "P-003", process: "Pintura", cycleTimeMode: "automatic", cycleTimeSeconds: 110, nominalCapacityPerHour: 33, referenceCapacityPerDay: 528, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 60, targetWipPieces: 150, speedUnit: "peças/h", status: "active" },
+    { id: "cap-stenhoj", sequence: 11, processCode: "P-004", process: "Stenhoj", cycleTimeMode: "automatic", cycleTimeSeconds: 60, nominalCapacityPerHour: 60, referenceCapacityPerDay: 960, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 90, targetWipPieces: 110, speedUnit: "peças/h", status: "active" },
   ],
 };
 
@@ -168,6 +171,9 @@ function migrateSnapshot(snapshot: StoredFormsSnapshot): FormsSnapshot {
     if (!Number.isFinite(row.beneficiatorDays) || Number(row.beneficiatorDays) < 0) row.beneficiatorDays = 0;
   }
   const genericBeatty = migrated.capacityRows.find((row) => row.id === "cap-beatty");
+  for (const row of migrated.capacityRows) {
+    if (row.cycleTimeMode !== "manual" && row.cycleTimeMode !== "automatic") row.cycleTimeMode = "manual";
+  }
   if (genericBeatty) Object.assign(genericBeatty, { process: "Beatty 1", processCode: "P-002-B1" });
   for (const defaultRow of defaults.capacityRows) {
     if (migrated.capacityRows.some((row) => row.id === defaultRow.id)) continue;
@@ -303,7 +309,7 @@ export const useMifcFormsStore = defineStore("mifc-forms", {
     },
     addCapacity() {
       const next = this.capacityRows.length + 1;
-      this.capacityRows.push({ id: createId("cap"), sequence: next, processCode: `P-${String(next).padStart(3, "0")}`, process: "Novo processo", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 100, targetWipPieces: 0, speedUnit: "peças/h", status: "active" });
+      this.capacityRows.push({ id: createId("cap"), sequence: next, processCode: `P-${String(next).padStart(3, "0")}`, process: "Novo processo", cycleTimeMode: "manual", cycleTimeSeconds: 0, nominalCapacityPerHour: 0, referenceCapacityPerDay: null, shifts: 2, availableHoursPerDay: 16, efficiencyPercent: 100, targetWipPieces: 0, speedUnit: "peças/h", status: "active" });
     },
     duplicateCapacity(id: string) {
       const source = this.capacityRows.find((row) => row.id === id);

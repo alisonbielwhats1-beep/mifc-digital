@@ -4,6 +4,7 @@ import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
 import { ChevronDown, Copy, Eye, Hand, Layers3, Maximize2, Minimize2, Minus, MousePointer2, Plus, Redo2, Save, Trash2, Type as TypeIcon, Undo2, Waypoints } from "@lucide/vue";
 import type { MifcFlowType } from "@mifc/domain";
+import { automaticCycleTimeStatus, calculateAutomaticCycleTimeSeconds, cycleTimeStatusLabel, type CycleTimeStatus } from "@/domain/cycle-time";
 import MifcNodeCard from "@/components/layout/MifcNodeCard.vue";
 import MifcPropertiesPanel from "@/components/layout/MifcPropertiesPanel.vue";
 import MifcSymbolPalette from "@/components/layout/MifcSymbolPalette.vue";
@@ -17,8 +18,9 @@ import { edgeGeometry } from "@/domain/layout-graph";
 import { beginNodePointerSelection, finishNodePointerSelection } from "@/domain/layout-selection";
 import { calculateLayoutProcessMeasures, formatMeasureValues, formatProcessDays } from "@/domain/layout-process-measures";
 import { calculateClientTotal, type LayoutValueTrace } from "@/domain/layout-value-lineage";
+import type { CalculationLineageNode, MeasureLineageEntry } from "@/domain/measure-lineage";
 import { OPERATIONAL_TIME_ZONE, POWER_BI_TIMEZONE_OFFSET_MINUTES, calculateCalendarDayMinutes, calculateNetAvailableMinutes } from "@/domain/operational-clock";
-import { useMifcFormsStore, type BufferFormRow, type LogisticsFormRow, type VolumeFormRow } from "@/stores/mifc-forms";
+import { useMifcFormsStore, type BufferFormRow, type CapacityFormRow, type LogisticsFormRow, type VolumeFormRow } from "@/stores/mifc-forms";
 import { LAYOUT_WORLD_HEIGHT, LAYOUT_WORLD_WIDTH, useMifcLayoutStore, type LayoutEdge, type LayoutNode, type LayoutNodeProperties, type LayoutNodeType, type LayoutTool } from "@/stores/mifc-layout";
 import { useUiStore } from "@/stores/ui";
 import { useOperationsStore } from "@/stores/operations";
@@ -48,6 +50,7 @@ const selectedTrace = ref<LayoutValueTrace | null>(null);
 const selectedBufferId = ref<string | null>(null);
 const selectedVolumeId = ref<string | null>(null);
 const selectedLogisticsId = ref<string | null>(null);
+const selectedCapacityId = ref<string | null>(null);
 const suppressNextNodeClick = ref(false);
 type MeasureDiagnostics = {
   contextDate: string;
@@ -59,6 +62,7 @@ const todayKey = () => { const now = new Date(); return `${now.getFullYear()}-${
 const selectedDate = ref(todayKey());
 const operationalNow = ref(new Date());
 const oracleMeasures = ref<{ ready: boolean; values: Record<string, number> | null; diagnostics?: MeasureDiagnostics; updatedAt: string | null }>({ ready: false, values: null, updatedAt: null });
+const measureLineage = ref<Record<string, MeasureLineageEntry>>({});
 let layoutMeasuresTimer: ReturnType<typeof setInterval> | undefined;
 let operationalClockTimer: ReturnType<typeof setInterval> | undefined;
 const interaction = reactive({ mode: "" as ""|"drag"|"resize"|"curve"|"pan", id: "", pointerId: -1, startX: 0, startY: 0, originX: 0, originY: 0, originWidth: 0, originHeight: 0, originCurve: 0, horizontal: true, recorded: false, toggleOffOnClick: false, groupOrigins: {} as Record<string,{x:number;y:number}> });
@@ -94,6 +98,15 @@ const processMeasureValues = computed<Record<string, number>>(() => calculateLay
   paint: availableMinutes("cap-paint"),
   stenhoj: availableMinutes("cap-stenhoj"),
 }));
+const lineageCapacityKeys: Record<string, string> = {
+  "T-P-M-RF3": "cap-rf3", "T-P-M-B1": "cap-beatty", "T-P-M-B2": "cap-beatty-2", "T-P-M-B3": "cap-beatty-3", "T-P-M-B4": "cap-beatty-4",
+  "T-P-M-LCT": "cap-lct", "T-P-M-P.A": "cap-pa", "T-P-M-CNC": "cap-cnc", "T-P-M-LPP2": "cap-paint", "T-P-M-STJ": "cap-stenhoj",
+};
+const lineageValues = computed<Record<string, number>>(() => {
+  const values: Record<string, number> = { ...(oracleMeasures.value.values ?? {}), ...processMeasureValues.value, "T-T": 4 / 24, "T-M": 5 / 1_440 };
+  for (const [measure, capacityId] of Object.entries(lineageCapacityKeys)) values[measure] = availableMinutes(capacityId);
+  return values;
+});
 const positionedBuffers = computed(() => positionLayoutBuffers(forms.bufferRows, activeRevision.value.nodes));
 const positionedMeasureBuffers = computed(() => buildLayoutMeasureBuffers(activeRevision.value.nodes, oracleMeasures.value.values));
 const clientTotals = computed(() => Object.fromEntries(clientProcessLanes.map((lane) => {
@@ -121,15 +134,47 @@ const processTraceConfig: Record<string, { capacityId?: string; demandKey?: stri
   "T-EMB-VM": { demandKey: "P-M-VM", formula: "1 ÷ produção média diária de Volvo VM" },
   "T-M3": { formula: "0 (constante explícita no modelo semântico; validação operacional pendente)" },
 };
+function processLineageSteps(keys: string[]): CalculationLineageNode[] {
+  return keys.map((key) => {
+    const config = processTraceConfig[key];
+    const capacityMeasure = config?.capacityId ? Object.entries(lineageCapacityKeys).find(([, capacityId]) => capacityId === config.capacityId)?.[0] : undefined;
+    const minutes = config?.capacityId ? availableMinutes(config.capacityId) : undefined;
+    const demand = config?.demandKey ? oracleMeasures.value.values?.[config.demandKey] : undefined;
+    const result = processMeasureValues.value[key];
+    const children: CalculationLineageNode[] = [];
+    if (key === "T-M3") {
+      children.push({ id: `${key}-constant`, key, label: "Constante do modelo", description: "A Mesa 3 está explicitamente marcada como zero no modelo semântico atual.", formula: "0", value: 0, unit: "dias", origin: "CONSTANTE", children: [] });
+    } else if (key === "T-EMB-VM") {
+      children.push({ id: `${key}-demand`, key: config?.demandKey, label: "Produção média diária Volvo VM", description: "A embalagem VM usa a cadência média filtrada como denominador.", value: demand, unit: "peças/dia", origin: "ORACLE_MES", children: [] });
+      children.push({ id: `${key}-constant`, label: "Numerador da conversão", description: "Uma unidade de produção corresponde a 1 ÷ cadência diária.", formula: "1", value: 1, unit: "unidade", origin: "CONSTANTE", children: [] });
+    } else {
+      children.push({ id: `${key}-minutes`, key: capacityMeasure, label: "Tempo disponível da máquina", description: "Horas disponíveis por dia do cadastro de capacidade convertidas para minutos.", formula: "horas disponíveis/dia × 60", value: minutes, unit: "min/dia", origin: "CAPACIDADE", children: [] });
+      children.push({ id: `${key}-demand`, key: config?.demandKey, label: "Demanda filtrada", description: `Demanda da etapa para ${selectedDate.value}, respeitando o contexto de data e cliente.`, value: demand, unit: config?.demandKey === "P-M-VM" ? "peças/dia" : "peças", origin: "ORACLE_MES", children: [] });
+      children.push({ id: `${key}-day`, label: "Conversão de minutos para dias", description: "Depois de dividir o tempo disponível pela demanda, o resultado é convertido pela duração do dia.", formula: "÷ 1.440 minutos/dia", value: 1_440, unit: "min/dia", origin: "CONSTANTE", children: [] });
+    }
+    return {
+      id: `process-lineage-${key}`,
+      key,
+      label: `${key} · resultado da etapa`,
+      description: "Medida de tempo de processo apresentada no Layout.",
+      formula: config?.formula ?? "Regra catalogada no modelo semântico.",
+      value: result,
+      unit: "dias",
+      origin: "CALCULATED",
+      children,
+    };
+  });
+}
 const productionKeys: Record<string, { production: string[]; demand: string[]; stops: string[] }> = {
   "T-RF3": { production: ["P-RF3"], demand: ["D-P-RF3"], stops: ["P-P-RF3"] },
   "T-B1": { production: ["P-B1"], demand: ["D-P-B1"], stops: ["P-P-B1"] },
   "T-B2": { production: ["P-B2"], demand: ["D-P-B2"], stops: ["P-P-B2"] },
   "T-B3": { production: ["P-B3"], demand: ["D-P-B3"], stops: ["P-P-B3"] },
   "T-B4": { production: ["P-B4"], demand: ["D-P-B4"], stops: ["P-P-B4"] },
-  "T-P.A/T-CNC": { production: ["P-P.A", "P-CNC"], demand: ["D-P-P.A", "D-P-CNC"], stops: ["P-P-P.A", "P-P-CNC"] },
+  "T-P.A": { production: ["P-P.A"], demand: ["D-P-P.A"], stops: ["P-P-P.A"] },
+  "T-CNC": { production: ["P-CNC"], demand: ["D-P-CNC"], stops: ["P-P-CNC"] },
   "T-LPP2": { production: ["P-LPP2"], demand: ["D-P-LPP2"], stops: ["P-P-LPP2"] },
-  "T-STJ/T-EMB-VM": { production: ["P-STJ"], demand: ["D-P-STJ"], stops: ["P-P-STJ"] },
+  "T-STJ": { production: ["P-STJ"], demand: ["D-P-STJ"], stops: ["P-P-STJ"] },
 };
 const netAvailableMeasureKeys: Record<string, string> = {
   "T-RF3": "T-D-L-RF3",
@@ -137,8 +182,10 @@ const netAvailableMeasureKeys: Record<string, string> = {
   "T-B2": "T-D-L-B2",
   "T-B3": "T-D-L-B3",
   "T-B4": "T-D-L-B4",
+  "T-P.A": "T-D-L-P.A",
+  "T-CNC": "T-D-L-CNC",
   "T-LPP2": "T-D-L-LPP2",
-  "T-STJ/T-EMB-VM": "T-D-L-STJ",
+  "T-STJ": "T-D-L-STJ",
 };
 function sumMeasureKeys(keys: string[]): number { return keys.reduce((total, key) => total + Number(oracleMeasures.value.values?.[key] ?? 0), 0); }
 function liveMetricsForNode(node: LayoutNode) {
@@ -155,6 +202,17 @@ function liveMetricsForNode(node: LayoutNode) {
       ? calculateNetAvailableMinutes({ calendarMinutes: calendarDayMinutes.value, programmedStopMinutes: stopMinutes })
       : undefined,
   };
+}
+function cycleMetricsForNode(node: LayoutNode): { mode: "manual" | "automatic"; value?: number; status: CycleTimeStatus; statusLabel: string; unit: string; production?: number; availableMinutes?: number } {
+  const capacity = node.processId ? forms.capacityRows.find((row) => row.id === node.processId) : undefined;
+  const mode = capacity?.cycleTimeMode ?? node.properties.cycleTimeMode ?? "manual";
+  const manualSeconds = capacity?.cycleTimeSeconds ?? node.properties.cycleTimeSeconds;
+  const metrics = liveMetricsForNode(node);
+  if (mode === "manual") return { mode, value: manualSeconds || undefined, status: manualSeconds ? "ready" : "waiting_source", statusLabel: manualSeconds ? "Valor manual" : "Sem valor manual", unit: "s/unid.", production: metrics?.production, availableMinutes: metrics?.netAvailableMinutes };
+  const sourceConfigured = Boolean(productionKeys[node.properties.calculationKey]);
+  const value = calculateAutomaticCycleTimeSeconds({ availableMinutes: metrics?.netAvailableMinutes, productionCount: metrics?.production });
+  const status = automaticCycleTimeStatus({ sourceConfigured, availableMinutes: metrics?.netAvailableMinutes, productionCount: metrics?.production });
+  return { mode, value, status, statusLabel: cycleTimeStatusLabel(status), unit: "s/unid. técnica", production: metrics?.production, availableMinutes: metrics?.netAvailableMinutes };
 }
 function actionSummaryForNode(node: LayoutNode) {
   const process = operations.processes.find((item) => item.layoutNodeId === node.id || item.id === node.processId);
@@ -179,6 +237,7 @@ function displayNode(node: LayoutNode): LayoutNode {
       capacityPerDay: capacity.referenceCapacityPerDay ?? 0,
       shifts: capacity.shifts,
       availabilityPercent: capacity.efficiencyPercent,
+      cycleTimeMode: capacity.cycleTimeMode,
     },
   };
 }
@@ -204,9 +263,9 @@ function chooseConnect(flow: MifcFlowType) { activeFlow.value = flow; layout.set
 function worldCenter() { const rect = canvas.value?.getBoundingClientRect(); return { x:((rect?.width ?? 1000)/2-pan.x)/zoom.value, y:((rect?.height ?? 700)/2-pan.y)/zoom.value }; }
 function worldPoint(event: PointerEvent) { const rect = canvas.value!.getBoundingClientRect(); return { x:(event.clientX-rect.left-pan.x)/zoom.value, y:(event.clientY-rect.top-pan.y)/zoom.value }; }
 function addSymbol(type: LayoutNodeType, label?: string) { const point = worldCenter(); layout.addNode(type,point.x-55,point.y-35,label); selectedTrace.value=null; panelOpen.value = true; }
-function clearSelection() { selectedNodeIds.value=[]; selectedTrace.value=null; selectedBufferId.value=null; selectedVolumeId.value=null; selectedLogisticsId.value=null; layout.selectNode(null); layout.selectEdge(null); panelOpen.value=false; }
+function clearSelection() { selectedNodeIds.value=[]; selectedTrace.value=null; selectedBufferId.value=null; selectedVolumeId.value=null; selectedLogisticsId.value=null; selectedCapacityId.value=null; layout.selectNode(null); layout.selectEdge(null); panelOpen.value=false; }
 function closePanel() { clearSelection(); }
-function openTrace(trace: LayoutValueTrace, bufferId?: string) { selectedTrace.value=trace;selectedBufferId.value=bufferId??null;selectedVolumeId.value=null;selectedLogisticsId.value=null;panelOpen.value=true; }
+function openTrace(trace: LayoutValueTrace, bufferId?: string, capacityId?: string) { selectedTrace.value=trace;selectedBufferId.value=bufferId??null;selectedVolumeId.value=null;selectedLogisticsId.value=null;selectedCapacityId.value=capacityId??null;panelOpen.value=true; }
 function operationalClockTrace(): LayoutValueTrace {
   const isToday = calendarDayMinutes.value !== 1_440;
   const currentTime = operationalNow.value.toLocaleString("pt-BR", { timeZone: OPERATIONAL_TIME_ZONE });
@@ -256,6 +315,7 @@ function stageTrace(lane: ClientProcessLane, stage: PositionedClientStage): Layo
     simpleExplanation: missingKeys.length ? "Uma ou mais entradas ainda não estão disponíveis para o mesmo cliente, processo e data. Por isso a tela não completa o valor com zero." : "O tempo da etapa usa os minutos disponíveis cadastrados e a demanda filtrada do mesmo período. Os estoques relacionados permanecem separados do tempo de processo.",
     inputs,
     intermediateResults: [...processKeys, ...stockKeys].map((key) => `${key} = ${formatProcessDays(Number(processMeasureValues.value[key] ?? oracleMeasures.value.values?.[key]))} dia`),
+    lineageSteps: processLineageSteps(processKeys),
     origin: "MIXED — Oracle/MES + parâmetros locais",
     measureKeys: [...processKeys, ...stockKeys],
     filters: [`Calendar[Date] = ${selectedDate.value}`, `Cliente = ${lane.label}`, `Etapa = ${stage.label}`],
@@ -266,6 +326,44 @@ function stageTrace(lane: ClientProcessLane, stage: PositionedClientStage): Layo
     sourceReference: mapping?.evidence ?? "docs/client-process-matrix.csv",
     missingKeys,
   };
+}
+function totalLineageSteps(total: ReturnType<typeof calculateClientTotal>): CalculationLineageNode[] {
+  const groups = [
+    { id: "manual", label: "1. Entradas manuais convertidas para dias", description: "Transporte, Beneficiador e movimentação entram no total com suas conversões de unidade.", inputs: total.inputs.filter((input) => input.origin === "INPUT"), origin: "INPUT manual" },
+    { id: "stock", label: "2. Estoques e esperas do fluxo", description: "Cada buffer ou espera é somado uma vez, respeitando o cliente e os filtros da medida.", inputs: total.inputs.filter((input) => input.origin === "STOCK"), origin: "Medida Power BI — estoque/espera" },
+    { id: "process", label: "3. Tempos de máquina participantes", description: "Os tempos das máquinas participantes entram como parcelas independentes; subtotais de ENN não são duplicados.", inputs: total.inputs.filter((input) => input.origin === "PROCESS"), origin: "Tempo de máquina calculado" },
+  ];
+  const nodes: CalculationLineageNode[] = groups.filter((group) => group.inputs.length).map((group) => ({
+    id: `total-lineage-${group.id}`,
+    label: group.label,
+    description: group.description,
+    value: group.inputs.every((input) => input.value !== undefined) ? group.inputs.reduce((sum, input) => sum + Number(input.value) * input.multiplier, 0) : undefined,
+    unit: "dias",
+    origin: group.origin,
+    children: group.inputs.map((input) => ({
+      id: `total-lineage-${group.id}-${input.key}`,
+      key: input.key,
+      label: input.label,
+      description: input.multiplier > 1 ? `Parcela aplicada ${input.multiplier} vezes na composição do cliente.` : "Parcela aplicada uma vez na composição do cliente.",
+      formula: input.multiplier > 1 ? `[${input.key}] × ${input.multiplier}` : `[${input.key}]`,
+      value: input.value === undefined ? undefined : input.value * input.multiplier,
+      textValue: input.value !== undefined && input.multiplier > 1 ? `${input.value} × ${input.multiplier}` : undefined,
+      unit: "dias",
+      origin: input.origin,
+      children: [],
+    })),
+  }));
+  nodes.push({
+    id: "total-lineage-final",
+    label: "4. Soma final do Lead Time funcional",
+    description: "O valor exibido é a soma dos três blocos acima, sem preencher parcelas ausentes com zero.",
+    formula: total.formula,
+    value: total.value,
+    unit: "dias",
+    origin: "RESULTADO FINAL",
+    children: [],
+  });
+  return nodes;
 }
 function totalTrace(lane: ClientProcessLane): LayoutValueTrace {
   const total = clientTotals.value[lane.key];
@@ -278,6 +376,7 @@ function totalTrace(lane: ClientProcessLane): LayoutValueTrace {
     simpleExplanation: total.value === undefined ? "O total funcional exige os três parâmetros manuais, todos os estoques e cada tempo de máquina da rota. Se uma parcela faltar, nenhuma soma parcial é apresentada como total." : `O total de ${lane.label} soma transporte, Beneficiador, ${total.inputs.find((input) => input.key === "T-M")?.multiplier} movimentações, estoques/esperas e cada máquina participante uma única vez. CC, Furação, Pintura e SEE não são somados novamente como subtotais de ENN.`,
     inputs: total.inputs.map((input) => ({ key: input.key, label: input.label, value: input.value === undefined ? undefined : input.value * input.multiplier, textValue: input.value !== undefined && input.multiplier > 1 ? `${input.value} × ${input.multiplier}` : undefined, unit: "dias", origin: input.origin === "INPUT" ? "INPUT manual" : input.origin === "PROCESS" ? "Tempo de máquina calculado" : "Medida Power BI — estoque/espera" })),
     intermediateResults: total.inputs.map((input) => `${input.key}${input.multiplier > 1 ? ` × ${input.multiplier}` : ""} = ${input.value === undefined ? "—" : formatMeasureDetailed(input.value * input.multiplier)} dia`),
+    lineageSteps: totalLineageSteps(total),
     origin: "MIXED — parâmetros manuais + medidas Power BI reproduzidas localmente",
     measureKeys: [total.measureKey, ...total.inputs.map((input) => input.key)],
     filters: [`Calendar[Date] = ${selectedDate.value}`, `Cliente = ${lane.label}`, "Sem subtotal duplicado de ENN"],
@@ -373,6 +472,7 @@ function clientParameterTrace(lane: ClientProcessLane): LayoutValueTrace {
 function openClient(lane: ClientProcessLane) {
   const row = clientVolumeRow(lane);
   selectedBufferId.value = null;
+  selectedCapacityId.value = null;
   selectedVolumeId.value = row?.id ?? null;
   selectedLogisticsId.value = forms.logisticsRows.find((item) => item.customer === lane.label && item.status === "active")?.id ?? null;
   selectedTrace.value = clientParameterTrace(lane);
@@ -454,15 +554,55 @@ function productionMetricTrace(node: LayoutNode, metrics: ReturnType<typeof live
 function nodeMetricTrace(node: LayoutNode, metric: "cycle"|"capacity"|"production"|"process") {
   const effective = displayNode(node);
   const metrics = liveMetricsForNode(node);
-  if (metric === "cycle") openTrace({ id:`${node.id}-ct`,title:`${node.label} · Tempo de Ciclo`,displayValue:effective.properties.cycleTimeSeconds > 0 ? effective.properties.cycleTimeSeconds.toLocaleString("pt-BR") : "—",unit:"s/peça",formula:"Valor de entrada do cadastro Capacidade; não é recalculado no Layout.",simpleExplanation:"O Tempo de Ciclo é um parâmetro manual/importado da máquina. Alterações na tela Capacidade aparecem aqui imediatamente.",inputs:[{key:"cycleTimeSeconds",label:"Tempo de Ciclo — CT",value:effective.properties.cycleTimeSeconds || undefined,unit:"s/peça",origin:"INPUT"}],intermediateResults:[],origin:"Valor manual / importado",measureKeys:[],filters:[`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:forms.savedAt,sourceReference:"Cadastro Capacidade; docs/excel-manual-automatic-map.md",missingKeys:effective.properties.cycleTimeSeconds > 0 ? [] : ["Tempo de Ciclo"] });
-  else if (metric === "capacity") openTrace({ id:`${node.id}-capacity`,title:`${node.label} · Capacidade por dia`,displayValue:effective.properties.capacityPerDay > 0 ? effective.properties.capacityPerDay.toLocaleString("pt-BR") : "—",unit:"peças/dia",formula:"Referência importada do processo. A regra genérica capacity.per_day permanece pendente e não é presumida.",simpleExplanation:"A capacidade exibida é a referência cadastrada. O sistema não inventa uma fórmula única enquanto a regra específica da máquina não estiver validada.",inputs:[{key:"referenceCapacityPerDay",label:"Capacidade de referência",value:effective.properties.capacityPerDay || undefined,unit:"peças/dia",origin:"IMPORT"}],intermediateResults:[],origin:"Importado",measureKeys:[],filters:[`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:forms.savedAt,sourceReference:"Cadastro Capacidade; regra capacity.per_day pendente",missingKeys:effective.properties.capacityPerDay > 0 ? [] : ["Capacidade de referência"] });
-  else if (metric === "process") { const times=processTimesForNode(node);const missing=times.filter((item)=>item.value===undefined).map((item)=>item.key);openTrace({id:`${node.id}-process`,title:`${node.label} · Tempo do processo`,displayValue:formatMeasureValues(times.map((item)=>item.key),processMeasureValues.value),unit:"dias",formula:times.map((item)=>`${item.key} = ${processTraceConfig[item.key]?.formula ?? "regra catalogada"}`).join(" | "),simpleExplanation:"São tempos das máquinas físicas. Os nomes de ENN servem somente para agrupamento e não acrescentam outra parcela ao total do cliente.",inputs:times.map((item)=>({key:item.key,label:`Tempo ${item.key}`,value:item.value,unit:"dias",origin:"CALCULATED"})),intermediateResults:times.map((item)=>`${item.key} = ${item.value===undefined?"—":formatMeasureDetailed(item.value)} dia`),origin:"Demanda Oracle/MES + capacidade local",measureKeys:times.map((item)=>item.key),filters:[`Calendar[Date] = ${selectedDate.value}`,`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:oracleMeasures.value.updatedAt,sourceReference:"MIFC.SemanticModel/definition/tables/1-Measure.tmdl; docs/client-process-matrix.csv",missingKeys:missing}); }
+  if (metric === "cycle") {
+    const cycle = cycleMetricsForNode(node);
+    const automatic = cycle.mode === "automatic";
+    const formula = automatic
+      ? "CT automático = (Calendar[Dia_Min] − paradas programadas − F-H) ÷ produção observada × 60"
+      : "CT manual = valor informado no cadastro Capacidade";
+    const inputs: LayoutValueTrace["inputs"] = [
+      { key: "cycleTimeMode", label: "Modo de cálculo", textValue: automatic ? "Automático" : "Manual", unit: "", origin: "INPUT" },
+      { key: "cycleTimeSeconds", label: "CT manual de reserva", value: effective.properties.cycleTimeSeconds || undefined, unit: "s/unid.", origin: "INPUT" },
+    ];
+    if (automatic) inputs.push(
+      { key: "T-D-L", label: "Tempo disponível líquido", value: cycle.availableMinutes, unit: "min", origin: "CALCULATED" },
+      { key: "P-*", label: "Produção observada", value: cycle.production, unit: "unid. técnica", origin: "ORACLE_MES" },
+    );
+    const missingKeys = automatic
+      ? (cycle.status === "ready" ? [] : [cycle.status === "not_available" ? "Fonte de produção desta máquina" : "Tempo disponível líquido / produção"])
+      : (effective.properties.cycleTimeSeconds > 0 ? [] : ["Tempo de Ciclo"]);
+    openTrace({
+      id: `${node.id}-ct`, title: `${node.label} · Tempo de Ciclo`, displayValue: cycle.value === undefined ? "—" : cycle.value.toLocaleString("pt-BR", { maximumFractionDigits: 3 }), unit: cycle.unit,
+      formula, simpleExplanation: automatic
+        ? `${cycle.statusLabel}. A conta reproduz a lógica de tempo disponível do Power BI; o denominador atual é o contador técnico do MES (RAIL_ID), ainda pendente de homologação como peça física.`
+        : "Este é o valor manual de reserva. Ao trocar para Automático, o Layout passa a buscar produção e paradas do MES para a data selecionada.",
+      inputs, intermediateResults: automatic ? [
+        `Calendar[Dia_Min] − paradas programadas − F-H = ${cycle.availableMinutes === undefined ? "—" : `${cycle.availableMinutes.toLocaleString("pt-BR", { maximumFractionDigits: 2 })} min`}`,
+        `Produção observada = ${cycle.production === undefined ? "—" : cycle.production.toLocaleString("pt-BR")} unidade técnica`,
+        `CT = ${cycle.value === undefined ? "—" : cycle.value.toLocaleString("pt-BR", { maximumFractionDigits: 3 })} s/unidade técnica`,
+      ] : [],
+      origin: automatic ? "Oracle/MES somente leitura + cálculo local" : "Valor manual / importado", measureKeys: automatic ? [node.properties.calculationKey, "Calendar[Dia_Min]"].filter(Boolean) : [], filters: [`Processo = ${node.label}`, `Calendar[Date] = ${selectedDate.value}`], process: node.label, date: selectedDate.value, updatedAt: automatic ? oracleMeasures.value.updatedAt : forms.savedAt, sourceReference: automatic ? "MIFC.SemanticModel/definition/tables/1-Measure.tmdl; docs/MIFC-DATA-CONTRACT.md" : "Cadastro Capacidade; docs/excel-manual-automatic-map.md", missingKeys,
+      editableCapacityId: node.processId,
+    }, undefined, node.processId);
+  }
+  else if (metric === "capacity") openTrace({ id:`${node.id}-capacity`,title:`${node.label} · Capacidade por dia`,displayValue:effective.properties.capacityPerDay > 0 ? effective.properties.capacityPerDay.toLocaleString("pt-BR") : "—",unit:"peças/dia",formula:"Referência importada do processo. A regra genérica capacity.per_day permanece pendente e não é presumida.",simpleExplanation:"A capacidade exibida é a referência cadastrada. O sistema não inventa uma fórmula única enquanto a regra específica da máquina não estiver validada.",inputs:[{key:"referenceCapacityPerDay",label:"Capacidade de referência",value:effective.properties.capacityPerDay || undefined,unit:"peças/dia",origin:"IMPORT"}],intermediateResults:[],origin:"Importado",measureKeys:[],filters:[`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:forms.savedAt,sourceReference:"Cadastro Capacidade; regra capacity.per_day pendente",missingKeys:effective.properties.capacityPerDay > 0 ? [] : ["Capacidade de referência"],editableCapacityId: node.processId }, undefined, node.processId);
+  else if (metric === "process") { const times=processTimesForNode(node);const missing=times.filter((item)=>item.value===undefined).map((item)=>item.key);openTrace({id:`${node.id}-process`,title:`${node.label} · Tempo do processo`,displayValue:formatMeasureValues(times.map((item)=>item.key),processMeasureValues.value),unit:"dias",formula:times.map((item)=>`${item.key} = ${processTraceConfig[item.key]?.formula ?? "regra catalogada"}`).join(" | "),simpleExplanation:"São tempos das máquinas físicas. LCT e RF2 aparecem em cartões distintos, mas o total FH continua usando apenas a parcela agregada T-LCT/RF2 do PBIP. Os nomes de ENN não acrescentam outra parcela ao total.",inputs:times.map((item)=>({key:item.key,label:`Tempo ${item.key}`,value:item.value,unit:"dias",origin:"CALCULATED"})),intermediateResults:times.map((item)=>`${item.key} = ${item.value===undefined?"—":formatMeasureDetailed(item.value)} dia`),lineageSteps:processLineageSteps(times.map((item)=>item.key)),origin:"Demanda Oracle/MES + capacidade local",measureKeys:times.map((item)=>item.key),filters:[`Calendar[Date] = ${selectedDate.value}`,`Processo = ${node.label}`],process:node.label,date:selectedDate.value,updatedAt:oracleMeasures.value.updatedAt,sourceReference:"MIFC.SemanticModel/definition/tables/1-Measure.tmdl; docs/client-process-matrix.csv",missingKeys:missing,editableCapacityId: node.processId}, undefined, node.processId); }
   else openTrace(productionMetricTrace(node, metrics));
 }
 function updateBuffer(id: string, patch: Partial<BufferFormRow>) { const row=forms.bufferRows.find((item)=>item.id===id);if(row)Object.assign(row,patch);const positioned=positionedBuffers.value.find((item)=>item.id===id);if(positioned)selectedTrace.value=bufferTrace(positioned); }
 function updateVolume(id: string, patch: Partial<VolumeFormRow>) { const row=forms.volumeRows.find((item)=>item.id===id);if(!row)return;Object.assign(row,patch);const pairsPerDay=row.vehiclesPerDay*(1+row.reinforcementPercent/100);for(const buffer of forms.bufferRows.filter((item)=>item.customer===row.customer))buffer.pairsPerDay=pairsPerDay;const lane=clientProcessLanes.find((item)=>item.label===row.customer);if(lane)selectedTrace.value=clientParameterTrace(lane); }
 function updateLogistics(id: string, patch: Partial<LogisticsFormRow>) { const row=forms.logisticsRows.find((item)=>item.id===id);if(!row)return;Object.assign(row,patch);const lane=clientProcessLanes.find((item)=>item.label===row.customer);if(lane)selectedTrace.value=clientParameterTrace(lane); }
-function focusNode(id: string) { const normalized=id.toLocaleLowerCase("pt-BR");const node=activeRevision.value.nodes.find((item)=>item.id===id||item.id.endsWith(`-${id}`)||item.label.replace(/\n/g," ").toLocaleLowerCase("pt-BR").includes(normalized));const rect=canvas.value?.getBoundingClientRect();if(!node||!rect)return;selectedTrace.value=null;selectedNodeIds.value=[node.id];layout.selectNode(node.id);panelOpen.value=true;pan.x=rect.width/2-(node.x+node.width/2)*zoom.value;pan.y=Math.max(8,rect.height*.35-(node.y+node.height/2)*zoom.value);renameFocusRequest.value+=1; }
+function updateCapacity(id: string, patch: Partial<CapacityFormRow>) {
+  const row = forms.capacityRows.find((item) => item.id === id);
+  if (!row) return;
+  Object.assign(row, patch);
+  const node = activeRevision.value.nodes.find((item) => item.processId === id);
+  if (!node || !selectedTrace.value) return;
+  if (selectedTrace.value.id.endsWith("-ct")) nodeMetricTrace(node, "cycle");
+  else if (selectedTrace.value.id.endsWith("-capacity")) nodeMetricTrace(node, "capacity");
+  else if (selectedTrace.value.id.endsWith("-process")) nodeMetricTrace(node, "process");
+}
+function focusNode(id: string) { const normalized=id.toLocaleLowerCase("pt-BR");const node=activeRevision.value.nodes.find((item)=>item.id===id||item.id.endsWith(`-${id}`)||item.label.replace(/\n/g," ").toLocaleLowerCase("pt-BR").includes(normalized));const rect=canvas.value?.getBoundingClientRect();if(!node||!rect)return;selectedTrace.value=null;selectedCapacityId.value=null;selectedNodeIds.value=[node.id];layout.selectNode(node.id);panelOpen.value=true;pan.x=rect.width/2-(node.x+node.width/2)*zoom.value;pan.y=Math.max(8,rect.height*.35-(node.y+node.height/2)*zoom.value);renameFocusRequest.value+=1; }
 function startPan(event: PointerEvent) {
   event.preventDefault();
   event.stopPropagation();
@@ -479,7 +619,7 @@ function onCanvasPointerDown(event: PointerEvent) {
 function startNodeDrag(event: PointerEvent,node: LayoutNode) {
   if (activeTool.value === "connect") return;
   event.preventDefault();
-  selectedTrace.value=null;selectedBufferId.value=null;
+  selectedTrace.value=null;selectedBufferId.value=null;selectedCapacityId.value=null;
   const additive=event.shiftKey||event.ctrlKey||event.metaKey;
   const pointerSelection=beginNodePointerSelection(selectedNodeIds.value,node.id,additive);
   selectedNodeIds.value=pointerSelection.selectedIds;
@@ -516,8 +656,8 @@ function endInteraction() {
 function onWheel(event: WheelEvent) { event.preventDefault(); setZoom(zoom.value+(event.deltaY<0 ? .06 : -.06)); }
 function setZoom(value: number) { zoom.value=Math.min(1.5,Math.max(.35,value)); }
 function fitView(readable=false) { const rect=canvas.value?.getBoundingClientRect(); if (!rect) return; const fitted=Math.min(1,(rect.width-28)/WORLD_WIDTH,(rect.height-28)/WORLD_HEIGHT); zoom.value=readable?Math.max(.48,fitted):fitted; pan.x=readable&&zoom.value>fitted?18:(rect.width-WORLD_WIDTH*zoom.value)/2; pan.y=readable&&zoom.value>fitted?8:(rect.height-WORLD_HEIGHT*zoom.value)/2; }
-function selectNode(id: string,event?:MouseEvent|KeyboardEvent) { if(suppressNextNodeClick.value){suppressNextNodeClick.value=false;return;} selectedTrace.value=null;selectedBufferId.value=null;if (activeTool.value === "connect") layout.connectNode(id,activeFlow.value); else { const additive=Boolean(event&&(event.shiftKey||event.ctrlKey||event.metaKey)); if(additive)selectedNodeIds.value=selectedNodeIds.value.includes(id)?selectedNodeIds.value.filter((item)=>item!==id):[...selectedNodeIds.value,id];else selectedNodeIds.value=[id]; layout.selectNode(selectedNodeIds.value.includes(id)?id:selectedNodeIds.value.at(-1)??null); panelOpen.value=true; if(selectedNodeIds.value.length===1)renameFocusRequest.value+=1; } }
-function selectEdge(id: string) { selectedTrace.value=null;selectedBufferId.value=null;selectedNodeIds.value=[]; layout.selectEdge(id); panelOpen.value=true; }
+function selectNode(id: string,event?:MouseEvent|KeyboardEvent) { if(suppressNextNodeClick.value){suppressNextNodeClick.value=false;return;} selectedTrace.value=null;selectedBufferId.value=null;selectedCapacityId.value=null;if (activeTool.value === "connect") layout.connectNode(id,activeFlow.value); else { const additive=Boolean(event&&(event.shiftKey||event.ctrlKey||event.metaKey)); if(additive)selectedNodeIds.value=selectedNodeIds.value.includes(id)?selectedNodeIds.value.filter((item)=>item!==id):[...selectedNodeIds.value,id];else selectedNodeIds.value=[id]; layout.selectNode(selectedNodeIds.value.includes(id)?id:selectedNodeIds.value.at(-1)??null); panelOpen.value=true; if(selectedNodeIds.value.length===1)renameFocusRequest.value+=1; } }
+function selectEdge(id: string) { selectedTrace.value=null;selectedBufferId.value=null;selectedCapacityId.value=null;selectedNodeIds.value=[]; layout.selectEdge(id); panelOpen.value=true; }
 function mappingFor(lane: ClientProcessLane, stage: PositionedClientStage): ClientStageMapping | undefined { return mappingForClientStage(lane,stage); }
 function mappingTitle(lane: ClientProcessLane, stage: PositionedClientStage) {
   const mapping = mappingFor(lane, stage);
@@ -601,9 +741,15 @@ function laneMeasureTrace(lane: ClientProcessLane, measure: PositionedClientLane
 function clientTotalDisplay(lane: ClientProcessLane) { const value=clientTotals.value[lane.key].value;return value===undefined?"—":formatProcessDays(value); }
 async function loadLayoutMeasures() {
   try {
-    const response = await fetch(`/api/layout/measures?date=${encodeURIComponent(selectedDate.value)}`, { cache: "no-store" });
-    if (!response.ok) return;
-    oracleMeasures.value = await response.json() as typeof oracleMeasures.value;
+    const [response, lineageResponse] = await Promise.all([
+      fetch(`/api/layout/measures?date=${encodeURIComponent(selectedDate.value)}`, { cache: "no-store" }),
+      fetch("/api/layout/lineage", { cache: "no-store" }),
+    ]);
+    if (response.ok) oracleMeasures.value = await response.json() as typeof oracleMeasures.value;
+    if (lineageResponse.ok) {
+      const lineage = await lineageResponse.json() as { measures?: Record<string, MeasureLineageEntry> };
+      measureLineage.value = lineage.measures ?? {};
+    }
   } catch { /* A tela continua com a linhagem quando a API local está indisponível. */ }
 }
 async function toggleFullscreen() {
@@ -623,7 +769,7 @@ async function onFullscreenChange() {
 }
 function removeSelected() { if (!selectedNode.value&&!selectedEdge.value&&!selectedNodeIds.value.length) return; if(selectedNodeIds.value.length>1){if(!window.confirm(`Remover os ${selectedNodeIds.value.length} blocos selecionados desta revisão?`))return;layout.deleteNodes(selectedNodeIds.value);selectedNodeIds.value=[];return;} const label=selectedNode.value?.label ?? "esta conexão"; if (!window.confirm(`Remover ${label} desta revisão?`)) return; layout.deleteSelected(); selectedNodeIds.value=[]; }
 function duplicate() { layout.duplicateSelected(); panelOpen.value=true; }
-function applyNode(id: string,label: string,properties: LayoutNodeProperties,processId?: string) { layout.applyNode(id,label,properties,processId);const capacity=processId?forms.capacityRows.find((row)=>row.id===processId):undefined;if(capacity)Object.assign(capacity,{process:label,cycleTimeSeconds:properties.cycleTimeSeconds,targetWipPieces:properties.wipPieces,referenceCapacityPerDay:properties.capacityPerDay,shifts:properties.shifts,efficiencyPercent:properties.availabilityPercent}); }
+function applyNode(id: string,label: string,properties: LayoutNodeProperties,processId?: string) { layout.applyNode(id,label,properties,processId);const capacity=processId?forms.capacityRows.find((row)=>row.id===processId):undefined;if(capacity)Object.assign(capacity,{process:label,cycleTimeMode:properties.cycleTimeMode ?? capacity.cycleTimeMode,cycleTimeSeconds:properties.cycleTimeSeconds,targetWipPieces:properties.wipPieces,referenceCapacityPerDay:properties.capacityPerDay,shifts:properties.shifts,efficiencyPercent:properties.availabilityPercent}); }
 async function saveLayout() { layout.save(); forms.save(); await ui.saveDemoRevision({revisionId:activeRevision.value.id,kind:"mifc-layout",savedAt:activeRevision.value.savedAt,parametersSavedAt:forms.savedAt}); }
 function switchRevision(id: string) { forms.switchRevision(id);layout.switchRevision(id);clearSelection(); }
 async function createRevision() { const sourceRevisionId=layout.activeRevisionId;layout.createRevision();forms.cloneRevision(sourceRevisionId,layout.activeRevisionId);clearSelection();await ui.saveDemoRevision({revisionId:activeRevision.value.id,kind:"mifc-layout-new-revision"}); }
@@ -653,7 +799,7 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
             <defs><marker id="arrow-material" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1f2c38"/></marker><marker id="arrow-info" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#526170"/></marker></defs>
             <g v-for="edge in renderedEdges" v-show="isInformationEdge(edge)?visibleLayers.information:visibleLayers.material" :key="edge.id" class="edge-group" :class="[edge.flowType,{selected:selectedEdge?.id===edge.id}]" @click.stop="selectEdge(edge.id)"><path class="edge-hit" :d="edge.geometry.path"/><path class="edge-line" :d="edge.geometry.path" :marker-end="`url(#${isInformationEdge(edge)?'arrow-info':'arrow-material'})`"/><circle v-if="selectedEdge?.id===edge.id" class="curve-handle" :cx="edge.geometry.control.x" :cy="edge.geometry.control.y" r="8" @pointerdown="startCurve($event,edge)"/></g>
           </svg>
-          <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="displayNode(node)" :zoom="zoom" :selected="selectedNodeIds.includes(node.id)" :primary="selectedNode?.id===node.id" :connecting="activeTool==='connect'" :live-metrics="liveMetricsForNode(node)" :action-summary="actionSummaryForNode(node)" :process-times="processTimesForNode(node)" :manual-values="manualValuesForNode(node)" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize" @metricselect="nodeMetricTrace"/>
+          <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="displayNode(node)" :zoom="zoom" :selected="selectedNodeIds.includes(node.id)" :primary="selectedNode?.id===node.id" :connecting="activeTool==='connect'" :live-metrics="liveMetricsForNode(node)" :cycle-metrics="cycleMetricsForNode(node)" :action-summary="actionSummaryForNode(node)" :process-times="processTimesForNode(node)" :manual-values="manualValuesForNode(node)" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize" @metricselect="nodeMetricTrace"/>
           <LayoutBufferCard v-for="buffer in positionedBuffers" v-show="visibleLayers.material" :key="buffer.id" :buffer="buffer" @select="(item) => openTrace(bufferTrace(item), item.id)" />
           <LayoutMeasureBufferCard v-for="buffer in positionedMeasureBuffers" v-show="visibleLayers.material" :key="`measure-${buffer.id}`" :buffer="buffer" @select="(item, entry) => openTrace(measureBufferTrace(item, entry))" />
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
@@ -676,7 +822,7 @@ watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;awa
         </div>
         <div class="canvas-status"><span v-if="connectSourceId">Agora selecione o bloco de destino</span><span v-else-if="selectedNodeIds.length>1">{{ selectedNodeIds.length }} blocos selecionados · mantenha Ctrl/Shift ao iniciar o arraste para mover o grupo</span><span v-else>{{ activeRevision.nodes.length }} blocos · arraste normal move somente um bloco · Ctrl/Shift seleciona o grupo</span></div><div class="zoom-controls"><button aria-label="Diminuir zoom" @click="setZoom(zoom-.1)"><Minus :size="16"/></button><span>{{ Math.round(zoom*100) }}%</span><button aria-label="Aumentar zoom" @click="setZoom(zoom+.1)"><Plus :size="16"/></button><button aria-label="Ajustar à tela" @click="fitView()"><Maximize2 :size="16"/></button></div>
       </div>
-      <LayoutValueTracePanel v-if="panelOpen&&selectedTrace" :trace="selectedTrace" :editable-buffer="selectedBufferId ? forms.bufferRows.find((item) => item.id === selectedBufferId) : undefined" :editable-volume="selectedVolumeId ? forms.volumeRows.find((item) => item.id === selectedVolumeId) : undefined" :editable-logistics="selectedLogisticsId ? forms.logisticsRows.find((item) => item.id === selectedLogisticsId) : undefined" @close="closePanel" @update-buffer="updateBuffer" @update-volume="updateVolume" @update-logistics="updateLogistics" />
+      <LayoutValueTracePanel v-if="panelOpen&&selectedTrace" :trace="selectedTrace" :lineage-catalog="measureLineage" :lineage-values="lineageValues" :editable-buffer="selectedBufferId ? forms.bufferRows.find((item) => item.id === selectedBufferId) : undefined" :editable-volume="selectedVolumeId ? forms.volumeRows.find((item) => item.id === selectedVolumeId) : undefined" :editable-logistics="selectedLogisticsId ? forms.logisticsRows.find((item) => item.id === selectedLogisticsId) : undefined" :editable-capacity="selectedCapacityId ? forms.capacityRows.find((item) => item.id === selectedCapacityId) : undefined" @close="closePanel" @update-buffer="updateBuffer" @update-volume="updateVolume" @update-logistics="updateLogistics" @update-capacity="updateCapacity" />
       <MifcPropertiesPanel v-else-if="panelOpen&&(selectedNode||selectedEdge)" :node="selectedNode" :edge="selectedEdge" :nodes="activeRevision.nodes" :edges="activeRevision.edges" :capacity-rows="forms.capacityRows" :focus-request="renameFocusRequest" @close="closePanel" @update="applyNode" @delete="removeSelected" @update-edge="layout.updateSelectedEdge" @preview-label="layout.previewNodeLabel" @commit-label="layout.commitNodeLabel" @cancel-label="layout.cancelNodeLabel"/>
     </section>
   </div>

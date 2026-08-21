@@ -9,7 +9,7 @@ const uid = (prefix: string) => `${prefix}-${Date.now().toString(36)}-${Math.ran
 
 const processSeeds: ProcessRecord[] = [
   ["lct","LCT","LCT",10,"Corte","node-cut","T-LCT/RF2","",""],
-  ["rf2","RF2","Roll Former 2",20,"Conformação","node-cut","T-LCT/RF2","",""],
+  ["rf2","RF2","Roll Former 2",20,"Conformação","node-rf2","","",""],
   ["rf3","RF3","Roll Former 3",30,"Conformação","node-stamp","T-RF3","D-P-RF3","P-RF3"],
   ["mesa3","M3","Mesa 3",40,"Solda","node-weld-1","T-M3","",""],
   ["beatty1","B1","Beatty 1",50,"Solda","node-weld-2","T-B1","D-P-B1","P-B1"],
@@ -17,11 +17,11 @@ const processSeeds: ProcessRecord[] = [
   ["beatty3","B3","Beatty 3",52,"Solda","node-beatty-3","T-B3","D-P-B3","P-B3"],
   ["beatty4","B4","Beatty 4",53,"Solda","node-beatty-4","T-B4","D-P-B4","P-B4"],
   ["pa","PA","P.A",60,"Acabamento","node-weld-3","T-P.A","D-P-P.A","P-P.A"],
-  ["cnc","CNC","CNC Plasma",61,"Corte","node-weld-3","T-CNC","D-P-CNC","P-CNC"],
+  ["cnc","CNC","CNC Plasma",61,"Corte","node-cnc","T-CNC","D-P-CNC","P-CNC"],
   ["paint","PINT","Pintura",70,"Pintura","node-assembly","T-LPP2","D-P-LPP2","P-LPP2"],
-  ["riveting","REB","Rebitagem",71,"Montagem","node-assembly","T-SCA-REB / T-DAF-REB","",""],
+  ["riveting","REB","Rebitagem",71,"Montagem","node-rework","T-SCA-REB / T-DAF-REB","",""],
   ["stenhoj","STJ","Stenhoj",80,"Montagem","node-inspection","T-STJ","D-P-STJ","P-STJ"],
-  ["packaging","EMB","Embalagem",90,"Logística","node-inspection","T-EMB-VM","",""],
+  ["packaging","EMB","Embalagem",90,"Logística","node-packaging","T-EMB-VM","",""],
   ["shipping","EXP","Expedição",100,"Logística","node-shipping","","",""],
 ].map(([id,code,name,sequence,type,layoutNodeId,powerBiMeasure,demandMeasure,productionMeasure]) => ({
   id: String(id), code: String(code), name: String(name), sequence: Number(sequence), type: String(type),
@@ -31,14 +31,14 @@ const processSeeds: ProcessRecord[] = [
 }));
 
 function applyMatrix(processes: ProcessRecord[]) {
-  const byStage: Record<string,string[]> = { "lct-rf2":["lct","rf2"], rf3:["rf3"], "mesa-3":["mesa3"], beattys:["beatty1","beatty2","beatty3","beatty4"], "pa-cnc":["pa","cnc"], "paint-rework":["paint","riveting"], shipping:["stenhoj","packaging","shipping"] };
+  const byStage: Record<string,string[]> = { lct:["lct"], rf2:["rf2"], "lct-rf2":["lct","rf2"], rf3:["rf3"], "mesa-3":["mesa3"], beattys:["beatty1","beatty2","beatty3","beatty4"], pa:["pa"], cnc:["cnc"], "pa-cnc":["pa","cnc"], paint:["paint"], rework:["riveting"], "paint-rework":["paint","riveting"], stenhoj:["stenhoj"], packaging:["packaging"], shipping:["stenhoj","packaging","shipping"] };
   for (const lane of clientProcessLanes) for (const mapping of lane.mappings) {
     if (!mapping.participates) continue;
     const ids = byStage[mapping.stageId] ?? [];
     let selected = ids;
     if (mapping.stageId === "beattys") selected = mapping.processMeasureKeys.map((key) => `beatty${key.slice(-1)}`);
-    if (mapping.stageId === "pa-cnc") selected = mapping.processMeasureKeys.includes("T-CNC") ? ["cnc"] : ["pa"];
-    if (mapping.stageId === "paint-rework") selected = mapping.processMeasureKeys.length > 1 ? ["paint","riveting"] : ["paint"];
+    if (["pa-cnc", "pa"].includes(mapping.stageId)) selected = mapping.processMeasureKeys.includes("T-CNC") ? ["cnc"] : ["pa"];
+    if (["paint-rework", "paint", "rework"].includes(mapping.stageId)) selected = mapping.processMeasureKeys.some((key) => key.includes("REB")) ? ["riveting"] : ["paint"];
     for (const id of selected) {
       const process = processes.find((item) => item.id === id);
       if (process && !process.customerKeys.includes(lane.key)) process.customerKeys.push(lane.key);
@@ -60,6 +60,7 @@ const resourceSeeds: ResourceRecord[] = [
   ["res-rf3","RF3","Roll Former 3","rf3","cap-rf3","P-RF3","D-P-RF3","P-R-RF3","P-P-RF3","DT-RF3"],
   ...[1,2,3,4].map((n) => [`res-b${n}`,`B${n}`,`Beatty ${n}`,`beatty${n}`,n===1?"cap-beatty":`cap-beatty-${n}`,`P-B${n}`,`D-P-B${n}`,`P-R-B${n}`,`P-P-B${n}`,`DT-B${n}`]),
   ["res-lct","LCT","LCT","lct","cap-lct","","","","",""],
+  ["res-rf2","RF2","Roll Former 2","rf2","cap-rf2","","","","",""],
   ["res-pa","PA","P.A","pa","cap-pa","P-P.A","D-P-P.A","P-R-P.A","P-P-P.A",""],
   ["res-cnc","CNC","CNC Plasma","cnc","cap-cnc","P-CNC","D-P-CNC","P-R-CNC","P-P-CNC",""],
   ["res-paint","PINT","Linha de Pintura","paint","cap-paint","P-LPP2","D-P-LPP2","P-R-LPP2","P-P-LPP2",""],

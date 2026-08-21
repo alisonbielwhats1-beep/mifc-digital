@@ -72,9 +72,9 @@ describe("editor legível e seleção em grupo",()=>{
     expect(store.activeRevision.nodes.find((item)=>item.id==="node-beatty-3")).toMatchObject({x:1380,y:280,label:"Beatty 3 Especial"});
   });
 
-  it("persiste a revisão visual no schema 7",()=>{
+  it("persiste a revisão visual no schema 8",()=>{
     const store=useMifcLayoutStore();store.hydrate();store.save();
     const payload=JSON.parse(localStorage.getItem("mifc-digital:layout-reference-v2")??"{}");
-    expect(payload.schemaVersion).toBe(7);
+    expect(payload.schemaVersion).toBe(8);
   });
 });

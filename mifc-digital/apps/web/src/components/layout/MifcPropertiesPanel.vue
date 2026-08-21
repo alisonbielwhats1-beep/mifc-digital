@@ -19,7 +19,7 @@ const emit = defineEmits<{
   cancelLabel: [id: string, previousLabel: string];
 }>();
 
-const draft = reactive({ label: "", processId: "", code: "", cycleTimeSeconds: 0, wipPieces: 0, capacityPerDay: 0, shifts: 2, availabilityPercent: 90, notes: "", calculationKey: "" });
+const draft = reactive({ label: "", processId: "", code: "", cycleTimeMode: "manual" as CapacityFormRow["cycleTimeMode"], cycleTimeSeconds: 0, wipPieces: 0, capacityPerDay: 0, shifts: 2, availabilityPercent: 90, notes: "", calculationKey: "" });
 const nameInput = ref<HTMLInputElement | null>(null);
 let originalLabel = "";
 watch(() => [props.node?.id, props.focusRequest] as const, async ([nodeId], previous) => {
@@ -49,7 +49,7 @@ const relatedActionSummary = computed(() => {
 function applyCapacityLink() {
   const capacity = props.capacityRows.find((row) => row.id === draft.processId);
   if (!capacity) return;
-  Object.assign(draft, { label: capacity.process, code: capacity.processCode, cycleTimeSeconds: capacity.cycleTimeSeconds, wipPieces: capacity.targetWipPieces, capacityPerDay: capacity.referenceCapacityPerDay ?? 0, shifts: capacity.shifts, availabilityPercent: capacity.efficiencyPercent });
+  Object.assign(draft, { label: capacity.process, code: capacity.processCode, cycleTimeMode: capacity.cycleTimeMode, cycleTimeSeconds: capacity.cycleTimeSeconds, wipPieces: capacity.targetWipPieces, capacityPerDay: capacity.referenceCapacityPerDay ?? 0, shifts: capacity.shifts, availabilityPercent: capacity.efficiencyPercent });
 }
 function previewLabel() {
   if (!props.node) return;
@@ -71,7 +71,7 @@ function cancelLabel() {
 }
 function save() {
   commitLabel();
-  emit("update", props.node!.id, draft.label, { code: draft.code, cycleTimeSeconds: Number(draft.cycleTimeSeconds), wipPieces: Number(draft.wipPieces), capacityPerDay: Number(draft.capacityPerDay), shifts: Number(draft.shifts), availabilityPercent: Number(draft.availabilityPercent), notes: draft.notes, calculationKey: draft.calculationKey }, draft.processId || undefined);
+  emit("update", props.node!.id, draft.label, { code: draft.code, cycleTimeMode: draft.cycleTimeMode, cycleTimeSeconds: Number(draft.cycleTimeSeconds), wipPieces: Number(draft.wipPieces), capacityPerDay: Number(draft.capacityPerDay), shifts: Number(draft.shifts), availabilityPercent: Number(draft.availabilityPercent), notes: draft.notes, calculationKey: draft.calculationKey }, draft.processId || undefined);
 }
 </script>
 
@@ -84,7 +84,7 @@ function save() {
         <label v-if="node.type === 'process'"><span>Processo de Capacidade</span><select v-model="draft.processId" @change="applyCapacityLink"><option value="">Sem vínculo</option><option v-for="process in capacityRows" :key="process.id" :value="process.id">{{ process.processCode }} · {{ process.process }}</option></select></label>
         <label><span>Nome do bloco</span><input ref="nameInput" v-model="draft.label" data-testid="node-name-input" required maxlength="80" @input="previewLabel" @blur="commitLabel" @keydown.enter.stop.prevent="commitLabel" @keydown.esc.stop.prevent="cancelLabel" /></label>
         <label><span>Código</span><input v-model.trim="draft.code" maxlength="30" /></label>
-        <div class="two-columns"><label><span>Tempo de Ciclo — CT (s/peça)</span><input v-model.number="draft.cycleTimeSeconds" type="number" min="0" step="0.1" /></label><label><span>WIP-meta (peças)</span><input v-model.number="draft.wipPieces" type="number" min="0" step="1" /></label></div>
+        <div class="two-columns"><label><span>Modo CT</span><select v-model="draft.cycleTimeMode"><option value="manual">Manual</option><option value="automatic">Automático (MES)</option></select></label><label><span>Tempo de Ciclo — CT (s/unid.)</span><input v-model.number="draft.cycleTimeSeconds" type="number" min="0" step="0.1" :disabled="draft.cycleTimeMode === 'automatic'" /></label></div><label><span>WIP-meta (peças)</span><input v-model.number="draft.wipPieces" type="number" min="0" step="1" /></label>
         <label><span>Capacidade / dia <small>(pç/dia)</small></span><input v-model.number="draft.capacityPerDay" type="number" min="0" step="1" /></label>
         <div class="two-columns"><label><span>Turnos</span><select v-model.number="draft.shifts"><option :value="1">1 turno</option><option :value="2">2 turnos</option><option :value="3">3 turnos</option><option :value="4">4 turnos</option></select></label><label><span>Disponibilidade</span><div class="unit-input"><input v-model.number="draft.availabilityPercent" type="number" min="0" max="100" /><b>%</b></div></label></div>
         <label><span>Regra / medida vinculada</span><input v-model.trim="draft.calculationKey" placeholder="Ex.: T-RF3" /></label>

@@ -20,16 +20,16 @@ function stageNodes(): LayoutNode[] {
 }
 
 describe("matriz cliente × processo do Layout", () => {
-  it("mantém os quatro clientes e as dez etapas alinhadas aos blocos", () => {
+  it("mantém os quatro clientes e as máquinas físicas alinhadas aos blocos", () => {
     expect(clientProcessLanes.map((lane) => lane.key)).toEqual(["FH", "VM", "SCA", "DAF"]);
-    expect(clientProcessStages).toHaveLength(10);
-    expect(positionClientStages(stageNodes()).map((stage) => stage.centerX)).toEqual([150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500]);
+    expect(clientProcessStages).toHaveLength(14);
+    expect(positionClientStages(stageNodes()).map((stage) => stage.centerX)).toEqual([150, 300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2100]);
   });
 
   it("mantém o alinhamento quando uma nova revisão prefixa os IDs", () => {
     const nodes = stageNodes().map((node) => ({ ...node, id: `layout-rev-05-${node.id}` }));
     const positioned = positionClientStages(nodes);
-    expect(positioned[1]).toMatchObject({ layoutNodeId: "layout-rev-05-node-stamp", centerX: 300 });
+    expect(positioned[1]).toMatchObject({ layoutNodeId: "layout-rev-05-node-rf2", centerX: 300 });
   });
 
   it("faz todos os clientes subirem no Roll Former 3", () => {

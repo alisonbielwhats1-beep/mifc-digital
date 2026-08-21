@@ -40,16 +40,20 @@ export interface PositionedClientLaneMeasure {
 }
 
 export const clientProcessStages: ClientProcessStage[] = [
-  { id: "lct-rf2", label: "LCT / RF2", layoutNodeId: "node-cut" },
+  { id: "lct", label: "LCT", layoutNodeId: "node-cut" },
+  { id: "rf2", label: "Roll Former 2", layoutNodeId: "node-rf2" },
   { id: "rf3", label: "Roll Former 3", layoutNodeId: "node-stamp" },
   { id: "mesa-3", label: "Mesa 3", layoutNodeId: "node-weld-1" },
   { id: "beatty-3", label: "B3", layoutNodeId: "node-beatty-3" },
   { id: "beatty-4", label: "B4", layoutNodeId: "node-beatty-4" },
   { id: "beatty-2", label: "B2", layoutNodeId: "node-beatty-2" },
   { id: "beatty-1", label: "B1", layoutNodeId: "node-weld-2" },
-  { id: "pa-cnc", label: "P.A / CNC", layoutNodeId: "node-weld-3" },
-  { id: "paint-rework", label: "Pintura / Rebitagem", layoutNodeId: "node-assembly" },
-  { id: "shipping", label: "Stenhoj / Embalagem", layoutNodeId: "node-inspection" },
+  { id: "pa", label: "P.A", layoutNodeId: "node-weld-3" },
+  { id: "cnc", label: "CNC Plasma", layoutNodeId: "node-cnc" },
+  { id: "paint", label: "Pintura", layoutNodeId: "node-assembly" },
+  { id: "rework", label: "Rebitagem", layoutNodeId: "node-rework" },
+  { id: "stenhoj", label: "Stenhoj", layoutNodeId: "node-inspection" },
+  { id: "packaging", label: "Embalagem", layoutNodeId: "node-packaging" },
 ];
 
 const beattyMeasureByStage: Record<string, string> = {
@@ -102,13 +106,17 @@ export const clientProcessLanes: ClientProcessLane[] = [
     label: "Volvo FH",
     totalMeasureKey: "T-T-FH",
     mappings: [
-      mapped("lct-rf2", ["T-LCT/RF2"], ["E-D-P-LCT", "E-D-P-RF2"], "PBIP: Volvo FH — tempo de processo/estoque"),
+      mapped("lct", ["T-LCT/RF2"], ["E-D-P-LCT"], "PBIP: Volvo FH — tempo agregado LCT/RF2 e estoque LCT"),
+      mapped("rf2", [], ["E-D-P-RF2"], "PBIP: estoque RF2 separado; o tempo agregado permanece uma única parcela da rota FH"),
       mapped("rf3", ["T-RF3"], ["E-P-D-FH-RF3"], "PBIP: Roll Former 3 filtrado para FH"),
       mapped("mesa-3", ["T-M3"], ["E-P-D-FH-M3"], "PBIP: Mesa 3 no contexto FH"),
       mapped("beattys", ["T-B4"], ["D-E-FH-B"], "PBIP: Beatty 4 e estoque FH Beattys"),
-      mapped("pa-cnc", ["T-P.A"], ["D-E-FH-P.A", "D-E-FH-CL"], "PBIP: P.A e Cantilever FH"),
-      mapped("paint-rework", ["T-LPP2"], ["D-E-FH-P.I"], "PBIP: Pintura e estoque de entrada FH"),
-      mapped("shipping", ["T-STJ"], ["E-P-D-FH-STJ", "E-P-D-FH-EMB"], "PBIP: Stenhoj e embalagem FH"),
+      mapped("pa", ["T-P.A"], ["D-E-FH-P.A"], "PBIP: P.A FH"),
+      mapped("cnc", [], ["D-E-FH-CL"], "PBIP: Cantilever FH; CNC não é etapa de processo do total FH"),
+      mapped("paint", ["T-LPP2"], ["D-E-FH-P.I"], "PBIP: Pintura e estoque de entrada FH"),
+      mapped("rework", [], [], "Rebitagem não compõe a rota FH no catálogo PBIP", "validated"),
+      mapped("stenhoj", ["T-STJ"], ["E-P-D-FH-STJ"], "PBIP: Stenhoj FH"),
+      mapped("packaging", [], ["E-P-D-FH-EMB"], "PBIP: estoque de embalagem FH; sem tempo adicional no total"),
     ],
   },
   {
@@ -116,16 +124,20 @@ export const clientProcessLanes: ClientProcessLane[] = [
     label: "Volvo VM",
     totalMeasureKey: "T-T-VM",
     mappings: [
-      mapped("lct-rf2", [], [], "Sem medida de processo VM para LCT/RF2 no catálogo PBIP", "validated"),
+      mapped("lct", [], [], "Sem medida de processo VM para LCT no catálogo PBIP", "validated"),
+      mapped("rf2", [], [], "Sem medida de processo VM para RF2 no catálogo PBIP", "validated"),
       mapped("rf3", ["T-RF3"], ["E-P-D-VM-RF3"], "PBIP: Roll Former 3 filtrado para VM"),
       {
         ...mapped("mesa-3", ["T-M3"], [], "T-M3 aparece como cartão, mas não compõe T-T-VM; confirmação operacional pendente", "pending"),
         participates: false,
       },
       mapped("beattys", ["T-B1"], ["D-E-VM-B"], "PBIP: Beatty 1 e estoque VM Beattys"),
-      mapped("pa-cnc", ["T-CNC"], ["D-E-VM-CL"], "PBIP: CNC e Cantilever VM"),
-      mapped("paint-rework", ["T-LPP2"], ["D-E-VM-P.I"], "PBIP: Pintura e estoque de entrada VM"),
-      mapped("shipping", ["T-EMB-VM"], ["E-P-D-VM-EMB"], "PBIP: tempo e estoque de embalagem VM"),
+      mapped("pa", [], [], "P.A não compõe a rota VM no catálogo PBIP", "validated"),
+      mapped("cnc", ["T-CNC"], ["D-E-VM-CL"], "PBIP: CNC e Cantilever VM"),
+      mapped("paint", ["T-LPP2"], ["D-E-VM-P.I"], "PBIP: Pintura e estoque de entrada VM"),
+      mapped("rework", [], [], "Rebitagem não compõe a rota VM", "validated"),
+      mapped("stenhoj", [], [], "VM segue para embalagem, não para Stenhoj", "validated"),
+      mapped("packaging", ["T-EMB-VM"], ["E-P-D-VM-EMB"], "PBIP: tempo e estoque de embalagem VM"),
     ],
   },
   {
@@ -133,13 +145,17 @@ export const clientProcessLanes: ClientProcessLane[] = [
     label: "Scania",
     totalMeasureKey: "T-T-SCA",
     mappings: [
-      mapped("lct-rf2", [], [], "Sem medida de processo Scania para LCT/RF2 no catálogo PBIP", "validated"),
+      mapped("lct", [], [], "Sem medida de processo Scania para LCT no catálogo PBIP", "validated"),
+      mapped("rf2", [], [], "Sem medida de processo Scania para RF2 no catálogo PBIP", "validated"),
       mapped("rf3", ["T-RF3"], ["E-P-D-SCA-RF3"], "PBIP: Roll Former 3 filtrado para Scania"),
       mapped("mesa-3", ["T-M3"], ["E-P-D-SCA-M3"], "PBIP: Mesa 3 no contexto Scania"),
       mapped("beattys", ["T-B3"], ["D-E-SCA-B"], "PBIP: Beatty 3 e estoque Scania Beattys"),
-      mapped("pa-cnc", ["T-P.A"], ["D-E-SCA-P.A", "D-E-SCA-CL"], "PBIP: P.A e Cantilever Scania"),
-      mapped("paint-rework", ["T-LPP2", "T-SCA-REB"], ["D-E-SCA-P.I", "D-E-SCA-REB"], "PBIP: pintura e rebitagem Scania"),
-      mapped("shipping", ["T-STJ"], ["E-P-D-SCA-STJ", "E-P-D-SCA-EMB"], "PBIP: Stenhoj e embalagem Scania"),
+      mapped("pa", ["T-P.A"], ["D-E-SCA-P.A"], "PBIP: P.A Scania"),
+      mapped("cnc", [], ["D-E-SCA-CL"], "PBIP: Cantilever Scania; CNC não participa da rota"),
+      mapped("paint", ["T-LPP2"], ["D-E-SCA-P.I"], "PBIP: pintura Scania"),
+      mapped("rework", ["T-SCA-REB"], ["D-E-SCA-REB"], "PBIP: rebitagem Scania"),
+      mapped("stenhoj", ["T-STJ"], ["E-P-D-SCA-STJ"], "PBIP: Stenhoj Scania"),
+      mapped("packaging", [], ["E-P-D-SCA-EMB"], "PBIP: estoque de embalagem Scania"),
     ],
   },
   {
@@ -147,13 +163,17 @@ export const clientProcessLanes: ClientProcessLane[] = [
     label: "DAF",
     totalMeasureKey: "T-T-DAF",
     mappings: [
-      mapped("lct-rf2", [], [], "Sem medida de processo DAF para LCT/RF2 no catálogo PBIP", "validated"),
+      mapped("lct", [], [], "Sem medida de processo DAF para LCT no catálogo PBIP", "validated"),
+      mapped("rf2", [], [], "Sem medida de processo DAF para RF2 no catálogo PBIP", "validated"),
       mapped("rf3", ["T-RF3"], ["E-P-D-DAF-RF3"], "PBIP: Roll Former 3 filtrado para DAF"),
       mapped("mesa-3", ["T-M3"], ["E-P-D-DAF-M3"], "PBIP: Mesa 3 no contexto DAF"),
       mapped("beattys", ["T-B2"], ["D-E-DAF-B"], "PBIP: Beatty 2 e estoque DAF Beattys"),
-      mapped("pa-cnc", ["T-CNC"], ["D-E-DAF-CL"], "PBIP: CNC e Cantilever DAF"),
-      mapped("paint-rework", ["T-LPP2", "T-DAF-REB"], ["D-E-DAF-P.I", "D-E-DAF-REB"], "PBIP: pintura e rebitagem DAF"),
-      mapped("shipping", ["T-STJ"], ["E-P-D-DAF-STJ", "E-P-D-DAF-EMB"], "PBIP: Stenhoj e embalagem DAF"),
+      mapped("pa", [], [], "P.A não compõe a rota DAF no catálogo PBIP", "validated"),
+      mapped("cnc", ["T-CNC"], ["D-E-DAF-CL"], "PBIP: CNC e Cantilever DAF"),
+      mapped("paint", ["T-LPP2"], ["D-E-DAF-P.I"], "PBIP: pintura DAF"),
+      mapped("rework", ["T-DAF-REB"], ["D-E-DAF-REB"], "PBIP: rebitagem DAF"),
+      mapped("stenhoj", ["T-STJ"], ["E-P-D-DAF-STJ"], "PBIP: Stenhoj DAF"),
+      mapped("packaging", [], ["E-P-D-DAF-EMB"], "PBIP: estoque de embalagem DAF"),
     ],
   },
 ];
@@ -217,13 +237,13 @@ export function positionClientLaneMeasures(
     { id: `stock-intro-Q-D-${lane.key}`, measureKey: `Q-D-${lane.key}`, kind: "stock", centerX: rawCenter },
   ];
 
-  const participating = stages.filter((stage) => mappingForClientStage(lane, stage)?.participates);
-  for (const [index, stage] of participating.entries()) {
-    const mapping = mappingForClientStage(lane, stage)!;
+  for (const [index, stage] of stages.entries()) {
+    const mapping = mappingForClientStage(lane, stage);
+    if (!mapping) continue;
     const pulseHalfWidth = Math.min(32, Math.max(18, stage.width * .28));
-    result.push(...spreadMeasureKeys(mapping.processMeasureKeys, "process", stage.centerX - pulseHalfWidth, stage.centerX + pulseHalfWidth, stage.id));
+    if (mapping.participates) result.push(...spreadMeasureKeys(mapping.processMeasureKeys, "process", stage.centerX - pulseHalfWidth, stage.centerX + pulseHalfWidth, stage.id));
 
-    const nextStage = participating[index + 1];
+    const nextStage = stages[index + 1];
     const stockLeft = stage.centerX + pulseHalfWidth + 18;
     const stockRight = (nextStage?.centerX ?? finishedCenter) - (nextStage ? Math.min(32, Math.max(18, nextStage.width * .28)) : 18);
     result.push(...spreadMeasureKeys(mapping.stockMeasureKeys, "stock", stockLeft, Math.max(stockLeft, stockRight), stage.id));

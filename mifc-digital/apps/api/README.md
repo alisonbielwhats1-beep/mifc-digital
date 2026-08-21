@@ -1,6 +1,6 @@
 # API — Oracle somente leitura
 
-Este módulo não abre conexão nem executa consultas automaticamente. A tela de Integrações permite testar credenciais quando a máquina estiver na rede da Metalsa; esse teste apenas abre e fecha a conexão.
+Este módulo mantém um pool local de conexões exclusivamente de leitura quando as credenciais locais estão configuradas. Ao iniciar a API, as tabelas aprovadas são carregadas novamente e a atualização escalonada é reativada sem exigir novo preenchimento no formulário.
 
 ## Fluxo planejado
 
@@ -23,7 +23,10 @@ As oito consultas com SQL embutido encontradas no PBIP estão confirmadas por fi
 ## Uso local
 
 1. Execute `npm run dev` na raiz. Isso inicia interface e API local.
-2. Abra Integrações e informe usuário e senha apenas para testar a conexão.
-3. Para leituras futuras, mantenha um usuário Oracle com permissão exclusiva de `SELECT` e só altere `ORACLE_LIVE_READS_ENABLED=true` após o teste e a revisão da equipe.
+2. Abra Integrações, informe usuário e senha uma vez e marque **Lembrar neste computador**.
+3. Use **Conectar e carregar tabelas**. Nas próximas aberturas, a API reaproveita a credencial local, inicia o pool de leitura e carrega novamente as consultas aprovadas.
+4. A seção de tabelas conectadas permite visualizar as linhas do cache local com paginação e filtro, sem aceitar SQL do navegador.
+
+O arquivo local de credenciais fica em `apps/api/.data/oracle-credentials.json`, é ignorado pelo Git e nunca é retornado pela API. Para remover o acesso salvo, use **Esquecer credencial salva** em Integrações.
 
 Os endpoints de execução não aceitam SQL vindo do navegador. Credenciais do formulário não são salvas nem registradas em logs.

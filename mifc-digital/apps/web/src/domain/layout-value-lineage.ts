@@ -1,4 +1,5 @@
 import type { LayoutClientKey } from "@/domain/client-process-matrix";
+import type { CalculationLineageNode } from "@/domain/measure-lineage";
 
 export interface ClientTotalInput {
   key: string;
@@ -43,6 +44,7 @@ export interface LayoutValueTrace {
   simpleExplanation: string;
   inputs: LayoutTraceInput[];
   intermediateResults: string[];
+  lineageSteps?: CalculationLineageNode[];
   origin: string;
   measureKeys: string[];
   filters: string[];
@@ -52,6 +54,7 @@ export interface LayoutValueTrace {
   updatedAt?: string | null;
   sourceReference: string;
   missingKeys: string[];
+  editableCapacityId?: string;
 }
 
 interface TotalDefinition {

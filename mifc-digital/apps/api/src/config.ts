@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { readStoredOracleCredentials } from "./oracle/credentials-store.js";
 
 export interface OracleConfig {
   pbipPath: string;
@@ -7,6 +8,7 @@ export interface OracleConfig {
   serviceName: string;
   user: string;
   password: string;
+  credentialsSource: "environment" | "local-store" | "none";
   readOnly: boolean;
   liveReadsEnabled: boolean;
   autoRefreshSeconds: number;
@@ -21,13 +23,20 @@ function readBoolean(name: string, fallback: boolean): boolean {
 }
 
 export function getOracleConfig(): OracleConfig {
+  const storedCredentials = readStoredOracleCredentials();
+  const environmentUser = process.env.ORACLE_USER?.trim() ?? "";
+  const environmentPassword = process.env.ORACLE_PASSWORD ?? "";
+  const hasEnvironmentCredentials = Boolean(environmentUser && environmentPassword);
+  const user = hasEnvironmentCredentials ? environmentUser : storedCredentials?.user ?? "";
+  const password = hasEnvironmentCredentials ? environmentPassword : storedCredentials?.password ?? "";
   return {
-    pbipPath: process.env.MIFC_PBIP_PATH ?? "C:\\Users\\Usuário\\Downloads\\MIFC",
+    pbipPath: process.env.MIFC_PBIP_PATH ?? "../mifc-pbip",
     host: process.env.ORACLE_HOST ?? "10.44.34.68",
     port: Number(process.env.ORACLE_PORT ?? "1522"),
     serviceName: process.env.ORACLE_SERVICE_NAME ?? "MESBR",
-    user: process.env.ORACLE_USER ?? "",
-    password: process.env.ORACLE_PASSWORD ?? "",
+    user,
+    password,
+    credentialsSource: hasEnvironmentCredentials ? "environment" : user && password ? "local-store" : "none",
     readOnly: readBoolean("ORACLE_READ_ONLY", true),
     liveReadsEnabled: readBoolean("ORACLE_LIVE_READS_ENABLED", false),
     autoRefreshSeconds: Number(process.env.ORACLE_AUTO_REFRESH_SECONDS ?? "300"),

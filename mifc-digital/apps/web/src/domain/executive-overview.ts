@@ -10,6 +10,7 @@ interface CapacityCandidate {
   label: string;
   capacityPerDay?: number | null;
   demandPerDay?: number;
+  cycleTimeMode?: "manual" | "automatic";
 }
 
 export interface ExecutiveOverviewInput {
@@ -37,6 +38,12 @@ function sumPresent(values: Record<string, number> | null, keys: string[]): numb
   return present.length ? present.reduce((total, value) => total + value, 0) : undefined;
 }
 
+function coverage(values: Record<string, number> | null, keys: string[]) {
+  const uniqueKeys = [...new Set(keys)];
+  const present = uniqueKeys.filter((key) => Number.isFinite(values?.[key]));
+  return { expected: uniqueKeys.length, present: present.length, missing: uniqueKeys.length - present.length };
+}
+
 export function summarizeExecutiveOverview(input: ExecutiveOverviewInput) {
   const completeTotals = input.clientTotals.filter((total) => Number.isFinite(total.value));
   const leadTimeSource = completeTotals.sort((left, right) => Number(right.value) - Number(left.value))[0];
@@ -58,6 +65,8 @@ export function summarizeExecutiveOverview(input: ExecutiveOverviewInput) {
     ? { value: activeBuffers.reduce((total, buffer) => total + buffer.quantityPieces, 0) }
     : {};
 
+  const productionCoverage = coverage(input.measureValues, productionKeys);
+  const demandCoverage = coverage(input.measureValues, demandKeys);
   const production = input.productionReady ? { value: sumPresent(input.measureValues, productionKeys) } : {};
   const demand = input.productionReady ? { value: sumPresent(input.measureValues, demandKeys) } : {};
   const bottleneck = input.capacityCandidates
@@ -76,6 +85,16 @@ export function summarizeExecutiveOverview(input: ExecutiveOverviewInput) {
     production,
     demand,
     bottleneck,
+    quality: {
+      productionCoverage,
+      demandCoverage,
+      completeClients: completeTotals.length,
+      totalClients: input.clientTotals.length,
+      configuredCapacity: input.capacityCandidates.filter((candidate) => Number(candidate.capacityPerDay) > 0).length,
+      totalCapacity: input.capacityCandidates.length,
+      automaticCycles: input.capacityCandidates.filter((candidate) => candidate.cycleTimeMode === "automatic").length,
+      totalCycles: input.capacityCandidates.length,
+    },
     overdueActions: input.overdueActions,
     connection: {
       state: input.connected ? "connected" as const : "offline" as const,
