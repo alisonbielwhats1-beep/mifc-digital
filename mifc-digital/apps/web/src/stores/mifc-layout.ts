@@ -339,13 +339,14 @@ export const useMifcLayoutStore = defineStore("mifc-layout", {
       try {
         const raw = localStorage.getItem(storageKey);
         const parsed = raw ? JSON.parse(raw) as { schemaVersion?: number; activeRevisionId?: string; revisions?: LayoutRevision[] } : null;
-        if ([2,3,4,5,6,7,8].includes(parsed?.schemaVersion ?? 0) && Array.isArray(parsed?.revisions) && parsed.revisions.length && typeof parsed.activeRevisionId === "string") {
+        if ([2,3,4,5,6,7,8,9,10].includes(parsed?.schemaVersion ?? 0) && Array.isArray(parsed?.revisions) && parsed.revisions.length && typeof parsed.activeRevisionId === "string") {
           const labeled = parsed.schemaVersion === 2 ? migrateLegacyProcessLabels(parsed.revisions) : parsed.revisions;
           const beattys = (parsed.schemaVersion ?? 0) < 4 ? migrateBeattyLayout(labeled) : labeled;
           const readable = (parsed.schemaVersion ?? 0) < 5 ? migrateReadableLayout(beattys) : beattys;
           const beneficiated = (parsed.schemaVersion ?? 0) < 6 ? migrateBeneficiator(readable) : readable;
           const expanded = (parsed.schemaVersion ?? 0) < 7 ? migrateExpandedLayout(beneficiated) : beneficiated;
-          this.revisions = (parsed.schemaVersion ?? 0) < 8 ? migrateMachineSeparation(expanded) : expanded;
+          const separated = (parsed.schemaVersion ?? 0) < 8 ? migrateMachineSeparation(expanded) : expanded;
+          this.revisions = (parsed.schemaVersion ?? 0) >= 9 ? migrateReadableLayout(separated) : separated;
           this.activeRevisionId = parsed.activeRevisionId;
         }
       } catch { /* baseline local */ }
