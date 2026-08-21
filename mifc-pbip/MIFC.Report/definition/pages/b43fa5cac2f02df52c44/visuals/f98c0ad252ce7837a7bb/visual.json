@@ -1,0 +1,225 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "f98c0ad252ce7837a7bb",
+  "position": {
+    "x": 522,
+    "y": 514,
+    "z": 2000,
+    "height": 229,
+    "width": 571,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dados de embarque"
+                    }
+                  },
+                  "Property": "Flatbed"
+                }
+              },
+              "queryRef": "Dados de embarque.Flatbed",
+              "nativeQueryRef": "Flatbed"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Carros_VM_CARGA"
+                }
+              },
+              "queryRef": "1-Measure.Carros_VM_CARGA",
+              "nativeQueryRef": "Carros_VM_CARGA"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Carros_VM_CARGA_N-EMB"
+                }
+              },
+              "queryRef": "1-Measure.Carros_VM_CARGA_N-EMB",
+              "nativeQueryRef": "Carga-N-Emb",
+              "displayName": "Carga-N-Emb"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Q-P-R"
+                }
+              },
+              "queryRef": "1-Measure.Q-P-R",
+              "nativeQueryRef": "Q-P-R"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "T-N-E-P-VM"
+                }
+              },
+              "queryRef": "1-Measure.T-N-E-P-VM",
+              "nativeQueryRef": "T-N-E-P-VM"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "bea19f9feba2aeee59eb",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "MP"
+              }
+            },
+            "Property": "Cliente"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "m",
+              "Entity": "MP",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "m"
+                          }
+                        },
+                        "Property": "Cliente"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'VM'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      },
+      {
+        "name": "5431c62fed79a0b64456",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Dados de embarque"
+              }
+            },
+            "Property": "Flatbed"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "d",
+              "Entity": "Dados de embarque",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "d"
+                              }
+                            },
+                            "Property": "Flatbed"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "null"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

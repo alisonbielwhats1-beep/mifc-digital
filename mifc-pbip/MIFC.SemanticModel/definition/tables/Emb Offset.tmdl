@@ -1,0 +1,44 @@
+table 'Emb Offset'
+	lineageTag: 2733cfca-5550-4ae4-b9e2-1f8980487d1e
+
+	column Cliente
+		dataType: string
+		lineageTag: 8520407b-d7af-46e5-93f8-4b6fb9c65af6
+		summarizeBy: none
+		sourceColumn: Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Capacidade por hora'
+		dataType: int64
+		formatString: 0
+		lineageTag: e92dfd07-c117-4334-8547-155d312919de
+		summarizeBy: none
+		sourceColumn: Capacidade por hora
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tempo de processamento (min)'
+		dataType: double
+		lineageTag: a9b95f43-f685-4307-912a-9036340bbdb0
+		summarizeBy: none
+		sourceColumn: Tempo de processamento (min)
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Emb Offset' = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("\\metbrosawfse01\ENGPROC\_Comum\120 DocE & A3 & KPI\KPIs\50-POWER BI\ENN\03-Embalagem\00-Embalagem Offset\02-Parâmetros\Capacidade Embalagem.xlsx"), null, true),
+				    Emb.Offset_Table = Source{[Item="Emb.Offset",Kind="Table"]}[Data],
+				    #"Changed Type" = Table.TransformColumnTypes(Emb.Offset_Table,{{"Cliente", type text}, {"Capacidade por hora", Int64.Type}, {"Tempo de processamento (min)", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,166 @@
+table DAF
+	lineageTag: a8c6ea9c-d527-42aa-a065-457c356bfd32
+
+	column DESCRIPTION
+		dataType: string
+		lineageTag: e9fd2d0e-365c-41ea-b12a-d4ec13df882f
+		summarizeBy: none
+		sourceColumn: DESCRIPTION
+
+		annotation SummarizationSetBy = Automatic
+
+	column ITEM
+		dataType: string
+		lineageTag: ab44665c-a042-42d7-b774-86ac329a8db0
+		summarizeBy: none
+		sourceColumn: ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column JOB_ORACLE
+		dataType: string
+		lineageTag: 147181cb-172b-4fcd-be91-0b98288b1cbe
+		summarizeBy: none
+		sourceColumn: JOB_ORACLE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CUSTOMER_CODE
+		dataType: string
+		lineageTag: d8e63c52-0bb3-4613-83f1-0ed8650a4ed9
+		summarizeBy: none
+		sourceColumn: CUSTOMER_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column MP
+		dataType: string
+		lineageTag: aef5065b-cc23-458a-9753-5c424cc682b0
+		summarizeBy: none
+		sourceColumn: MP
+
+		annotation SummarizationSetBy = Automatic
+
+	column SHIP_DATE
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 29031843-40e3-4a9c-bd59-4e99c095a4d4
+		summarizeBy: none
+		sourceColumn: SHIP_DATE
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column LOCATION
+		dataType: string
+		lineageTag: 7bf51c72-1845-4920-8964-b9a7952e75ba
+		summarizeBy: none
+		sourceColumn: LOCATION
+
+		annotation SummarizationSetBy = Automatic
+
+	column RAIL_TYPE
+		dataType: string
+		lineageTag: e1884ba4-bea9-4f16-9d4a-f1a6c0cdf3f6
+		summarizeBy: none
+		sourceColumn: RAIL_TYPE
+
+		annotation SummarizationSetBy = Automatic
+
+	column RAIL_TYPE_DESCRIPTION
+		dataType: string
+		lineageTag: 53cfea22-8f07-4a70-9b26-a09cf2fd35b4
+		summarizeBy: none
+		sourceColumn: RAIL_TYPE_DESCRIPTION
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente
+		dataType: string
+		lineageTag: b094a97a-e784-49f4-99da-f0654c33c13c
+		summarizeBy: none
+		sourceColumn: Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Local
+		dataType: string
+		lineageTag: 502fbf39-0bcb-48c6-9261-b421b015b1dd
+		summarizeBy: none
+		sourceColumn: Local
+
+		annotation SummarizationSetBy = Automatic
+
+	column REFORÇADA?
+		dataType: string
+		lineageTag: 0047f187-e516-4915-a25e-35ed9d302bcf
+		summarizeBy: none
+		sourceColumn: REFORÇADA?
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'QTD long Reforçada' = IF(DAF[RAIL_TYPE_DESCRIPTION]="Longarina",if(DAF[REFORÇADA?] = "Sim",1,0),0)
+		formatString: 0
+		lineageTag: c25ba27b-531d-44f8-9f8b-cd5ec362dcc1
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'QTD long SIMPLES' = IF(DAF[RAIL_TYPE_DESCRIPTION]="Longarina",if(DAF[REFORÇADA?] = "Não",1,0),0)
+		formatString: 0
+		lineageTag: 76c7a79c-1c92-477b-8d11-418d764c38c9
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'QTD REF' = ```
+			IF(DAF[RAIL_TYPE_DESCRIPTION]="Reforço",if(DAF[Local]="Ag. Stenhøj",0,1),0) 
+			```
+		formatString: 0
+		lineageTag: 24dc7f96-ee9c-4011-8211-cb8255909e4e
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column FINISH_LENGTH
+		dataType: double
+		lineageTag: d18fadcc-67fe-42ba-b8bc-43e94b59315e
+		summarizeBy: sum
+		sourceColumn: FINISH_LENGTH
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Flatbed = DAF[SHIP_DATE]
+		dataType: string
+		lineageTag: 32787712-8574-4efd-a267-d18821491690
+		summarizeBy: none
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DAF = m
+		mode: import
+		queryGroup: 1-E-Kanban
+		source =
+				let
+				    Fonte = Base2,
+				    #"Linhas Filtradas" = Table.SelectRows(Fonte, each ([DESCRIPTION] <> "BEATTY 2")),
+				    #"Consulta Acrescentada" = Table.Combine({#"Linhas Filtradas", #"DAF SIMPLES", #"DAF REFORÇADA"}),
+				    #"Linhas Classificadas" = Table.Sort(#"Consulta Acrescentada",{{"SHIP_DATE", Order.Descending}}),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Linhas Classificadas",{{"SHIP_DATE", type date}}),
+				    #"Linhas Filtradas1" = Table.SelectRows(#"Tipo Alterado", each ([Local] <> "Slitter")),
+				    #"Valor Substituído" = Table.ReplaceValue(#"Linhas Filtradas1","Roll Former 3 Input","xxxxx",Replacer.ReplaceText,{"LOCATION"}),
+				    #"Linhas Filtradas2" = Table.SelectRows(#"Valor Substituído", each ([LOCATION] <> "xxxxx")),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Linhas Filtradas2",{{"JOB_ORACLE", type text}}),
+				    #"Linhas Filtradas3" = Table.SelectRows(#"Tipo Alterado1", each true)
+				in
+				    #"Linhas Filtradas3"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,319 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "1544b2339206a355a2dc",
+  "position": {
+    "x": 65.714285714285722,
+    "y": 271.42857142857144,
+    "z": 0,
+    "height": 430,
+    "width": 1472.8571428571429,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "BI_PUNCH_SCA"
+                    }
+                  },
+                  "Property": "CHASSIS_NUMBER"
+                }
+              },
+              "queryRef": "BI_PUNCH_SCA.CHASSIS_NUMBER",
+              "nativeQueryRef": "CHASSIS_NUMBER1"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SCANIA"
+                    }
+                  },
+                  "Property": "local"
+                }
+              },
+              "queryRef": "SCANIA.local",
+              "nativeQueryRef": "local"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "BI_PUNCH_SCA"
+                    }
+                  },
+                  "Property": "ITEM"
+                }
+              },
+              "queryRef": "BI_PUNCH_SCA.ITEM",
+              "nativeQueryRef": "ITEM"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SCANIA"
+                    }
+                  },
+                  "Property": "CHASSIS_NUMBER"
+                }
+              },
+              "queryRef": "SCANIA.CHASSIS_NUMBER",
+              "nativeQueryRef": "CHASSIS_NUMBER"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Scania"
+                }
+              },
+              "queryRef": "1-Medidas.Scania",
+              "nativeQueryRef": "Scania"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Q-G-SCA"
+                }
+              },
+              "queryRef": "1-Medidas.teste",
+              "nativeQueryRef": "Quantidade de Golpes",
+              "displayName": "Quantidade de Golpes"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dOperacao"
+                    }
+                  },
+                  "Property": "OPERAÇÃO"
+                }
+              },
+              "queryRef": "dOperacao.OPERAÇÃO",
+              "nativeQueryRef": "OPERAÇÃO"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "T-N-P-B-M-SCA"
+                }
+              },
+              "queryRef": "1-Medidas.T-N-P-B",
+              "nativeQueryRef": "Tempo em Minutos de Processamento",
+              "displayName": "Tempo em Minutos de Processamento"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "T-N-P-B-H-SCA"
+                }
+              },
+              "queryRef": "1-Medidas.Q-G-H",
+              "nativeQueryRef": "Q-G-H"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "BI_PUNCH_SCA"
+                    }
+                  },
+                  "Property": "Data"
+                }
+              },
+              "queryRef": "BI_PUNCH_SCA.Data",
+              "nativeQueryRef": "Data"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "SCANIA"
+                  }
+                },
+                "Property": "CHASSIS_NUMBER"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnFormatting": [
+        {
+          "properties": {
+            "styleTotal": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 1,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "1-Medidas.T-N-P-B"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "SCANIA.CHASSIS_NUMBER"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "1-Medidas.Scania"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "1-Medidas.teste"
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "213.67012567772946D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "1-Medidas.T-N-P-B"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "192.6666624850128D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "BI_PUNCH_SCA.ITEM"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "175.66666419020908D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "SCANIA.local"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,58 @@
+table Base_Desc_Hora
+	lineageTag: 4f97c824-2a56-47d9-a5bd-0df440098dc4
+
+	column Hora_Cheia
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 80f179b2-83d9-441e-b52d-3ad070fe822e
+		summarizeBy: none
+		sourceColumn: Hora_Cheia
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column 'Descr.'
+		dataType: string
+		lineageTag: 1c3bba87-a2bf-4f8f-adfa-f4a86360d08d
+		summarizeBy: none
+		sourceColumn: Descr.
+		sortByColumn: seq
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column seq
+		dataType: int64
+		formatString: 0
+		lineageTag: 14eabcc0-7378-43a4-8149-e944a6707ae2
+		summarizeBy: sum
+		sourceColumn: seq
+
+		annotation SummarizationSetBy = Automatic
+
+	column HORA
+		dataType: double
+		lineageTag: fb82d478-7bbd-47f0-bcfa-d034a39eb3b4
+		summarizeBy: sum
+		sourceColumn: HORA
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Base_Desc_Hora = m
+		mode: import
+		source =
+				let
+				Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("VdJLisNAEATRqwivjVFU6ztXMV74/pdwZW9yEiSRtGL16Pf7sa5/83k8ey7fZaWX3mN99enn2QlOUFK9KpNyUkpGr5HJcDKUbL22TDYnm5J96blns7vZ1Rz6ncnh5FBy9jozOZ2cSq5eVyaXk0vJ3evO5HZyd4LW/LjBvsiX6ZvAGBgBI1xSGAsjYYZsSGNsjIyRL4mMkREy8iWRMTJCRsCkMlZGykiYZMbMiBkRk87YGTkjYxIaQyPo0qqELkOXoEvGldBl6BJ0zZuc0GXoEnSJuNK57FzzLs/1z/nzAw==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Hora_Cheia = _t, #"Descr." = _t, seq = _t, HORA = _t]),
+				#"Changed Type" = Table.TransformColumnTypes(Source,{{"Hora_Cheia", type time}, {"seq", Int64.Type}}),
+				#"Changed Type with Locale" = Table.TransformColumnTypes(#"Changed Type", {{"HORA", type number}}, "en-US")
+				in
+				#"Changed Type with Locale"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,148 @@
+table SHIPDATE
+	lineageTag: b89d1cac-ac36-4762-b606-d38924ece989
+
+	column DESCRIPTION
+		dataType: string
+		lineageTag: 93c16195-8cdd-4f13-aa41-1d79bc09ed04
+		summarizeBy: none
+		sourceColumn: DESCRIPTION
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHASSIS_NUMBER
+		dataType: string
+		lineageTag: 0a96ebb8-83a9-4ab9-bfce-434f01f60785
+		summarizeBy: none
+		sourceColumn: CHASSIS_NUMBER
+
+		annotation SummarizationSetBy = Automatic
+
+	column ITEM
+		dataType: string
+		lineageTag: 30852d11-e4f0-4429-aa65-68e5952fb7d2
+		summarizeBy: none
+		sourceColumn: ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column COMPONENT
+		dataType: string
+		lineageTag: c9749e76-8d88-4cfc-8802-cca994f76b67
+		summarizeBy: none
+		sourceColumn: COMPONENT
+
+		annotation SummarizationSetBy = Automatic
+
+	column CUSTOMER_CODE
+		dataType: string
+		lineageTag: e8a7efd5-43d7-4646-8c4c-333a11f3a16a
+		summarizeBy: none
+		sourceColumn: CUSTOMER_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column MP
+		dataType: string
+		lineageTag: e75c7630-95d4-4719-9d20-de1534c564d5
+		summarizeBy: none
+		sourceColumn: MP
+
+		annotation SummarizationSetBy = Automatic
+
+	column SHIP_DATE
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: b0a379fd-52fa-40cb-b04d-87f39070d9f1
+		summarizeBy: none
+		sourceColumn: SHIP_DATE
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column FLATBED
+		dataType: int64
+		formatString: 0
+		lineageTag: 96999378-fe0a-4d57-ad81-c30abfaa2cdc
+		summarizeBy: sum
+		sourceColumn: FLATBED
+
+		annotation SummarizationSetBy = Automatic
+
+	column BUNDLE
+		dataType: int64
+		formatString: 0
+		lineageTag: e993bf2f-68bb-4939-ba1f-a158a17b682b
+		summarizeBy: sum
+		sourceColumn: BUNDLE
+
+		annotation SummarizationSetBy = Automatic
+
+	column HAND
+		dataType: string
+		lineageTag: c0264baa-cb26-4f79-b4df-3e428928758e
+		summarizeBy: none
+		sourceColumn: HAND
+
+		annotation SummarizationSetBy = Automatic
+
+	column LOCATION
+		dataType: string
+		lineageTag: b9ebb594-ec34-4ae5-b1e8-d7badee373d3
+		summarizeBy: none
+		sourceColumn: LOCATION
+
+		annotation SummarizationSetBy = Automatic
+
+	column PRODUCT_CLASS
+		dataType: string
+		lineageTag: f49578bd-e832-4bd0-8ce5-1575ceb53aab
+		summarizeBy: none
+		sourceColumn: PRODUCT_CLASS
+
+		annotation SummarizationSetBy = Automatic
+
+	column REFORÇADA
+		dataType: string
+		lineageTag: ae40d038-7594-41c5-8d61-de54b4250028
+		summarizeBy: none
+		sourceColumn: REFORÇADA
+
+		annotation SummarizationSetBy = Automatic
+
+	column Clientes
+		dataType: string
+		lineageTag: 25296990-f07a-4a26-8363-e2ebee84ee3f
+		summarizeBy: none
+		sourceColumn: Clientes
+
+		annotation SummarizationSetBy = Automatic
+
+	column local
+		dataType: string
+		lineageTag: c946a7b3-f1fb-4f4e-9e01-8510da5c30b7
+		summarizeBy: none
+		sourceColumn: local
+
+		annotation SummarizationSetBy = Automatic
+
+	partition SHIPDATE = m
+		mode: import
+		source =
+				let
+				    Fonte = Oracle.Database("10.44.34.68:1522/MESBR", [HierarchicalNavigation=true, Query="SELECT re.DESCRIPTION, w.CHASSIS_NUMBER, i.ITEM, cc.ITEM AS COMPONENT, I.CUSTOMER_CODE, FG_SK_SLITTER_FROM_ITEM(cc.ITEM) AS #(lf)       MP, TO_CHAR(r.SHIP_DATE, 'DD-MON-YYYY HH24:MI') AS SHIP_DATE, #(lf)       r.FLATBED, r.BUNDLE, i.HAND, nvl(l.DESCRIPTION, ' ') AS LOCATION,C.PRODUCT_CLASS,#(lf)    CASE #(lf)        WHEN EXISTS(#(lf)                    SELECT 1#(lf)                    FROM OCHASSIS OC INNER JOIN ORAIL ORR ON#(lf)                        OC.CHASSIS_ID = ORR.CHASSIS_ID INNER JOIN ITEM II ON#(lf)                        II.ITEM IN (ORR.LEFT_PART_NUMBER, ORR.RIGHT_PART_NUMBER)#(lf)                    WHERE OC.CHASSIS_NUMBER = C.CHASSIS_NUMBER AND#(lf)                        I.ITEM NOT IN (ORR.LEFT_PART_NUMBER, ORR.RIGHT_PART_NUMBER) AND#(lf)                        II.RAIL_TYPE <> 'M'#(lf)                    ) THEN 'Reforçada'#(lf)        ELSE ' '#(lf)    END AS REFORÇADA#(lf)FROM WORK_ORDER w INNER JOIN ITEM i ON#(lf)    w.ITEM_ID = i.ITEM_ID INNER JOIN RESOURCES re ON#(lf)    w.RESOURCE_ID = re.RESOURCE_ID INNER JOIN OPERATIONS o ON#(lf)    re.RESOURCE_ID = o.RESOURCE_ID INNER JOIN OCHASSIS c ON#(lf)    w.CHASSIS_NUMBER = c.CHASSIS_NUMBER AND#(lf)    w.SHIP_TO = c.SHIP_TO_LOC_ID INNER JOIN ORAIL r ON#(lf)    c.CHASSIS_ID = r.CHASSIS_ID AND#(lf)    I.ITEM IN (R.LEFT_PART_NUMBER, R.RIGHT_PART_NUMBER) INNER JOIN#(lf)                              (SELECT DISTINCT it.ITEM,#(lf)                                  ROUND((NVL(it.BLANK_LENGTH, 0) * 25.4), 3) AS BLANK_LENGTH,#(lf)                                  WW.ITEM_ID AS ASSEMBLY_ITEM_ID,#(lf)                                  WW.JOB_ORACLE#(lf)                              FROM  WORK_ORDER WW INNER JOIN WIP_REQUIREMENT_OPERATIONS WIP ON#(lf)                                  WW.WIP_ENTITY_ID = WIP.WIP_ENTITY_ID INNER JOIN ITEM IT ON#(lf)                                  WIP.INVENTORY_ITEM_ID = IT.ITEM_ID#(lf)                              WHERE IT.ITEM_TYPE IN ('SA', 'SAS') AND#(lf)                                  WIP.QUANTITY_PER_ASSEMBLY > 0) cc ON#(lf)    i.ITEM_ID = cc.ASSEMBLY_ITEM_ID AND#(lf)    W.JOB_ORACLE = CC.JOB_ORACLE LEFT JOIN RAIL ra ON#(lf)    w.JOB_ORACLE = ra.JOB_ORACLE AND #(lf)    ra.RAIL_STATUS_ID NOT IN (10, 11) LEFT JOIN LOCATIONS l ON#(lf)    ra.LOCATION_ID = l.LOCATION_ID  LEFT JOIN #(lf)                            (SELECT DISTINCT WW.JOB_ORACLE, WB.RAIL_ID#(lf)                            FROM WORK_ORDER WW #(lf)                            INNER JOIN WORK_ORDER_BASE WB ON WW.WORK_ORDER_ID = WB.WORK_ORDER_ID#(lf)                            INNER JOIN RAIL R ON R.RAIL_ID = WB.RAIL_ID#(lf)                            INNER JOIN ITEM I ON R.ITEM_ID = I.ITEM_ID#(lf)                            WHERE I.ITEM_TYPE = 'BB') WB ON#(lf)    W.JOB_ORACLE = WB.JOB_ORACLE#(lf)WHERE o.OPERATIONS_ID IN (4,5,6,7) AND#(lf)    r.SHIP_DATE BETWEEN (SYSDATE-0) AND (SYSDATE+1) #(lf)    AND W.WORK_ORDER_STATUS_ID = 2 #(lf)    --and w.quantity_ordered > (w.quantity_finished - w.quantity_scrap)#(lf)ORDER BY SHIP_DATE, r.FLATBED, cc.ITEM, cc.BLANK_LENGTH, r.BUNDLE, w.CHASSIS_NUMBER, i.HAND"]),
+				    #"Linhas Filtradas" = Table.SelectRows(Fonte, each true),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Linhas Filtradas",{{"SHIP_DATE", type datetime}, {"FLATBED", Int64.Type}, {"BUNDLE", Int64.Type}}),
+				    #"Coluna Condicional Adicionada" = Table.AddColumn(#"Tipo Alterado", "Clientes", each if [PRODUCT_CLASS] = "NC" then "SCA" else if [PRODUCT_CLASS] = "NR" then "SCA" else if [PRODUCT_CLASS] = "WD" then "SCA" else if [PRODUCT_CLASS] = "06" then "VM" else if [PRODUCT_CLASS] = "04" then "FH" else if [PRODUCT_CLASS] = "24" then "FH" else if [PRODUCT_CLASS] = "16" then "B8" else if [PRODUCT_CLASS] = "15" then "B13" else null),
+				    #"Linhas Filtradas3" = Table.SelectRows(#"Coluna Condicional Adicionada", each true),
+				    #"Linhas Filtradas2" = Table.SelectRows(#"Linhas Filtradas3", each true),
+				    #"Coluna Condicional Adicionada1" = Table.AddColumn(#"Linhas Filtradas2", "local", each if [LOCATION] = "Embalaje 1" then "Estoque FG" else if [LOCATION] = "Stenhoj" then "Stenhoj " else if [LOCATION] = "Rebitagem" then "Rebitagem" else if [LOCATION] = "Embalaje 3" then "Estoque FG" else if [LOCATION] = "Beatty Alma Output 1" then "Beatty output" else if [LOCATION] = "Pintura Output 2" then "Pintura Output 2" else if [LOCATION] = "Pintura Input 2" then "Pintura Input 2 " else if [LOCATION] = "Plasma 03 Auto" then "Cantilever" else if [LOCATION] = "Beatty ABA Output" then "P.A Output" else if [LOCATION] = "Beatty Alma Output 4" then "Buffer P.A - B3 e B4" else if [LOCATION] = "Mesa 04" then "Cantilever" else if [LOCATION] = "Marking VIN Output" then "Cantilever" else if [LOCATION] = "Marking VIN Input" then "Cantilever" else if [LOCATION] = "Roll Former 3" then "Roll Former 3" else if [LOCATION] = "Beatty Alma Output 2" then "Beatty output" else if [LOCATION] = "Beatty Alma Output 3" then "Buffer P.A - B3 e B4" else if [LOCATION] = "Roll Former 3 Input" then "Slitter" else if [LOCATION] = "Beatty Alma Input 4" then "Buffer P.A" else if [LOCATION] = "Roll Former 3 Output " then "Roll Former 3" else if [LOCATION] = "Beatty ABA Input" then "P.A Output" else if [LOCATION] = "Plasma CNC 02 Auto" then "Cantilever" else if [LOCATION] = "Beatty Alma Input 3" then "Buffer P.A - B3 e B4" else if [LOCATION] = "Beatty Alma Input 2" then "Beatty output" else if [LOCATION] = "Beatty Alma Input 1" then "Beatty output" else if [LOCATION] = "Yoke Punch 3" then "Buffer P.A - B3 e B4" else "Slitter"),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Coluna Condicional Adicionada1",{{"SHIP_DATE", type date}}),
+				    #"Linhas Filtradas1" = Table.SelectRows(#"Tipo Alterado1", each true)
+				in
+				    #"Linhas Filtradas1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

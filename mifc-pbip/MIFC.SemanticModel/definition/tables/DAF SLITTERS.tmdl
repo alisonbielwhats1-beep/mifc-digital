@@ -1,0 +1,154 @@
+table 'DAF SLITTERS'
+	lineageTag: 3718e71b-3612-4183-be3a-7957d46103f8
+
+	column DESCRIPTION
+		dataType: string
+		lineageTag: 498739f1-e1da-4d9a-8fae-70dc0fde942c
+		summarizeBy: none
+		sourceColumn: DESCRIPTION
+
+		annotation SummarizationSetBy = Automatic
+
+	column ITEM
+		dataType: string
+		lineageTag: 85f59ae1-8d9c-4ef8-b7cd-8466901ec4c0
+		summarizeBy: none
+		sourceColumn: ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column JOB_ORACLE
+		dataType: double
+		lineageTag: 71d91d9f-bed3-49ab-8d92-038ae5222d07
+		summarizeBy: sum
+		sourceColumn: JOB_ORACLE
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column CUSTOMER_CODE
+		dataType: string
+		lineageTag: c3e220bd-3e84-464f-b883-b8870d4717cf
+		summarizeBy: none
+		sourceColumn: CUSTOMER_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column MP
+		dataType: string
+		lineageTag: 354cb181-f1b7-4d08-b3ec-650f92edbeaa
+		summarizeBy: none
+		sourceColumn: MP
+
+		annotation SummarizationSetBy = Automatic
+
+	column SHIP_DATE
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 380fbefe-8743-44d2-82aa-6a76e8e41e46
+		summarizeBy: none
+		sourceColumn: SHIP_DATE
+
+		annotation SummarizationSetBy = Automatic
+
+	column LOCATION
+		dataType: string
+		lineageTag: a72e73f5-0536-4544-9e6d-23d704212bd9
+		summarizeBy: none
+		sourceColumn: LOCATION
+
+		annotation SummarizationSetBy = Automatic
+
+	column RAIL_TYPE
+		dataType: string
+		lineageTag: c8b63b4c-705f-47c3-ba68-fda696ec8f24
+		summarizeBy: none
+		sourceColumn: RAIL_TYPE
+
+		annotation SummarizationSetBy = Automatic
+
+	column RAIL_TYPE_DESCRIPTION
+		dataType: string
+		lineageTag: 79ee2021-4194-43be-8295-5fd5be2742eb
+		summarizeBy: none
+		sourceColumn: RAIL_TYPE_DESCRIPTION
+
+		annotation SummarizationSetBy = Automatic
+
+	column QUANTITY_ORDERED
+		dataType: double
+		lineageTag: 0e1e5db4-890b-4c33-a16c-d8fe67263fa5
+		summarizeBy: sum
+		sourceColumn: QUANTITY_ORDERED
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column QUANTITY_FINISHED
+		dataType: double
+		lineageTag: c8747033-9e67-4c2f-9887-577d9b054951
+		summarizeBy: sum
+		sourceColumn: QUANTITY_FINISHED
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Pares Slitter'
+		dataType: double
+		lineageTag: fa7a8e9e-0e51-4997-803a-d13d1347625d
+		summarizeBy: sum
+		sourceColumn: Pares Slitter
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Local
+		dataType: string
+		lineageTag: 527fb4ae-f1b0-4f14-9ce4-6771617f30fa
+		summarizeBy: none
+		sourceColumn: Local
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: string
+		lineageTag: 8dd491d2-3828-43a0-ba75-ec73458e317a
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+	column FINISH_LENGTH
+		dataType: double
+		lineageTag: 4d39fd74-9128-42e7-8971-5038ecb26cf4
+		summarizeBy: sum
+		sourceColumn: FINISH_LENGTH
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'DAF SLITTERS' = m
+		mode: import
+		queryGroup: 1-E-Kanban
+		source =
+				let
+				    Fonte = Oracle.Database("10.44.34.68:1522/MESBR", [HierarchicalNavigation=true, Query="SELECT re.DESCRIPTION,ROUND(i.FINISH_LENGTH*25.4/1000,1)as FINISH_LENGTH, i.ITEM, W.JOB_ORACLE, I.CUSTOMER_CODE, FG_SK_SLITTER_FROM_ITEM(i.ITEM) AS MP,#(lf)TO_CHAR(W.SHIP_DATE, 'DD-MON-YYYY HH24:MI') AS SHIP_DATE, nvl(l.DESCRIPTION, ' ') AS LOCATION#(lf),I.RAIL_TYPE#(lf),RT.DESCRIPTION RAIL_TYPE_DESCRIPTION, W.QUANTITY_ORDERED, W.QUANTITY_FINISHED#(lf)FROM WORK_ORDER w#(lf)INNER JOIN ITEM i ON w.ITEM_ID = i.ITEM_ID #(lf) INNER JOIN RAIL_TYPE RT ON RT.VALUE = I.RAIL_TYPE#(lf)INNER JOIN RESOURCES re ON w.RESOURCE_ID = re.RESOURCE_ID #(lf)INNER JOIN OPERATIONS o ON re.RESOURCE_ID = o.RESOURCE_ID #(lf)   LEFT JOIN RAIL ra ON w.JOB_ORACLE = ra.JOB_ORACLE    #(lf)   AND ra.RAIL_STATUS_ID NOT IN (10, 11) #(lf)   LEFT JOIN LOCATIONS l ON ra.LOCATION_ID = l.LOCATION_ID  #(lf)   LEFT JOIN #(lf)     (SELECT DISTINCT WW.JOB_ORACLE, WB.RAIL_ID#(lf)      FROM WORK_ORDER WW #(lf)      INNER JOIN WORK_ORDER_BASE WB ON WW.WORK_ORDER_ID = WB.WORK_ORDER_ID#(lf)      INNER JOIN RAIL R ON R.RAIL_ID = WB.RAIL_ID AND R.CHASSIS_NUMBER IS NULL#(lf)      INNER JOIN ITEM I ON R.ITEM_ID = I.ITEM_ID     #(lf)      WHERE I.ITEM_TYPE = 'BB') WB ON W.JOB_ORACLE = WB.JOB_ORACLE#(lf)WHERE o.OPERATIONS_ID = 9#(lf)AND I.CUSTOMER_CODE = 'DAF'#(lf)AND W.SHIP_DATE BETWEEN (SYSDATE-2) AND (SYSDATE+30) #(lf)AND W.QUANTITY_FINISHED < W.QUANTITY_ORDERED#(lf)AND W.WORK_ORDER_STATUS_ID = 2 #(lf)ORDER BY SHIP_DATE ASC"]),
+				    #"Personalização Adicionada" = Table.AddColumn(Fonte, "Pares Slitter", each ([QUANTITY_ORDERED]-[QUANTITY_FINISHED])/2),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Personalização Adicionada",{{"Pares Slitter", type number}}),
+				    #"Personalização Adicionada1" = Table.AddColumn(#"Tipo Alterado", "Local", each "Slitter"),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Personalização Adicionada1",{{"SHIP_DATE", type datetime}}),
+				    #"Duplicatas Removidas" = Table.Distinct(#"Tipo Alterado1", {"JOB_ORACLE"}),
+				    #"Data Inserida" = Table.AddColumn(#"Duplicatas Removidas", "Data", each DateTime.Date([SHIP_DATE]), type date),
+				    #"Tipo Alterado2" = Table.TransformColumnTypes(#"Data Inserida",{{"Data", type text}})
+				in
+				    #"Tipo Alterado2"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

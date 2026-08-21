@@ -1,0 +1,77 @@
+table 'Produção RF2'
+	lineageTag: f006eb02-d965-4a4f-9a72-54b5428955dd
+
+	column _NAME
+		dataType: string
+		lineageTag: 088fd3b7-34c9-4223-a71a-2e9754ca2fc5
+		summarizeBy: none
+		sourceColumn: _NAME
+
+		annotation SummarizationSetBy = Automatic
+
+	column _VALUE
+		dataType: int64
+		formatString: 0
+		lineageTag: 57daaee4-26a2-4715-b2b4-8d2012687c29
+		summarizeBy: sum
+		sourceColumn: _VALUE
+
+		annotation SummarizationSetBy = Automatic
+
+	column _TIMESTAMP
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 577f39f7-57f5-4fab-b951-8781fe86f389
+		summarizeBy: none
+		sourceColumn: _TIMESTAMP
+
+		variation Variation
+			isDefault
+			relationship: 8fd16a17-b9b3-471f-b2ed-26db4fce97a7
+			defaultHierarchy: LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: c1f4bb2b-fe1c-4db3-a86f-3bef6bb3924b
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Início da Hora'
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 0390e990-5efe-46ae-968e-f89f8711c75c
+		summarizeBy: none
+		sourceColumn: Início da Hora
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	partition 'Produção RF2' = m
+		mode: import
+		queryGroup: 4-Produção
+		source =
+				let
+				    Fonte = Sql.Database("METBROSAWAPP03", "DT_LOGGER"),
+				    dbo_GOLPES_RF2 = Fonte{[Schema="dbo",Item="GOLPES_RF2"]}[Data],
+				    #"Colunas Removidas" = Table.RemoveColumns(dbo_GOLPES_RF2,{"id", "_NUMERICID"}),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Colunas Removidas",{{"_VALUE", Int64.Type}}),
+				    #"Colunas Removidas1" = Table.RemoveColumns(#"Tipo Alterado",{"_QUALITY"}),
+				    #"Data Inserida" = Table.AddColumn(#"Colunas Removidas1", "Data", each DateTime.Date([_TIMESTAMP]), type date),
+				    #"Início da Hora Inserido" = Table.AddColumn(#"Data Inserida", "Início da Hora", each Time.StartOfHour([_TIMESTAMP]), type datetime),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Início da Hora Inserido",{{"Início da Hora", type time}}),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Tipo Alterado1", each [Data] >= #date(2024, 5, 3))
+				in
+				    #"Linhas Filtradas"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

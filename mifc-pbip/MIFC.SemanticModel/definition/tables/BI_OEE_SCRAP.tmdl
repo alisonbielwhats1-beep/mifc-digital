@@ -1,0 +1,119 @@
+table BI_OEE_SCRAP
+	lineageTag: b6db075a-fdc8-4f95-b7f0-1c3252e3e1d7
+
+	column RAIL_ID
+		dataType: double
+		lineageTag: 06050a37-b6e5-469c-8194-fa7954b847b2
+		summarizeBy: count
+		sourceColumn: RAIL_ID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DESCRIPTION
+		dataType: string
+		lineageTag: ada43f03-0061-4630-a02e-ed1326f35d5b
+		summarizeBy: none
+		sourceColumn: DESCRIPTION
+
+		annotation SummarizationSetBy = Automatic
+
+	column COMMENTS
+		dataType: string
+		lineageTag: a74479e8-9f59-415d-b877-e0128b2ff0d3
+		summarizeBy: none
+		sourceColumn: COMMENTS
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 67e7b2a4-377c-4742-949e-d3d8eb229a62
+		summarizeBy: none
+		sourceColumn: Data
+
+		variation Variation
+			isDefault
+			relationship: 334faf92-93aa-4811-a321-a7126f04b30a
+			defaultHierarchy: LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ITEM
+		dataType: string
+		lineageTag: 92cc4d27-72a9-42da-a9e4-b9d041b6bb71
+		summarizeBy: none
+		sourceColumn: ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column TIPO
+		dataType: string
+		lineageTag: 2e65966f-d530-4168-b695-569ee23dded5
+		summarizeBy: none
+		sourceColumn: TIPO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHASSIS_NUMBER
+		dataType: string
+		lineageTag: 04541f7b-9ae3-4f94-b7cf-5f06e04ea5c7
+		summarizeBy: none
+		sourceColumn: CHASSIS_NUMBER
+
+		annotation SummarizationSetBy = Automatic
+
+	column CUSTOMER_CODE
+		dataType: string
+		lineageTag: 8ab76854-6c05-423d-b4fc-d17574765a24
+		summarizeBy: none
+		sourceColumn: CUSTOMER_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column MODELO
+		dataType: string
+		lineageTag: 3e9bd736-ddb2-4255-ae5f-7383a522438f
+		summarizeBy: none
+		sourceColumn: MODELO
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'OPERAÇÃO GERADORA SCRAP'
+		dataType: string
+		lineageTag: 2abd2beb-e599-4322-afa4-d7769fe7734d
+		summarizeBy: none
+		sourceColumn: OPERAÇÃO GERADORA SCRAP
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'RETRABALHO APONTADO'
+		dataType: string
+		lineageTag: 1b5ac3f6-6ff5-4bfa-ac75-7941127bf712
+		summarizeBy: none
+		sourceColumn: RETRABALHO APONTADO
+
+		annotation SummarizationSetBy = Automatic
+
+	partition BI_OEE_SCRAP = m
+		mode: import
+		queryGroup: 6-Sucatas
+		source =
+				let
+				    Fonte = Oracle.Database("10.44.34.68:1522/MESBR", [HierarchicalNavigation=true]),
+				    BOMES = Fonte{[Schema="BOMES"]}[Data],
+				    BI_HEATMAP_SCRAP = BOMES{[Name="BI_HEATMAP_SCRAP"]}[Data],
+				    #"Colunas Renomeadas" = Table.RenameColumns(BI_HEATMAP_SCRAP,{{"DEFEITO", "DESCRIPTION"}}),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Colunas Renomeadas", each ([DESCRIPTION] = "Metalsa") and ([DEFEITO] <> "PECA OBSOLETA" and [DEFEITO] <> "TESTE DE MANUTENÇÃO" and [DEFEITO] <> "TESTE DE RECORTE" and [DEFEITO] <> "TESTE ENGENHARIA" and [DEFEITO] <> "TESTE FURACAO" and [DEFEITO] <> "TESTE STENHOJ" and [DEFEITO] <> "TRY-OUT DE MASCARA PLASMA")),
+				    #"Data Inserida" = Table.AddColumn(#"Linhas Filtradas", "Data", each DateTime.Date([CREATION_DATE]), type date)
+				in
+				    #"Data Inserida"
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+

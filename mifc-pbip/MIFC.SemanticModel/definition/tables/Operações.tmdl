@@ -1,0 +1,34 @@
+table Operações
+	lineageTag: 995fc521-c13c-420f-ae01-a055f920d913
+
+	column 'Dados '
+		dataType: string
+		lineageTag: dc4f3f14-f497-4139-adcc-a9f3d3f23f8c
+		summarizeBy: none
+		sourceColumn: "Dados "
+		sortByColumn: Ranking
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ranking
+		dataType: int64
+		formatString: 0
+		lineageTag: a86c1519-4d0f-4861-9b8b-608ec96fb388
+		summarizeBy: sum
+		sourceColumn: Ranking
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Operações = m
+		mode: import
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("Vc9NDoIwEAXgq0y6ViPg7xIMGBdGo+6IC0gGxABVnJp4M/dezOk0Gt1+76Wdl6ZqX1dE2Kme8tSxl6qdrmtIdNdgBwGrLxqZomDYDkLoQxQAQjTiMHAhZkQP0IYuhlhHora7+dBYaJG1VNV4l+8mrlW1ZLoMVi0XwWef/rl7QYKZuw/zirISG5a5CKwPS75qF0d2xFAsLAewJ2xPr+fZqtsmogX8by1ucs9K8Ct2ued2xDfSV4OQLK3xkOMb", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Dados " = _t, Ranking = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"Dados ", type text}, {"Ranking", Int64.Type}})
+				in
+				    #"Tipo Alterado"
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,4080 @@
+table 1-Measure
+	lineageTag: 26d1f4ca-1627-42ee-bc26-ef1b1abdd48e
+
+	measure P-RF3 =
+			--Produção Peças Roll Former 3
+			CALCULATE(
+			    DISTINCTCOUNT(
+			    'Produção'[RAIL_ID]),'Produção'[DESCRIPTION] ="Roll Former 3"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: 28f0b44e-eb05-4c99-bc66-8b6e54d59526
+
+	measure T-D = ```
+			--Tempo Disponível 
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) 
+			```
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\ALL
+		lineageTag: a3fc2138-f922-4c53-85f0-9bc2ccc3115d
+
+	measure TKT-C-RF3 =
+			-- Takt Time Cliente RF3
+			
+			[T-P-M-RF3] / [D-P-RF3]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: cd1ff782-5d0f-4b2a-aaf0-36776ec89910
+
+	measure T-P-M-RF3 =
+			--Tempo de Produção Roll Former 3
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "Roll Former 3"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: 2d8aa38f-6b36-4847-aeac-8ffed42ec8f8
+
+	measure D-P-RF3 =
+			-- Demanda de Produção em Peças Roll Former 3
+			[P-T-D] * 2
+		formatString: 0
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: 25ace595-250a-4e0f-a93f-092d2037557f
+
+	measure T-C-RF3 =
+			--Tempo de Ciclo RF3
+			
+			[T-D-L-RF3]/[P-RF3]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: 2149e505-b609-4cc9-ab9b-d91ce58667f1
+
+	measure T-R-RF3 =
+			-- Tempo Restante Roll Former 3
+			
+			[T-P-M-RF3] - [T-D-L-RF3]
+		formatString: 0
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: 4dae3cc9-a932-44d4-aa34-5409b069dab5
+
+	measure P-P-RF3 = ```
+			--Paradas Programadas na Rollformer III
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "ROLLFORMER 3"
+			)
+			```
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: 10dda649-d858-4b49-9a06-7251828de3c6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-D-L-RF3 = ```
+			--Tempo Disponível Liquído Roll Former 3
+			var valor =
+			
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-RF3]
+			
+			
+			var fuso =
+			
+			[F-H] 
+			
+			return
+			
+			valor - fuso
+			```
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: 4fad2356-9824-4b70-9188-b83f1b97beaf
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-R-RF3 =
+			--Produção Restante Roll Former 3
+			
+			[D-P-RF3] - [P-RF3]
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: d8711896-9b06-47de-bb8f-6a57c3f51b95
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-C-R-RF3 =
+			-- Tempo de Ciclo Restante RF3
+			[T-R-RF3] / [P-R-RF3]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: e8aae69f-7f27-4dd8-9e0e-ede644273dcb
+
+	measure P-B1 =
+			--Produção Peças Beatty 1
+			CALCULATE(
+			    DISTINCTCOUNT(
+			    'Produção'[RAIL_ID]),'Produção'[DESCRIPTION] ="Beatty Alma Output 1"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: 4058e974-c0b6-4008-8ebb-e3c7a604ea88
+
+	measure P-P-B1 = ```
+			--Paradas Programadas na Beatty 1
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "BEATTY01"
+			)
+			```
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: 94426467-43ef-43f1-b4f8-2ddde3fea97d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-P-M-B1 =
+			--Tempo de Produção Beatty 1
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "Beatty 1"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: 0d7b9cfa-49a1-4b3f-a6bd-4388562712ef
+
+	measure T-D-L-B1 = ```
+			--Tempo Disponível Liquído Beatty 1
+			var valor =
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-B1]
+			
+			
+			var fuso = 
+			
+			[F-H]
+			
+			return
+			
+			valor - fuso
+			```
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: 28ea285d-78ad-4ac8-9362-1a1b0bc8eba3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-R-B1 =
+			-- Tempo Restante Beatty 1
+			
+			[T-P-M-B1] - [T-D-L-B1]
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: 2203bf16-f96d-47f7-a18a-235ef909fcf8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure D-P-B1 =
+			-- Demanda de Produção em Peças Beatty 1
+			[P-VM-F] * 2
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: 44f1d759-72dc-4378-8f0a-d961fd8c47fd
+
+	measure TKT-C-B1 =
+			-- Takt Time Cliente Beatty 1
+			
+			[T-P-M-B1] / [D-P-B1]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: aae3a8d7-f38a-45fd-91b9-f43b279f04c4
+
+	measure T-C-B1 =
+			--Tempo de Ciclo B1
+			
+			[T-D-L-B1]/[P-B1]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: 097e0f0d-efab-4c96-b9b4-b7ce9d43b631
+
+	measure P-R-B1 =
+			--Produção Restante Beatty 1
+			
+			[D-P-B1] - [P-B1]
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: 43ed424f-82b3-4aeb-a66b-bad21680c342
+
+	measure D-P-B2 =
+			-- Demanda de Produção em Peças Beatty 2
+			[P-DAF-S] * 2
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: 0c87d40b-6331-4319-99ea-ddad249eed79
+
+	measure P-B2 =
+			--Produção Peças Beatty 2
+			CALCULATE(
+			    DISTINCTCOUNT(
+			    'Produção'[RAIL_ID]),'Produção'[DESCRIPTION] ="Beatty Alma Output 2"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: 9eff8abf-dcf1-4908-bb70-f688d9147579
+
+	measure P-P-B2 = ```
+			--Paradas Programadas na Beatty 2
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "BEATTY02"
+			)
+			```
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: 28b1c027-e8bb-42c9-b3ea-cea36eb447da
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-R-B2 =
+			--Produção Restante Beatty 2
+			
+			[D-P-B2] - [P-B2]
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: 4ded3ebb-f4a0-44a5-876f-09103deb239b
+
+	measure T-D-L-B2 = ```
+			--Tempo Disponível Liquído Beatty 2
+			var valor =
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-B2]
+			
+			
+			var fuso = 
+			
+			[F-H]
+			
+			return
+			
+			valor - fuso
+			```
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: 5b53be85-de12-4649-941b-bbcd81f406c4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-P-M-B2 =
+			--Tempo de Produção Beatty 2
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "Beatty 2"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: c4fe42b2-d609-40b4-90c7-835d3ec7b295
+
+	measure T-R-B2 =
+			-- Tempo Restante Beatty 2
+			
+			[T-P-M-B2] - [T-D-L-B2]
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: 065b98be-5bd1-4880-8a95-92866f4c9b28
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TKT-C-B2 =
+			-- Takt Time Cliente Beatty 2
+			
+			[T-P-M-B2] / [D-P-B2]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: dc1e5307-6e41-4d2d-8e91-04f68b1726ca
+
+	measure T-C-B2 =
+			--Tempo de Ciclo B2
+			
+			[T-D-L-B2]/[P-B2]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: f7c9fe54-fae8-49ae-8c57-9e6eac05f8d0
+
+	measure D-P-B3 =
+			-- Demanda de Produção em Peças Beatty 3
+			[P-SCA-F] * 2
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: b399d4e3-ef17-43ac-848a-efd63910669b
+
+	measure P-B3 =
+			--Produção Peças Beatty 3
+			CALCULATE(
+			    DISTINCTCOUNT(
+			    'Produção'[RAIL_ID]),'Produção'[DESCRIPTION] ="Beatty Alma Output 3"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: c8189698-061d-4418-be29-39d9322077e7
+
+	measure P-P-B3 = ```
+			--Paradas Programadas na Beatty 3
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "BEATTY03"
+			)
+			```
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: 196a035f-e8c2-4777-8849-84362dc5032d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-R-B3 =
+			--Produção Restante Beatty 3
+			
+			[D-P-B3] - [P-B3]
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: 635a11e3-a971-4872-b010-84faa4bbc4e9
+
+	measure T-C-B3 =
+			--Tempo de Ciclo B3
+			
+			[T-D-L-B3]/[P-B3]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: 740870f1-b8f5-41a3-9f03-2cad26d97cfa
+
+	measure T-D-L-B3 = ```
+			--Tempo Disponível Liquído Beatty 3
+			var valor =
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-B3]
+			
+			
+			var fuso = 
+			
+			[F-H]
+			
+			return
+			
+			valor - fuso
+			```
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: 2bd7a610-c29f-47cf-8fc6-f21e7069fedb
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-P-M-B3 =
+			--Tempo de Produção Beatty 3
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "Beatty 3"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: d36195eb-3033-4696-bf83-d25f25d0cfb5
+
+	measure T-R-B3 =
+			-- Tempo Restante Beatty 3
+			
+			[T-P-M-B3] - [T-D-L-B3]
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: a5eb7b55-a927-45f3-baab-ef5630d6953e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TKT-C-B3 =
+			-- Takt Time Cliente Beatty 3
+			
+			[T-P-M-B3] / [D-P-B3]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: a3c9c683-da01-470f-93cf-180206b0a3aa
+
+	measure D-P-B4 =
+			-- Demanda de Produção em Peças Beatty 4
+			[P-FH-F] * 2
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: e91a64da-1c51-4037-8f04-3915588b01da
+
+	measure P-B4 =
+			--Produção Peças Beatty 4
+			CALCULATE(
+			    DISTINCTCOUNT(
+			    'Produção'[RAIL_ID]),'Produção'[DESCRIPTION] ="Beatty Alma Output 4"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: 5e10a2b8-9edb-4682-aeb4-2887124940ec
+
+	measure P-P-B4 = ```
+			--Paradas Programadas na Beatty 4
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "BEATTY04"
+			)
+			```
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: 3fad6493-cdf7-4771-863b-bb188cf9e32b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-R-B4 =
+			--Produção Restante Beatty 4
+			
+			[D-P-B4] - [P-B4]
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: 8c91af6e-fc5f-40f3-b188-0280a4f8e204
+
+	measure T-D-L-B4 = ```
+			--Tempo Disponível Liquído Beatty 4
+			var valor =
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-B4]
+			
+			
+			var fuso = 
+			
+			[F-H]
+			
+			return
+			
+			valor - fuso
+			```
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: 572b6ff5-6dd7-415c-85f0-b5af1b090535
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-P-M-B4 =
+			--Tempo de Produção Beatty 4
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "Beatty 4"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: 5d2f2f7c-64fb-4d9d-aee0-8ee0144bb6d7
+
+	measure T-R-B4 =
+			-- Tempo Restante Beatty 4
+			
+			[T-P-M-B4] - [T-D-L-B4]
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: d55ceba0-1a5f-4aa6-a6da-9cb64ef68fae
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TKT-C-B4 =
+			-- Takt Time Cliente Beatty 4
+			
+			[T-P-M-B4] / [D-P-B4]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: 2d876f0c-b365-4562-aee1-ab5ddfe04720
+
+	measure T-C-B4 =
+			--Tempo de Ciclo B4
+			
+			[T-D-L-B4]/[P-B4]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: 89ebb5f2-d0fb-4ced-9ebe-5a255a862ef5
+
+	measure T-C-R-B1 =
+			-- Tempo de Ciclo Restante B1
+			[T-R-B1] / [P-R-B1]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: e43e6d86-95da-4874-afab-eb8b6fbff8ad
+
+	measure T-C-R-B2 =
+			-- Tempo de Ciclo Restante B2
+			[T-R-B2] / [P-R-B2]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: 5690c829-499d-4af7-9fa9-d56fba2261d1
+
+	measure T-C-R-B3 =
+			-- Tempo de Ciclo Restante B3
+			[T-R-B3] / [P-R-B3]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: 451580ca-7098-4a93-9543-0d716f32c6e2
+
+	measure T-C-R-B4 =
+			-- Tempo de Ciclo Restante B4
+			[T-R-B4] / [P-R-B4]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: 50fdaed1-c5fd-456f-9c31-39bdb714296a
+
+	measure 'D-P-P.A' =
+			-- Demanda de Produção em Peças P.A
+			( [P-FH-F] + [P-SCA-F] ) * 2
+		formatString: 0
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: c3ed23a8-cdd2-41ba-83a5-ac57c1873bc0
+
+	measure 'P-P.A' =
+			--Produção Peças P.A
+			CALCULATE(
+			    DISTINCTCOUNT(
+			    'Produção'[RAIL_ID]),'Produção'[DESCRIPTION] ="Beatty ABA Output"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: f0a274ff-4cba-475b-a268-81286f4d710f
+
+	measure 'P-P-P.A' = ```
+			--Paradas Programadas na P.A
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "BEATTY PATIN"
+			)
+			```
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: a1908fc1-0de3-466d-9913-b43aaf8eb32a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'P-R-P.A' =
+			--Produção Restante P.A
+			
+			[D-P-P.A] - [P-P.A]
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: 94e5e797-abed-45a8-9e35-16f2f2683c0f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'T-C-P.A' =
+			--Tempo de Ciclo P.A
+			
+			[T-D-L-P.A]/[P-P.A]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: 24ffcca5-9f84-445a-b8d5-3d4175a63860
+
+	measure 'T-D-L-P.A' = ```
+			--Tempo Disponível Liquído P.A
+			var valor =
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-P.A]
+			
+			var fuso =
+			
+			[F-H]
+			
+			return
+			
+			valor - fuso
+			
+			```
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: 6e514fa6-3392-4dcc-a1b2-c3f5e0ef9701
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'T-P-M-P.A' =
+			--Tempo de Produção P.A
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "P.A"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: e64daa00-db0a-4db2-bb36-0de514814390
+
+	measure 'TKT-C-P.A' =
+			-- Takt Time Cliente P.A
+			
+			[T-P-M-P.A] / [D-P-P.A]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: 34cc4830-2df9-4df4-8349-f97222846ad8
+
+	measure 'T-R-P.A' =
+			-- Tempo Restante P.A
+			
+			[T-P-M-P.A] - [T-D-L-P.A]
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: 8a2f50a9-74b9-47cd-94a3-a30b35a5d023
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'T-C-R-P.A' =
+			-- Tempo de Ciclo Restante P.A
+			[T-R-P.A] / [P-R-P.A]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: 153e6f58-3892-4a27-ac8d-515eb06be999
+
+	measure R-C-RF3 =
+			-- Regra Condicional RF3
+			CALCULATE(
+			IF(
+			    [T-C-RF3] < [TKT-C-RF3] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: f42dc10e-b742-4568-8cef-08a233a67302
+
+	measure R-C-B1 =
+			-- Regra Condicional Beatty 1
+			CALCULATE(
+			
+			IF(
+			    [T-C-B1] < [TKT-C-B1] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 1
+		lineageTag: fd403a18-d43e-411d-9142-a393eb8618cd
+
+	measure R-C-B2 =
+			-- Regra Condicional Beatty 2
+			CALCULATE(
+			
+			IF(
+			    [T-C-B2] < [TKT-C-B2] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 2
+		lineageTag: 94191ea9-0c93-4bfa-8727-e4b6f4666ea1
+
+	measure R-C-B3 =
+			-- Regra Condicional Beatty 3
+			CALCULATE(
+			IF(
+			    [T-C-B3] < [TKT-C-B3] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 3
+		lineageTag: 01c87362-6445-4a56-ae44-5ac00ca32ae4
+
+	measure R-C-B4 =
+			-- Regra Condicional Beatty 4
+			CALCULATE(
+			IF(
+			    [T-C-B4] < [TKT-C-B4] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Beatty 4
+		lineageTag: 5d0c4a43-e57b-43f1-b946-0bf0c06be192
+
+	measure 'R-C-P.A' =
+			-- Regra Condicional P.A
+			CALCULATE(
+			IF(
+			    [T-C-P.A] < [TKT-C-P.A] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\P.A
+		lineageTag: f784cabd-240a-479f-8283-3780bc7b1935
+
+	measure D-P-LPP2 =
+			-- Demanda de Produção em Peças Pintura
+			[P-T-D] * 2
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: 8e14a086-6fe8-44ca-a38e-989db7a5eb69
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-P-LPP2 = ```
+			--Paradas Programadas na Pintura
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "PAINT LINE 02"
+			)
+			```
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: fb436b38-3e56-4359-a1d5-a48107111e34
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-LPP2 =
+			--Produção Peças Pintura
+			CALCULATE(
+			    DISTINCTCOUNT(
+			    'Produção'[RAIL_ID]),'Produção'[DESCRIPTION] ="Pintura Output 2"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: 9db14287-39c4-4ae4-a18e-ce945444735c
+
+	measure P-R-LPP2 =
+			--Produção Restante Pintura
+			
+			[D-P-LPP2] - [P-LPP2]
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: 21c338d6-ce6a-4fe7-9a68-f7e30d50f893
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-D-L-LPP2 = ```
+			--Tempo Disponível Liquído Pintura
+			
+			var valor = 
+			
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-LPP2]
+			
+			var fuso =
+			
+			[F-H]
+			
+			
+			return
+			
+			valor - fuso
+			```
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: 729c4ef4-75ab-4c85-83f3-57e1d4c1b27e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-P-M-LPP2 =
+			--Tempo de Produção Pintura
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "Pintura"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: 6d482883-efe1-4095-98e7-82b4ca4c47ab
+
+	measure T-R-LPP2 =
+			-- Tempo Restante Pintura
+			
+			[T-P-M-LPP2] - [T-D-L-LPP2]
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: 3e1412ea-aac0-43cf-9ef9-4345fe134887
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TKT-C-LPP2 =
+			-- Takt Time Cliente Pintura
+			[T-P-M-LPP2] / [D-P-LPP2]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: c1f8bcb7-6602-4d82-9f89-c71ff936a66b
+
+	measure T-C-LPP2 =
+			--Tempo de Ciclo Pintura
+			
+			[T-D-L-LPP2]/[P-LPP2]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: 5c0dc51b-1113-4993-bfc1-10cf62cdbd15
+
+	measure R-C-LPP2 =
+			-- Regra Condicional Pintura
+			CALCULATE(
+			IF(
+			    [T-C-LPP2] < [TKT-C-LPP2] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: 6aba50e6-fede-4016-b24b-64a90a40e36d
+
+	measure T-C-R-LPP2 =
+			-- Tempo de Ciclo Restante Pintura
+			[T-R-LPP2] / [P-R-LPP2]
+		displayFolder: ALL\Máquinas\Pintura
+		lineageTag: 07b85d8c-dd21-4e5a-92d8-5eb82b07bf1d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure D-P-STJ =
+			-- Demanda de Produção em Peças Stenhoj
+			([P-SCA-F] + [P-FH-F] + [P-DAF-S]) * 2
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: e94ceb30-2b33-4028-b8d4-b7a8ba62e023
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-P-STJ = ```
+			--Paradas Programadas na Stenhoj
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "STENHOJ O1"
+			)
+			```
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: fe14c189-751c-478e-bead-ca6dbcb18afa
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-STJ =
+			--Produção Peças Stenhoj
+			CALCULATE(
+			    DISTINCTCOUNT(
+			    'Produção'[RAIL_ID]),'Produção'[DESCRIPTION] ="Stenhoj"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: 1b5d56c1-664b-4035-af4f-4ba97f9569ce
+
+	measure P-R-STJ =
+			--Produção Restante Stenhoj
+			
+			[D-P-STJ] - [P-STJ]
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: 9c33fcad-d600-4d08-aa66-0d363b4437f9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-D-L-STJ = ```
+			--Tempo Disponível Liquído Stenhoj
+			
+			var valor =
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-STJ]
+			
+			var fuso = 
+			
+			[F-H]
+			
+			return 
+			
+			valor - fuso
+			```
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: 39d0f164-b486-4d93-8a67-307ec187276f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-P-M-STJ =
+			--Tempo de Produção Stenhoj
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "Stenhoj"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: 45089602-3228-4223-82ea-746857615c97
+
+	measure T-C-STJ =
+			--Tempo de Ciclo Stenhoj
+			
+			[T-D-L-STJ]/[P-STJ]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: 20909cdd-047b-4541-8ed5-0213938d0570
+
+	measure TKT-C-STJ =
+			-- Takt Time Cliente Stenhoj
+			
+			[T-P-M-STJ] / [D-P-STJ]
+		formatString: 0.0000000000
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: 17d5d48b-7a05-4b05-a941-435744dcf532
+
+	measure T-R-STJ =
+			-- Tempo Restante Stenhoj
+			
+			[T-P-M-STJ] - [T-D-L-STJ]
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: a769c0db-d27c-4c3d-a0e1-abeb429f6813
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure R-C-STJ =
+			-- Regra Condicional Stenhoj
+			CALCULATE(
+			IF(
+			    [T-C-STJ] < [TKT-C-STJ] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: af121092-9f08-4c56-9bcd-3ad59cdbb90e
+
+	measure T-C-R-STJ =
+			-- Tempo de Ciclo Restante Stenhoj
+			[T-R-STJ] / [P-R-STJ]
+		displayFolder: ALL\Máquinas\Stenhoj
+		lineageTag: 85c12303-c06f-48f0-9ae6-bfc606fcd4d8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-C-C =
+			-- Pares Cliente Carga
+			
+			COUNTA(
+			    SHIPDATE[COMPONENT]
+			)
+		formatString: 0
+		displayFolder: ALL\8.E-Kanban
+		lineageTag: dfa5a3d3-6c68-4b96-80e3-e44d47e7dfe8
+
+	measure P-SCA-F =
+			-- Pares Scania Flatbed
+			
+			(CALCULATE(COUNTA(SCANIA[COMPONENT]))/2)
+		displayFolder: ALL\8.E-Kanban
+		lineageTag: e7c82957-9cfc-4254-93bf-a9d6f6932ce2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-I-FH =
+			-- Total de Itens FH
+			
+			COUNT('FH'[CHASSIS_NUMBER])
+		formatString: 0
+		displayFolder: ALL\8.E-Kanban
+		lineageTag: f69f3e6f-7f8b-4496-b8a6-29bcc414ec4a
+
+	measure P-FH-F =
+			-- Pares FH Flatbed
+			
+			
+			[T-I-FH]/2
+		displayFolder: ALL\8.E-Kanban
+		lineageTag: dd66f9cf-40b4-4724-bf78-58d1042f1b54
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-I-VM =
+			-- Total de Itens VM
+			
+			
+			COUNT('VM'[CHASSIS_NUMBER])
+		formatString: 0
+		displayFolder: ALL\8.E-Kanban
+		lineageTag: 308f28fa-e86a-4801-a632-36d5a796f409
+
+	measure P-VM-F =
+			-- Pares VM Flatbed
+			
+			[T-I-VM]/2
+		displayFolder: ALL\8.E-Kanban
+		lineageTag: e1e4862e-3748-496f-bf73-2606873f9d6c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-DAF-S =
+			-- Pares DAF Shipdate
+			
+			
+			(COUNT(DAF[ITEM])/2) + sum('DAF SLITTERS'[Pares Slitter])
+		displayFolder: ALL\8.E-Kanban
+		lineageTag: f3d97cb8-7280-4b00-a992-1b5dfe90f803
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-T-D =
+			-- Pares Totais do Dia
+			[P-SCA-F] + [P-DAF-S] + [P-FH-F] +[P-VM-F]
+		formatString: 0
+		displayFolder: ALL\9.Estoque
+		lineageTag: 47ea8c24-4dc9-4b4e-a9f1-2c0c74ee669b
+
+	measure C-T-E =
+			-- Comprimento Total ( Estoque ) em Metros
+			
+			SUM(
+			    Lotes[MP(m)]
+			)
+		formatString: 0
+		displayFolder: ALL\9.Estoque
+		lineageTag: d9051465-5640-420c-9d7e-871a00a3f11e
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure C-P-M = ```
+			-- Comprimento Produzido Médio
+			
+			VAR qtd_comprimento =
+			    COUNT('Produção'[RAIL_ID])
+			
+			VAR soma_comprimento =
+			    SUMX(
+			        FILTER(
+			            'Produção',
+			            'Produção'[ITEM(m)] <> BLANK()
+			        ),
+			        'Produção'[ITEM(m)]
+			    )
+			
+			VAR media_pond =
+			    DIVIDE(soma_comprimento, qtd_comprimento)
+			
+			RETURN
+			    
+			media_pond
+			
+			
+			```
+		formatString: 0.00000000
+		displayFolder: ALL\9.Estoque
+		lineageTag: f91a37a4-12e4-4bff-979d-4a1690ed3178
+
+	measure E-M-P = ```
+			-- Estoque Médio em Peças
+			
+			[C-T-E] / [C-P-M] 
+			```
+		formatString: 0.00000
+		displayFolder: ALL\9.Estoque
+		lineageTag: f5425465-f87f-42ac-883a-03711d5f427c
+
+	measure P-T =
+			-- Produção Total
+			
+			DISTINCTCOUNT(
+			    'Produção'[RAIL_ID]
+			)
+		formatString: 0
+		displayFolder: ALL\9.Estoque
+		lineageTag: 2e42c847-69a6-444d-88d7-fb96b3a9021c
+
+	measure Scania = ```
+			[Pares_long_ref]+[Pares_long_simples]+[Pares_reforço] 
+			```
+		displayFolder: ALL\Scania
+		lineageTag: edbe360c-5bd5-48e0-8ec5-e00cd67127f9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Pares_long_ref = SUM(SCANIA[QTD LONG REF])/2
+		displayFolder: ALL\Scania
+		lineageTag: 5dd418a8-4e3a-40e0-bbf3-245e99affbc3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Pares_long_simples = (SUM(SCANIA[QTD long SIMPLES]))/2
+		displayFolder: ALL\Scania
+		lineageTag: 6d7aed60-1cdb-490a-800b-bdd7979ba59b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Pares_reforço = (SUM(SCANIA[QTD REF]))/2
+		displayFolder: ALL\Scania
+		lineageTag: e02dc82c-7f8e-4fa2-86c4-284434158e3b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure FH = if(SELECTEDVALUE(FH[Local]) = "Estoque FG", DISTINCTCOUNT(FH[CHASSIS_NUMBER]),[Total Itens FH]/2)
+		displayFolder: ALL\FH
+		lineageTag: ee24da89-b485-41cd-be8e-12aa0d5003fc
+
+	measure 'Total Itens FH' = COUNT('FH'[CHASSIS_NUMBER])
+		formatString: 0
+		displayFolder: ALL\FH
+		lineageTag: 8814c244-5883-48c3-9eb7-d4ffd64bffcb
+
+	measure VM = if(SELECTEDVALUE(VM[local]) = "Estoque FG", DISTINCTCOUNT(VM[CHASSIS_NUMBER]),[Total Itens VM]/2)
+		displayFolder: ALL\VM
+		lineageTag: 6f36865a-bf6e-41c4-ad40-a9972ecb9688
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Itens VM' = COUNT('VM'[CHASSIS_NUMBER])
+		formatString: 0
+		displayFolder: ALL\VM
+		lineageTag: 3fa7078d-c865-4c84-8eb8-94fb90b111e1
+
+	measure DAF = ([Total peças] / 2) + SUM('DAF SLITTERS'[Pares Slitter])
+		displayFolder: ALL\DAF
+		lineageTag: b457bfaa-6652-4717-88ca-572deebbf142
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total peças' = (SUM(DAF[QTD long Reforçada])) + (SUM(DAF[QTD long SIMPLES])) + (SUM(DAF[QTD REF]))
+		displayFolder: ALL\DAF
+		lineageTag: 03e3a6b9-97e3-410b-b8ab-bd7aedfb50ef
+
+	measure C-P-M-SCA = ```
+			-- Comprimento Produzido Médio Scania
+			
+			VAR qtd_comprimento =
+			    COUNTROWS(
+			        FILTER(
+			            SCANIA,
+			            SCANIA[FINISH_LENGHT] <> BLANK()
+			        )
+			    )
+			
+			VAR media_pond =
+			    DIVIDE(
+			        SUMX(
+			            FILTER(
+			                SCANIA,
+			                SCANIA[FINISH_LENGHT] <> BLANK()
+			            ),
+			            SCANIA[FINISH_LENGHT]
+			        ),
+			        qtd_comprimento
+			    )
+			
+			RETURN
+			    media_pond
+			
+			
+			```
+		formatString: 0.0
+		displayFolder: ALL\0.0.MIFC\SCANIA
+		lineageTag: 2130799a-3c14-4b10-a9fb-2fa06776c160
+
+	measure C-P-M-FH = ```
+			-- Comprimento Produzido Médio FH
+			
+			
+			VAR qtd_comprimento =
+			    COUNTROWS(
+			        FILTER(
+			            FH,
+			            FH[FINISH_LENGHT] <> BLANK()
+			        )
+			    )
+			
+			VAR media_pond =
+			    DIVIDE(
+			        SUMX(
+			            FILTER(
+			                FH,
+			                FH[FINISH_LENGHT] <> BLANK()
+			            ),
+			            FH[FINISH_LENGHT]
+			        ),
+			        qtd_comprimento
+			    )
+			
+			RETURN
+			    media_pond
+			
+			```
+		formatString: 0.0
+		displayFolder: ALL\0.0.MIFC\FH
+		lineageTag: 268d94f9-605a-4664-aeec-23b12f055fac
+
+	measure C-P-M-VM = ```
+			-- Comprimento Produzido Médio VM
+			
+			VAR qtd_comprimento =
+			    COUNTROWS(
+			        FILTER(
+			            VM,
+			            VM[FINISH_LENGHT] <> BLANK()
+			        )
+			    )
+			
+			VAR media_pond =
+			    DIVIDE(
+			        SUMX(
+			            FILTER(
+			                VM,
+			                VM[FINISH_LENGHT] <> BLANK()
+			            ),
+			            VM[FINISH_LENGHT]
+			        ),
+			        qtd_comprimento
+			    )
+			
+			RETURN
+			    media_pond
+			
+			```
+		formatString: 0.0
+		displayFolder: ALL\0.0.MIFC\VM
+		lineageTag: 797fe7a6-d5d9-4424-a8a5-f685da69e4b0
+
+	measure C-P-M-DAF = ```
+			-- Comprimento Produzido Médio DAF
+			
+			VAR qtd_comprimento =
+			    COUNTROWS(
+			        FILTER(
+			            'DAF SLITTERS',
+			            'DAF SLITTERS'[FINISH_LENGTH] <> BLANK()
+			        )
+			    )
+			
+			VAR media_pond =
+			    DIVIDE(
+			        SUMX(
+			            FILTER(
+			                'DAF SLITTERS',
+			                'DAF SLITTERS'[FINISH_LENGTH] <> BLANK()
+			            ),
+			            'DAF SLITTERS'[FINISH_LENGTH]
+			        ),
+			        qtd_comprimento
+			    )
+			
+			RETURN
+			    media_pond
+			
+			```
+		formatString: 0.0
+		displayFolder: ALL\0.0.MIFC\DAF
+		lineageTag: 1f503943-6c6a-49e1-a01f-dbd85226fbc9
+
+	measure E-M-P-SCA =
+			-- Estoque Médio em Peças Scania
+			IF(SELECTEDVALUE(Lotes[Cliente]) = "SCA",
+			[C-T-E] / [C-P-M-SCA],BLANK())
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: 20f2c551-c5df-4718-b0fc-7d37b4b48ed1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-M-P-FH =
+			-- Estoque Médio em Peças Volvo
+			IF(SELECTEDVALUE(Lotes[Cliente]) = "VDB",
+			[C-T-E] / [C-P-M-FH],BLANK())
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: 2313b9f7-8a16-4a2e-8dd3-8f80a633a669
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-M-P-VM =
+			-- Estoque Médio em Peças Volvo VM
+			IF(SELECTEDVALUE(Lotes[Cliente]) = "VDB",
+			[C-T-E] / [C-P-M-VM],BLANK())
+		displayFolder: ALL\0.0.MIFC\VM\Estoque
+		lineageTag: e56e74e9-0545-40da-9893-58cd0b970027
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-M-P-DAF =
+			-- Estoque Médio em Peças DAF
+			IF(SELECTEDVALUE(Lotes[Cliente]) = "DAF",
+			[C-T-E] / [C-P-M-DAF],BLANK())
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: a5823cbc-7b41-4604-8119-4d106dce9d12
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure C-P-M-TOTAL =
+			
+			-- Comprimento Produzido Médio Total
+			
+			VAR qtd_comprimento_DAF =
+			    COUNTROWS(
+			        FILTER(
+			            'DAF SLITTERS',
+			            'DAF SLITTERS'[FINISH_LENGTH] <> BLANK() && 'DAF SLITTERS'[Local]= "Slitter"
+			        )
+			    )
+			
+			VAR media_pond_DAF =
+			    SUMX(
+			        FILTER(
+			            'DAF SLITTERS',
+			            'DAF SLITTERS'[FINISH_LENGTH] <> BLANK() && 'DAF SLITTERS'[Local] = "Slitter"
+			        ),
+			        'DAF SLITTERS'[FINISH_LENGTH]
+			    )
+			
+			VAR qtd_comprimento_FH =
+			    COUNTROWS(
+			        FILTER(
+			            FH,
+			            FH[FINISH_LENGHT] <> BLANK() && FH[local] = "Slitter"
+			        )
+			    )
+			
+			VAR media_pond_FH =
+			    SUMX(
+			        FILTER(
+			            FH,
+			            FH[FINISH_LENGHT] <> BLANK() && FH[local] = "Slitter"
+			        ),
+			        FH[FINISH_LENGHT]
+			    )
+			
+			VAR qtd_comprimento_SCANIA =
+			    COUNTROWS(
+			        FILTER(
+			            SCANIA,
+			            SCANIA[FINISH_LENGHT] <> BLANK() && SCANIA[local] = "Slitter"
+			        )
+			    )
+			
+			VAR media_pond_SCANIA =
+			    SUMX(
+			        FILTER(
+			            SCANIA,
+			            SCANIA[FINISH_LENGHT] <> BLANK() && SCANIA[local] = "Slitter"
+			        ),
+			        SCANIA[FINISH_LENGHT]
+			    )
+			
+			VAR qtd_comprimento_VM =
+			    COUNTROWS(
+			        FILTER(
+			            VM,
+			            VM[FINISH_LENGHT] <> BLANK() && VM[local] = "Slitter"
+			        )
+			    )
+			
+			VAR media_pond_VM =
+			    SUMX(
+			        FILTER(
+			            VM,
+			            VM[FINISH_LENGHT] <> BLANK() && VM[local]= "Slitter"
+			        ),
+			        VM[FINISH_LENGHT]
+			    )
+			
+			VAR total_qtd_comprimento =
+			    qtd_comprimento_DAF + qtd_comprimento_FH + qtd_comprimento_SCANIA + qtd_comprimento_VM
+			
+			VAR total_media_pond =
+			    media_pond_DAF + media_pond_FH + media_pond_SCANIA + media_pond_VM
+			
+			RETURN
+			   DIVIDE(total_media_pond, total_qtd_comprimento)
+		formatString: 0.0
+		displayFolder: ALL\0.0.MIFC\ALL
+		lineageTag: 18f5eed1-c529-41c7-93a6-020a60510769
+
+	measure E-M-P-S =
+			-- Estoque Médio em Peças Pelo ShipDate
+			
+			ROUNDDOWN(
+			IF(
+			[C-T-E] / [C-P-M-TOTAL] = BLANK() , 0 , [C-T-E] / [C-P-M-TOTAL] ),0
+			)
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\ALL\Estoque
+		lineageTag: 36a67b84-af24-4607-947b-b5a17d87f81b
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure C-M-FL = ```
+			-- Comprimento Finish Length
+			VAR soma_sca = 
+			SUMX(
+			    FILTER(
+			        SCANIA,
+			        SCANIA[FINISH_LENGHT] <> BLANK() && SCANIA[LOCAL] = "Slitter"
+			    ),
+			    SCANIA[FINISH_LENGHT]
+			)
+			
+			VAR soma_fh = 
+			SUMX(
+			    FILTER(
+			        FH,
+			        FH[FINISH_LENGHT] <> BLANK() && FH[LOCAL] = "Slitter"
+			    ),
+			    FH[FINISH_LENGHT]
+			)
+			
+			VAR soma_vm = 
+			SUMX(
+			    FILTER(
+			        VM,
+			        VM[FINISH_LENGHT] <> BLANK() && VM[LOCAL] = "Slitter"
+			    ),
+			    VM[FINISH_LENGHT]
+			)
+			
+			VAR soma_daf = 
+			SUMX(
+			    FILTER(
+			        'DAF SLITTERS',
+			        'DAF SLITTERS'[FINISH_LENGTH] <> BLANK() && 'DAF SLITTERS'[LOCAL] = "Slitter"
+			    ),
+			    ('DAF SLITTERS'[Pares Slitter] * 2) * 'DAF SLITTERS'[FINISH_LENGTH]
+			)
+			
+			RETURN
+			    soma_sca + soma_fh + soma_vm + soma_daf
+			
+			```
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: 8c4c40c9-2f96-46ec-9822-ddb6c88e53f6
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure R-E-FL = ```
+			-- Relação Estoque com Finish Length 
+			
+			[C-T-E] / [C-M-FL]
+			```
+		formatString: 0%;-0%;0%
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: af9afc6c-3944-447e-84d9-39a52047abd6
+
+	measure Status_Slitter = ```
+			
+			
+			IF(
+			    [C-T-E] < [C-M-FL] , "Em Risco", "Em Ordem"
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: bde64001-31ea-4209-849a-ae11f6226e79
+
+	measure Q-P-ShipDate = ```
+			
+			-- Quantidade de Peças ShipDate
+			
+			VAR soma_sca = 
+			COUNTX(
+			    FILTER(
+			        SCANIA,
+			        SCANIA[FINISH_LENGHT] <> BLANK() && SCANIA[LOCAL] = "Slitter"
+			    ),
+			    SCANIA[CHASSIS_NUMBER]
+			)
+			
+			VAR soma_fh = 
+			COUNTX(
+			    FILTER(
+			        FH,
+			        FH[FINISH_LENGHT] <> BLANK() && FH[LOCAL] = "Slitter"
+			    ),
+			    FH[CHASSIS_NUMBER]
+			)
+			
+			VAR soma_vm = 
+			COUNTX(
+			    FILTER(
+			        VM,
+			        VM[FINISH_LENGHT] <> BLANK() && VM[LOCAL] = "Slitter"
+			    ),
+			    VM[CHASSIS_NUMBER]
+			)
+			
+			VAR soma_daf = 
+			SUMX(
+			    FILTER(
+			        'DAF SLITTERS',
+			        'DAF SLITTERS'[FINISH_LENGTH] <> BLANK() && 'DAF SLITTERS'[LOCAL] = "Slitter"
+			    ),
+			    'DAF SLITTERS'[Pares Slitter] * 2 
+			)
+			
+			RETURN
+			    soma_sca + soma_fh + soma_vm + soma_daf
+			
+			```
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: 8640e3bf-709f-4f6b-bde0-9c95723cb06a
+
+	measure Q-S-E =
+			-- Quantidade de Slitter em Estoque
+			
+			COUNT(
+			    Lotes[DESCRIPTION]
+			)
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: d2b27506-c794-4fbd-a21b-def3c959f020
+
+	measure Q-G-SCA = ```
+			--Quantidade de Golpes Scania
+			
+			var valor1 =
+			CALCULATE(
+			    SUM(
+			        BI_PUNCH_SCA[ALMA]),
+			        FILTER(
+			            BI_PUNCH_SCA,
+			            BI_PUNCH_SCA[CHASSIS_NUMBER]
+			        )
+			            
+			)
+			
+			var valor2 = 
+			DIVIDE(
+			    SUM(
+			    BI_PUNCH_SCA[ALMA_BOTH]),
+			    2
+			)
+			
+			return
+			
+			valor1 + valor2
+			```
+		displayFolder: ALL\0.0.MIFC\Golpes
+		lineageTag: 9103203c-26b1-481e-9e6a-54c2ea7f1270
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-N-P-B-M-SCA =
+			-- Tempo Necessário de Processamento das Beattys Scania ( Minutos )
+			
+			DIVIDE(
+			    [Q-G-SCA],
+			    SELECTEDVALUE(
+			        dOperacao[Capacidade]
+			    )
+			)
+		displayFolder: ALL\0.0.MIFC\Golpes
+		lineageTag: f201faf7-2572-4fa7-9af8-3e1488647e04
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-N-P-B-H-SCA =
+			-- Tempo Necessário de Processamento das Beattys Scania ( Horas)
+			var valor =
+			
+			DIVIDE(
+			    [Q-G-SCA],
+			    SELECTEDVALUE(
+			        dOperacao[Capacidade]
+			    )
+			)
+			
+			return
+			
+			valor/60
+		displayFolder: ALL\0.0.MIFC\Golpes
+		lineageTag: 54e8fa33-1122-4017-819a-2cf035a7fd12
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Q-G-VDB = ```
+			--Quantidade de Golpes Volvo
+			var valor1 =
+			CALCULATE(
+			    SUM(
+			        BI_PUNCH_VDB[ALMA]),
+			        FILTER(
+			            BI_PUNCH_VDB,
+			            BI_PUNCH_VDB[CHASSIS_NUMBER]
+			        )
+			            
+			)
+			
+			var valor2 = 
+			DIVIDE(
+			    SUM(
+			    BI_PUNCH_VDB[ALMA_BOTH]),
+			    2
+			)
+			
+			return
+			
+			valor1 + valor2
+			```
+		displayFolder: ALL\0.0.MIFC\Golpes
+		lineageTag: aed25b70-87ad-4fe8-83ed-e56edb49aca5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-N-P-B-M-VDB =
+			-- Tempo Necessário de Processamento das Beattys Volvo ( Minutos )
+			
+			DIVIDE(
+			    [Q-G-VDB],
+			    SELECTEDVALUE(
+			        dOperacao[Capacidade]
+			    )
+			)
+		displayFolder: ALL\0.0.MIFC\Golpes
+		lineageTag: 9836d667-3ffb-411d-bdc2-b175484cb44a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-N-P-B-H-VDB =
+			-- Tempo Necessário de Processamento das Beattys Volvo ( Horas)
+			var valor =
+			
+			DIVIDE(
+			    [Q-G-VDB],
+			    SELECTEDVALUE(
+			        dOperacao[Capacidade]
+			    )
+			)
+			
+			return
+			
+			valor/60
+		displayFolder: ALL\0.0.MIFC\Golpes
+		lineageTag: df43fbb0-701c-4771-8ad5-88675cf7d619
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-CNC =
+			--Produção Peças CNC Plasma
+			CALCULATE(
+			    DISTINCTCOUNT(
+			    'Produção'[RAIL_ID]),'Produção'[DESCRIPTION] ="Plasma CNC 02 Auto"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: ef8e3d59-fb3f-4aed-b83b-16578e9ca651
+
+	measure P-P-CNC = ```
+			--Paradas Programadas CNC Plasma
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "PLASMA 2 MANUAL"
+			)
+			```
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: ec651b1e-159d-45f2-9399-f1d422981736
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure D-P-CNC =
+			-- Demanda de Produção em Peças CNC
+			[P-DAF-S] * 2
+		displayFolder: ALL\0.0.MIFC\ALL\Demanda
+		lineageTag: 9fc7646f-6707-4b64-b222-9cfc56d6c64e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-R-CNC =
+			--Produção Restante CNC Plasma
+			
+			[D-P-CNC] - [P-CNC]
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: 99091e9a-606e-4824-b763-97e3f6573752
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-D-L-CNC = ```
+			--Tempo Disponível Liquído CNC Plasma
+			
+			var valor =
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-CNC]
+			
+			var fuso = 
+			
+			[F-H] 
+			
+			return
+			
+			valor - fuso
+			
+			```
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: e1edeaf3-9f46-4625-8477-361049a2f6e4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-C-CNC =
+			--Tempo de Ciclo CNC Plasma
+			
+			[T-D-L-CNC]/[P-CNC]
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: 81a1887c-46e6-4870-b16c-dc152bea1478
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-P-M-CNC =
+			--Tempo de Produção CNC Plasma
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "CNC Plasma"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: 068b82d0-0305-4082-88dd-b985b001b8f0
+
+	measure T-R-CNC =
+			-- Tempo Restante CNC Plasma
+			
+			[T-P-M-CNC] - [T-D-L-CNC]
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: 106261e5-93d5-45c0-9fe3-bd97faf4277b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-C-R-CNC =
+			-- Tempo de Ciclo Restante CNC Plasma
+			[T-R-CNC] / [P-R-CNC]
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: 271b99c7-0a7e-4cf6-ac16-f20686bd8c69
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TKT-C-CNC =
+			-- Takt Time Cliente CNC Plasma
+			
+			[T-P-M-CNC] / [D-P-CNC]
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: 3f60279c-78d5-446a-8ead-7861824b686c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure R-C-CNC =
+			-- Regra Condicional CNC Plasma
+			CALCULATE(
+			IF(
+			    [T-C-CNC] < [TKT-C-CNC] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: b19ecfd2-b17a-4c1b-9024-ca501010ba07
+
+	measure T-B =
+			-- Tempo Beneficiador
+			
+			0
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: 6e62b916-8823-47b1-8479-dd1c8ade6145
+
+	measure T-T =
+			-- Tempo de Transporte em Dias
+			
+			4/24
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: c9566b81-6ac3-4981-83e1-4f5b6935f450
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Q-D-FH = ```
+			
+			VAR qtd_pcs = ([FH] * 2) / [Q-D-E-FH]
+			VAR qtd_resultado = [E-M-P-S]
+			RETURN
+			CALCULATE(
+			    qtd_resultado / qtd_pcs,
+			    REMOVEFILTERS('Calendar'[Date])
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: 2357d8ba-116a-4bef-b90a-e20d15b32597
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Q-D-SCA = ```
+			-- Quantidade de Dias Scania
+			
+			var qtd_dias =
+			
+			([Scania]*2)/[Q-D-E-SCA] 
+			
+			var qtd_resultado = 
+			
+			[E-M-P-S]
+			
+			return
+			qtd_resultado / qtd_dias
+			```
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: f1203c78-201a-411f-af3f-cdf68e40f4aa
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Q-D-E-SCA = ```
+			--Quantidade de Dias Scania
+			CALCULATE(
+			    DISTINCTCOUNT(Scania[SHIP_DATE]),
+			    Scania[SHIP_DATE] >= TODAY()
+			)
+			
+			```
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: bf9607db-bd9e-4068-bc95-123964d0b944
+
+	measure Q-D-E-FH = ```
+			--Quantidade de Dias FH
+			CALCULATE(
+			    DISTINCTCOUNT(FH[SHIP_DATE]),
+			    FH[SHIP_DATE] >= TODAY()
+			)
+			
+			```
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: adfd9b54-99ad-4109-913e-752227e4b4ca
+
+	measure Q-D-E-VM = ```
+			--Quantidade de Dias VM
+			CALCULATE(
+			    DISTINCTCOUNT(VM[SHIP_DATE]),
+			    VM[SHIP_DATE] >= TODAY()
+			)
+			
+			```
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: b993d672-a525-4605-8687-44b368737997
+
+	measure Q-D-VM = ```
+			-- Quantidade de Dias VM
+			
+			var qtd_pcs = 
+			
+			([VM] * 2)/[Q-D-E-VM]
+			
+			var qtd_resultado = 
+			
+			[E-M-P-S]
+			
+			return
+			
+			qtd_resultado / qtd_pcs
+			```
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: c889564f-36c9-49f7-b6dd-626e2cfaca77
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Q-D-E-DAF = ```
+			--Quantidade de Dias DAF
+			
+			CALCULATE(
+			    DISTINCTCOUNT(DAF[SHIP_DATE]),
+			    DAF[SHIP_DATE] >= DATEVALUE(TODAY())
+			)
+			
+			```
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: 09823078-2487-47aa-bc4e-640db839d5db
+
+	measure Q-D-DAF = ```
+			-- Quantidade de Dias DAF
+			
+			var qtd_pcs = 
+			
+			([DAF] * 2)/[Q-D-E-DAF]
+			
+			var qtd_resultado = 
+			
+			[E-M-P-S]
+			
+			return
+			
+			qtd_resultado / qtd_pcs
+			```
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: e4d503be-9161-4586-9578-9cd613fbd2a3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'qtd_segregação pintura' = IF(calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Processos e ENNs.ENN] = "Pintura"))=0,0,calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Processos e ENNs.ENN] = "Pintura" && Segregacao[MOTIVO] <> "RETRABALHO CONCENTRICIDADE" && Segregacao[MOTIVO] <> "FULL INNER LINER")))
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: 04297bc5-4a44-4de4-a885-c616446dd53e
+
+	measure 'qtd_segregação Furação' = if([qtd_segregação f1]+[qtd_segregação f2]= 0,0,[qtd_segregação f1]+[qtd_segregação f2])
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: ff1c7f7a-5b0a-4293-ab06-dec885b822c4
+
+	measure 'qtd_segregação f1' = calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Processos e ENNs.ENN] = "Furação 1"))
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: f5417e6c-bcbd-4559-b51b-7d423629e82e
+
+	measure 'qtd_segregação f2' = calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Processos e ENNs.ENN] = "Furação 2"))
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: 672a1ce3-05e3-40f8-96fc-2f0a79cbf1cb
+
+	measure 'qtd_segregação f3' = calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Processos e ENNs.ENN] = "Furação 3"))
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: aa0e87e3-33bc-4883-a548-57d5c9bcdad1
+
+	measure 'qtd_segregação f4' = calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Processos e ENNs.ENN] = "Furação 4"))
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: fbe44f2f-fb57-4150-990d-0220e702878f
+
+	measure 'qtd_segregação see' = if(calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Processos e ENNs.ENN] = "SEE"))=0,0,calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Processos e ENNs.ENN] = "SEE")))
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: f69918f6-85e1-4265-94db-47df57f10c2e
+
+	measure P-M-FH = ```
+			-- Peças Médios FH
+			
+			(([FH] * 2) / [Q-D-E-FH]) 
+			```
+		displayFolder: ALL\0.0.MIFC\FH\Produção
+		lineageTag: 74c7be5d-2107-4f9a-96c9-5d9db66b48db
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-M-SCA =
+			-- Peças Médios Scania
+			
+			([Scania] * 2) / [Q-D-E-SCA]
+		displayFolder: ALL\0.0.MIFC\SCANIA\Produção
+		lineageTag: 55a35dc3-7f8f-4738-9b9b-6c213ae1403a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-M-VM =
+			-- Peças Médios VM
+			
+			([VM] * 2) / [Q-D-E-VM]
+		displayFolder: ALL\0.0.MIFC\VM\Produção
+		lineageTag: 7a6f3cf2-e593-4b76-af9e-17a3561508d4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-M-DAF =
+			-- Peças Médios DAF
+			
+			([DAF] * 2) / [Q-D-E-DAF]
+		displayFolder: ALL\0.0.MIFC\DAF\Produção
+		lineageTag: 29e15639-a8fe-4135-8119-3bf1aadc7440
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Pares Kanban BEATTYS sequenciado' = ```
+			[FH] +  [Pares SCA_quadro] + [VM] + [DAF] - (sum('DAF SLITTERS'[Pares Slitter])) 
+			```
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: 7ec207c2-8290-4484-8657-9cc43459703c
+
+	measure 'Pares SCA_quadro' = [Pares_long_ref]+[Pares_long_simples]+[Pares_reforço]
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: d3923a0c-b1de-4dae-b70d-83b4ed287f03
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Pares Kanban Beattys total' = [Pares Kanban BEATTYS sequenciado] + [Pares RF2] + [Pares_base]
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: 47e776d6-44d9-4b09-9601-7a4096e24a61
+
+	measure 'Pares RF2' = DISTINCTCOUNT('Relatorio_Item RF2'[Rail id])/2
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: dea4c65d-6135-43e8-bb91-e833f8814970
+
+	measure Pares_base = (COUNTROWS(Relatorio_bases))/2
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: 64a84f6f-540b-438c-8ec1-e31c1ca3339e
+
+	measure E-B-VM =
+			-- Estoque Beatty VM
+			
+			CALCULATE(
+			    [VM],VM[local] = "Beatty Output"
+			)
+		displayFolder: ALL\0.0.MIFC\VM\Estoque
+		lineageTag: b8f33da1-ebd4-43e3-ad4d-afa1694a0f78
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure D-E-VM-B = ```
+			-- Dias de Estoque VM Beattys
+			
+			var valor = 
+			[E-B-VM]
+			
+			var producao = 
+			
+			[P-M-VM] / 2 
+			
+			RETURN
+			IF(
+			valor / producao = BLANK(),0,
+			valor / producao
+			)
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\VM\Estoque
+		lineageTag: 3f82acf1-0ed3-467f-861b-474ac03f8483
+
+	measure E-B-SCA =
+			-- Estoque Beatty Scania
+			IF(
+			CALCULATE(
+			    [Scania],SCANIA[local] = "Beatty Output") = BLANK(), 0
+			)
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: e1ed5ae3-0f68-4183-86ef-7d32271a1d39
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure D-E-SCA-B = ```
+			-- Dias de Estoque Scania Beattys
+			
+			var valor = 
+			[E-B-SCA]
+			
+			var producao = 
+			
+			[P-M-SCA] / 2 
+			
+			RETURN
+			
+			IF(
+			valor / producao = BLANK(),0,
+			valor / producao
+			)
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: 075eccda-a3f1-46b2-b382-57c8353ecaf4
+
+	measure E-B-FH =
+			-- Estoque Beatty FH
+			IF(
+			CALCULATE(
+			    [FH],FH[local] = "Beatty Output") = BLANK(), 0
+			)
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: 3ef05782-775c-4bc4-a874-e29562c1f705
+
+	measure D-E-FH-B = ```
+			-- Dias de Estoque FH Beattys
+			
+			var valor = 
+			[E-B-FH]
+			
+			var producao = 
+			
+			[P-M-FH] / 2 
+			
+			RETURN
+			IF(
+			valor/producao = BLANK(), 
+			0,
+			valor/producao
+			)
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: 78b33e71-69e2-4ca1-a8e8-7278a69769ad
+
+	measure E-B-DAF = ```
+			--Estoque Beattys DAF
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [DAF_REV2], 
+			            DAF[local] = "Beatty Output"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [DAF_REV2], 
+			        DAF[local] = "Beatty Output"
+			    )
+			)
+			
+			```
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: 87e781fa-f33e-433e-b46d-12fafeeb5365
+
+	measure DAF_REV2 = ([Total peças] / 2)
+		displayFolder: ALL\0.0.MIFC\Logística
+		lineageTag: d3329c2b-9b4e-40f0-8530-1b264426e03e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure D-E-DAF-B = ```
+			-- Dias de Estoque DAF Beattys
+			
+			var valor = 
+			[E-B-DAF]
+			
+			var producao = 
+			
+			[P-M-DAF] / 2 
+			
+			RETURN
+			
+			IF(
+			valor / producao = BLANK(),0,
+			valor / producao
+			)
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: 8d2e1f11-2923-407e-a67e-a26ae4e28099
+
+	measure T-B1 =
+			-- Tempo de Beatty 1
+			
+			([T-P-M-B1] / [D-P-B1]) / 1440
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: 239d7ece-2a6a-406e-927a-707cd310e57d
+
+	measure T-B2 =
+			-- Tempo de Beatty 2
+			
+			([T-P-M-B2] / [D-P-B2]) / 1440
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: afcab22e-a41f-4560-a627-c34ef3ca5bb5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-B3 =
+			-- Tempo de Beatty 3
+			
+			([T-P-M-B3] / [D-P-B3]) / 1440
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: 4da54ce8-f560-48c0-81af-a75f07cfd1a6
+
+	measure T-B4 =
+			-- Tempo de Beatty 4
+			
+			([T-P-M-B4] / [D-P-B4]) / 1440
+		formatString: 0.00000
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: c9f41e5d-c293-452b-bc24-7f953d773ab7
+
+	measure 'T-P.A' =
+			-- Tempo de P.A
+			
+			([T-P-M-P.A] / [D-P-P.A]) / 1440
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: 98c18069-64a4-4c3d-9699-4988612bf597
+
+	measure E-CL-DAF = ```
+			--Cantilever
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [DAF_REV2], 
+			            DAF[local] = "Cantilever"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [DAF_REV2], 
+			        DAF[local] = "Cantilever"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: 29e7ffc6-5c54-40da-b7a7-ceed8df412de
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-CL-VM = ```
+			--Cantilever
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [VM], 
+			            VM[local] = "Cantilever"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [VM], 
+			        VM[local] = "Cantilever"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\VM\Estoque
+		lineageTag: 8639fa10-f83d-4223-add9-4fcfa9675fc4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-CL-FH = ```
+			--Cantilever
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [FH], 
+			            FH[local] = "Cantilever"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [FH], 
+			        FH[local] = "Cantilever"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: 5d0705d8-d8d7-4022-b4f7-3948506da88c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-CL-SCA = ```
+			--Cantilever
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [Scania], 
+			        SCANIA[local] = "Cantilever"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [Scania], 
+			        SCANIA[local] = "Cantilever"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: 117877a0-68f2-4e7d-b3ef-d2737d8cf652
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure D-E-VM-CL = ```
+			-- Dias de Estoque VM Cantilever
+			
+			var valor = 
+			[E-CL-VM]
+			
+			var producao = 
+			
+			[P-M-VM] / 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\VM\Estoque
+		lineageTag: 79c24e19-7a5f-4305-926c-2fb9fea9e94f
+
+	measure D-E-SCA-CL = ```
+			-- Dias de Estoque Scania Cantilever
+			
+			var valor = 
+			[E-CL-SCA]
+			
+			var producao = 
+			
+			[P-M-SCA] * 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: fbe52ca4-7225-4e34-b443-b93bfd226c48
+
+	measure D-E-FH-CL = ```
+			-- Dias de Estoque FH Cantilever
+			
+			var valor = 
+			[E-CL-FH]
+			
+			var producao = 
+			
+			[P-M-FH] / 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: 39e4ea22-37c3-48e3-a8c9-9e775f4fca18
+
+	measure D-E-DAF-CL = ```
+			-- Dias de Estoque DAF Cantilever
+			
+			var valor = 
+			[E-CL-DAF]
+			
+			var producao = 
+			
+			[P-M-DAF] / 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: 5e60e095-70a5-4043-ba23-456ea10f17fd
+
+	measure E-PI-FH = ```
+			--Pintura Input 2
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [FH], 
+			            FH[local] = "Pintura Input 2"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [FH], 
+			        FH[local] = "Pintura Input 2"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\FH\Buffer
+		lineageTag: ad8b7688-85b7-4fb2-bcdf-1f3f8fe20320
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-PI-VM = ```
+			--Pintura Input 2
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [VM], 
+			            VM[local] = "Pintura Input 2"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [VM], 
+			        vm[local] = "Pintura Input 2"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\VM\Estoque
+		lineageTag: 92422a4f-177e-4c38-929f-2b445d5ab422
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-PI-SCA = ```
+			--Pintura Input 2
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [Scania], 
+			            SCANIA[local] = "Pintura Input 2"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [Scania], 
+			        SCANIA[local] = "Pintura Input 2"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\SCANIA\Buffer
+		lineageTag: c454ea70-40aa-4185-bb0a-5693bc9a116a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-PI-DAF = ```
+			--Pintura Input 2
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [DAF_REV2], 
+			            DAF[local] = "Pintura Input 2"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [DAF_REV2], 
+			        DAF[local] = "Pintura Input 2"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\DAF\Buffer
+		lineageTag: 27761911-995c-42d3-8edd-78763ee78258
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'D-E-VM-P.I' = ```
+			-- Dias de Estoque VM Pintura Input
+			
+			var valor = 
+			[E-PI-VM]
+			
+			var producao = 
+			
+			[P-M-VM] / 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\VM\Estoque
+		lineageTag: 4ef5fd35-4a96-4ca3-9f22-c8c84bcedc7d
+
+	measure 'D-E-DAF-P.I' = ```
+			-- Dias de Estoque DAF Pintura Input
+			
+			var valor = 
+			[E-PI-DAF]
+			
+			var producao = 
+			
+			[P-M-DAF] / 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: 9e80c612-8ef8-4b08-b592-8f92b3236b2b
+
+	measure 'D-E-FH-P.I' = ```
+			-- Dias de Estoque FH Pintura Input
+			
+			var valor = 
+			[E-PI-FH]
+			
+			var producao = 
+			
+			[P-M-FH] * 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: 76bd8c4e-7745-4896-aa74-efced16cd8ec
+
+	measure 'D-E-SCA-P.I' = ```
+			-- Dias de Estoque Scania Pintura Input
+			
+			var valor = 
+			[E-PI-SCA]
+			
+			var producao = 
+			
+			[P-M-SCA] / 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: 838dfe6a-410f-4810-86e0-2ed624a2b5b1
+
+	measure T-LPP2 =
+			-- Tempo de Pintura
+			
+			([T-P-M-LPP2] / [D-P-LPP2]) / 1440
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: 78d04186-80c5-41cb-9948-477c990ce56f
+
+	measure T-STJ =
+			-- Tempo de Stenhoj
+			
+			([T-P-M-STJ] / [D-P-STJ]) / 1440
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: 3dace1de-f52f-4194-9082-a2b6d3f64cc1
+
+	measure T-RF3 =
+			-- Tempo de Rollformer 3
+			
+			([T-P-M-RF3] / [D-P-RF3]) / 1440
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: 2be8a973-38fb-44e3-9507-4d7ec455b714
+
+	measure T-M =
+			-- Tempo de Movimentação
+			
+			5/1440
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: 8736f5a2-2193-4245-b4c7-581c108bddfe
+
+	measure T-CNC =
+			-- Tempo de CNC
+			
+			([T-P-M-CNC] / [D-P-CNC]) / 1440
+		formatString: 0.000
+		displayFolder: ALL\Máquinas\CNC Plasma
+		lineageTag: c1757d44-7276-4702-b676-10248cb06d6c
+
+	measure 'E-P.A-FH' = ```
+			--Buffer P.A
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [FH], 
+			            FH[local] = "Buffer P.A - B3 e B4"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [FH], 
+			        FH[local] = "Buffer P.A - B3 e B4"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\FH\Buffer
+		lineageTag: ce18d0bb-0212-4bfb-a349-05ec98ead159
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'E-P.A-SCA' = ```
+			--Buffer P.A
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [Scania], 
+			            SCANIA[local] = "Buffer P.A - B3 e B4"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [Scania], 
+			        SCANIA[local] = "Buffer P.A - B3 e B4"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\SCANIA\Buffer
+		lineageTag: 1c4fb274-38e6-4f01-b5af-25932458d1d0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'D-E-FH-P.A' = ```
+			-- Dias de Estoque VM P.A
+			
+			var valor = 
+			[E-P.A-FH]
+			
+			var producao = 
+			
+			[P-M-FH] / 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: c9809861-65d8-433b-b23c-f84f5374f4f4
+
+	measure 'D-E-SCA-P.A' = ```
+			-- Dias de Estoque Scania P.A
+			
+			var valor = 
+			[E-P.A-SCA]
+			
+			var producao = 
+			
+			[P-M-SCA] / 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: fc5941d9-d382-4232-b703-4fea73a117e7
+
+	measure E-REB-SCA = ```
+			--Buffer Rebitagem
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [Scania], 
+			            SCANIA[local] = " MTG - REB"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [Scania], 
+			        SCANIA[local] = " MTG - REB"
+			    )
+			)
+			
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\SCANIA\Buffer
+		lineageTag: 257574dc-e267-42d5-b517-c0d1908ff6c2
+
+	measure D-E-SCA-REB = ```
+			-- Dias de Estoque Scania Rebitagem
+			
+			var valor = 
+			[E-REB-SCA]
+			
+			var producao = 
+			
+			[P-M-SCA] / 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: e9357d38-9d9d-41f1-8b87-36600b594379
+
+	measure E-REB-DAF = ```
+			--Buffer Rebitagem
+			IF(
+			    ISBLANK(
+			        CALCULATE(
+			            [DAF_REV2], 
+			            DAF[local] = " MTG - REB"
+			        )
+			    ), 
+			    0,
+			    CALCULATE(
+			        [DAF_REV2], 
+			        DAF[local] = " MTG - REB"
+			    )
+			)
+			
+			```
+		displayFolder: ALL\0.0.MIFC\DAF\Buffer
+		lineageTag: 377ed282-9af4-4fa5-a92a-3bdb7c157c7c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure D-E-DAF-REB = ```
+			-- Dias de Estoque DAF Rebitagem
+			
+			var valor = 
+			[E-REB-DAF]
+			
+			var producao = 
+			
+			[P-M-DAF] / 2 
+			
+			RETURN
+			
+			valor / producao
+			```
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: 754bccea-7209-4c10-9e14-d935125a65f9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-RF2 =
+			--Produção Peças Roll Former 2
+			SUM(
+			    'Produção RF2'[_VALUE]
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: 9810f211-f362-4b8b-bd06-dd78497c89de
+
+	measure P-P-RF2 = ```
+			--Paradas Programadas na Rollformer 2
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "ROLLFORMER 2"
+			)
+			```
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: dee84847-13ab-4fda-a4b7-9d294e11e546
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure D-P-RF2 =
+			
+			CALCULATE(
+			    [T-I-FH],
+			    FH[MP] = "4-MP600450SL411-0" || FH[MP] = "4-MP600760SL445-0"
+			)
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\ALL\Demanda
+		lineageTag: 460882cd-c936-4fe2-b58d-c6121f968e66
+
+	measure T-D-L-RF2 = ```
+			--Tempo Disponível Liquído Roll Former 2
+			var valor =
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-RF2]
+			
+			var fuso = 
+			
+			[F-H]
+			
+			return
+			
+			valor - fuso
+			```
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: f3859387-f5a8-44da-996e-f856ea8944d9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-C-RF2 =
+			--Tempo de Ciclo RF2
+			
+			[T-D-L-RF2]/[P-RF2]
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: 8c424e40-bfac-48fe-909f-618ff4581457
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-P-M-RF2 =
+			--Tempo de Produção Roll Former 2
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "Roll Former 2"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: 8da76543-de6b-40ad-b893-da659925b4d2
+
+	measure TKT-C-RF2 =
+			-- Takt Time Cliente RF2
+			
+			[T-P-M-RF2] / [D-P-RF2]
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: 926619ba-26c6-43aa-9753-92219ee5fac9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-R-RF2 =
+			--Produção Restante Rollformer 2
+			
+			[D-P-RF2] - [P-RF2]
+		formatString: 0
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: 33ab6d8f-be91-449b-92cf-70b8d740ad96
+
+	measure T-R-RF2 =
+			-- Tempo Restante Rollformer 2
+			
+			[T-P-M-RF2] - [T-D-L-RF2]
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: 2b8efc59-1323-4cdb-8b4c-4b4de2aa0a54
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-C-R-RF2 =
+			-- Tempo de Ciclo Restante RF2
+			[T-R-RF2] / [P-R-RF2]
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: 1c65b40b-51e0-47da-8e43-d2ccf710de4f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure R-C-RF2 =
+			-- Regra Condicional RF2
+			CALCULATE(
+			IF(
+			    [T-C-RF2] < [TKT-C-RF2] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\Roll Former 2
+		lineageTag: 5c1eae37-4e4e-4b26-9171-eecd79187202
+
+	measure P-LCT =
+			--Produção Peças LCT
+			SUM(
+			    'Produção LCT'[_VALUE]
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: ce3aae22-fb49-4159-a97f-37e11306951f
+
+	measure P-P-LCT = ```
+			--Paradas Programadas na LCT
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[CODIGO] IN {"L9", "O3", "M6", "O2"} && 
+			    Paradas[OPERAÇÃO] = "LCT"
+			)
+			```
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: 98ec4c15-b79d-4c93-ab26-75c738d2a0fc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-P-M-LCT =
+			--Tempo de Produção LCT
+			CALCULATE(
+			
+			SUM('Máquinas'[Tempo Disponível (Min)]),
+			'Máquinas'[Máquina] = "LCT"
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: 0bf56ff1-7038-4b3a-aa50-c9be64332008
+
+	measure TKT-C-LCT =
+			-- Takt Time Cliente LCT
+			
+			[T-P-M-LCT] / [D-P-RF2]
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: f6baac06-8c0f-4048-b9b5-2b4e45a52bea
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-D-L-LCT = ```
+			--Tempo Disponível Liquído LCT
+			
+			var valor =
+			
+			
+			SUM(
+			    'Calendar'[Dia_Min]
+			) - [P-P-LCT]
+			
+			var fuso = 
+			
+			[F-H]
+			
+			
+			return
+			
+			valor - fuso
+			```
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: 023960e7-8559-4f60-a9bd-5b3271458a05
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-C-LCT =
+			--Tempo de Ciclo LCT
+			
+			[T-D-L-LCT]/[P-LCT]
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: 2369d265-3347-480d-9f09-a53438001265
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-R-LCT =
+			--Produção Restante LCT
+			
+			[D-P-RF2] - [P-LCT]
+		formatString: 0
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: bfcea049-c602-4413-9869-bbfbb421fa14
+
+	measure T-R-LCT =
+			-- Tempo Restante LCT
+			
+			[T-P-M-LCT] - [T-D-L-LCT]
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: c66d3e84-025a-49d3-8372-937c3c1557ca
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-C-R-LCT =
+			-- Tempo de Ciclo Restante LCT
+			[T-R-LCT] / [P-R-LCT]
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: 8698d80c-89af-48a0-9d6f-ed8ac47648d3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure R-C-LCT =
+			-- Regra Condicional LCT
+			CALCULATE(
+			IF(
+			    [T-C-LCT] < [TKT-C-LCT] , 1 , 0 ),
+			    'Calendar'[Date] = TODAY()
+			)
+		formatString: 0
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: 779635c5-7249-4e82-8992-f017053fce87
+
+	measure T-LCT/RF2 =
+			-- Tempo de LCT/RF2
+			
+			([T-P-M-LCT] / [D-P-RF2]) / 1440
+		formatString: 0.000
+		displayFolder: ALL\Máquinas\LCT
+		lineageTag: 3adcd50e-a668-4bdc-97ea-92d531ad18d5
+
+	measure E-P-LCT =
+			-- Estoque Pós LCT
+			
+			SUM(BI_MIFC_LCT_POS_STOCK[TOTAL])
+		displayFolder: ALL\0.0.MIFC\ALL\Estoque
+		lineageTag: 721277c8-acce-46bf-91fa-3ab5cb05a47a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-D-P-LCT =
+			-- Estoque em dias Pós LCT
+			
+			 [E-P-LCT]/[P-M-FH]
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\ALL\Estoque
+		lineageTag: 002324af-3c98-48a4-ac93-1ae2a4d05b3b
+
+	measure E-D-P-RF2 = ```
+			
+			
+			VAR pecas_rf2 = 
+			
+			[Pares RF2] * 2
+			
+			var dias = 
+			
+			pecas_rf2 / [P-M-FH] 	 
+			
+			
+			return
+			
+			dias
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\ALL\Estoque
+		lineageTag: b25fc3cd-f2b1-4643-867e-c3e6da3fc906
+
+	measure E-P-D-SCA-RF3 = ```
+			-- Estoque em Peças em Dias na Scania Pós Rollformer 3
+			
+			VAR pecas = 
+			
+			[Scania] * 2 
+			
+			var demanda = 
+			
+			[P-M-SCA-REV 2]
+			
+			return
+			
+			pecas / demanda
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: 8721d086-0e71-435e-a199-e497bc66c5c0
+
+	measure 'P-M-SCA-REV 2' =
+			-- Peças Médios Scania REV 2
+			CALCULATE(
+			
+			([Scania] * 2) / [Q-D-E-SCA] , 'Calendar'[Date]  = TODAY(),ALLEXCEPT(SCANIA,SCANIA[SHIP_DATE])
+			)
+		displayFolder: ALL\0.0.MIFC\SCANIA\Produção
+		lineageTag: 82ea7ee8-1621-4e63-8ba9-29dc7329f178
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'P-M-VM-REV 2' =
+			-- Peças Médios VM REV 2
+			CALCULATE(
+			
+			([VM] * 2) / [Q-D-E-VM] , 'Calendar'[Date]  = TODAY(),ALLEXCEPT(VM,VM[SHIP_DATE])
+			)
+		displayFolder: ALL\0.0.MIFC\VM\Produção
+		lineageTag: 662ea5c9-0856-499d-8d8b-7f800538d0da
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-P-D-VM-RF3 = ```
+			-- Estoque em Peças em Dias na VM Pós Rollformer 3
+			
+			VAR pecas = 
+			
+			[VM] * 2 
+			
+			var demanda = 
+			
+			[P-M-VM-REV 2]
+			
+			return
+			
+			pecas / demanda
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\VM\Estoque
+		lineageTag: e8ca29fb-d99a-4991-80b4-58d8e08b19b9
+
+	measure 'P-M-FH-REV 2' =
+			-- Peças Médios FH REV 2
+			CALCULATE(
+			
+			([FH] * 2) / [Q-D-E-FH] , 'Calendar'[Date]  = TODAY(),ALLEXCEPT(FH,FH[SHIP_DATE])
+			)
+		displayFolder: ALL\0.0.MIFC\FH\Produção
+		lineageTag: 8a62bdcb-58b3-464a-94fc-cb1588266502
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-P-D-FH-RF3 = ```
+			-- Estoque em Peças em Dias na FH Pós Rollformer 3
+			
+			VAR pecas = 
+			
+			[FH] * 2 
+			
+			var demanda = 
+			
+			[P-M-FH-REV 2]
+			
+			return
+			
+			pecas / demanda
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: d8372f87-95ed-4613-a843-405e0557afcf
+
+	measure 'P-M-DAF-REV 2' =
+			-- Peças Médios DAF REV 2
+			CALCULATE(
+			
+			([DAF] * 2) / [Q-D-E-DAF] , 'Calendar'[Date]  = TODAY(),ALLEXCEPT(DAF,DAF[SHIP_DATE])
+			)
+		displayFolder: ALL\0.0.MIFC\DAF\Produção
+		lineageTag: a14532c1-399b-4fa2-bc7b-efc977ca5548
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-P-D-DAF-RF3 = ```
+			-- Estoque em Peças em Dias na DAF Pós Rollformer 3
+			
+			VAR pecas = 
+			
+			[DAF] * 2 
+			
+			var demanda = 
+			
+			[P-M-DAF-REV 2]
+			
+			return
+			
+			pecas / demanda
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: bbf732bc-5af2-4a78-bf95-cfa275f13e2b
+
+	measure D-P-SCA-REB =
+			-- Demanda de Produção em Peças Scania Rebitagem
+			([P-SCA-F]) * 2
+		displayFolder: ALL\0.0.MIFC\SCANIA\Demanda
+		lineageTag: 1272c597-0ff3-4bdb-84c2-385575fbe967
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-SCA-REB =
+			-- Tempo de Scania Rebitagem
+			
+			([T-P-M-STJ] / [D-P-SCA-REB]) / 1440
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\SCANIA\Tempo
+		lineageTag: 9bededef-f04a-45d8-982d-c10f01657b00
+
+	measure D-P-DAF-REB =
+			-- Demanda de Produção em Peças DAF Rebitagem
+			([P-DAF-S]) * 2
+		displayFolder: ALL\0.0.MIFC\DAF\Demanda
+		lineageTag: e3dff6f5-2a00-48d1-9643-99063d8d80e5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-DAF-REB =
+			-- Tempo de DAF Rebitagem
+			
+			([T-P-M-STJ] / [D-P-DAF-REB]) / 1440
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\DAF\Tempo
+		lineageTag: 4f422807-3667-4bfd-9afa-77015aa97af0
+
+	measure E-P-D-SCA-STJ = ```
+			-- Estoque em Peças em Dias Scania Stenhoj
+			
+			VAR pecas = 
+			
+			[Scania] * 2 
+			
+			var demanda = 
+			
+			[P-M-SCA-REV 2]
+			
+			return
+			
+			pecas / demanda
+			```
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: bb2dba53-7921-4aa6-a8d7-d022fec15a39
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-P-D-DAF-STJ = ```
+			-- Estoque em Peças em Dias DAF Stenhoj
+			
+			VAR pecas = 
+			
+			[DAF] * 2 
+			
+			var demanda = 
+			
+			[P-M-DAF-REV 2]
+			
+			return
+			
+			pecas / demanda
+			```
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: b4ef5381-c1ae-4005-8221-3065d2a5d3d4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-P-D-FH-STJ = ```
+			-- Estoque em Peças em Dias na FH Stenhoj
+			
+			VAR pecas = 
+			
+			[FH] * 2 
+			
+			var demanda = 
+			
+			[P-M-FH-REV 2]
+			
+			return
+			
+			pecas / demanda
+			```
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: d0c7d0d2-1467-47d2-87d6-4c1ed7772900
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-EMB-VM =
+			-- Tempo de Embalagem VM
+			IF(
+			((1440 / [P-M-VM]) / 1440) = BLANK(),0,
+			(1440 / [P-M-VM]) / 1440
+			)
+		displayFolder: ALL\0.0.MIFC\VM\Tempo
+		lineageTag: 2b30f673-2ab4-4eb6-aa21-edd8fd3df32f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure qtd_segregação_fh = calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Cliente] = "FH"))
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: 3e62d53e-18c4-4307-9662-f94c9c5151b8
+
+	measure E-P-D-FH-M3 = ```
+			-- Estoque em Peças em Dias FH Mesa 3
+			
+			VAR pecas = 
+			
+			[qtd_segregação_fh]
+			var demanda = 
+			
+			[P-M-FH-REV 2]
+			return
+			
+			pecas / demanda
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: 6e2e3ac0-1348-42e5-a322-26e456639990
+
+	measure qtd_segregação_scania = calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Cliente] = "SCA"))
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: d37822f7-90b1-46f1-92ee-a2b883a2f883
+
+	measure E-P-D-SCA-M3 = ```
+			-- Estoque em Peças em Dias Scania Mesa 3
+			
+			VAR pecas = 
+			
+			[qtd_segregação_scania]
+			var demanda = 
+			
+			[P-M-SCA-REV 2]
+			return
+			
+			pecas / demanda
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: d3b96547-f921-4277-93b3-491ce92d8c2c
+
+	measure qtd_segregação_daf = calculate(DISTINCTCOUNT(Segregacao[RAIL_ID]),FILTER(Segregacao,Segregacao[Cliente] = "DAF"))
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: f0bf33a0-a367-497b-97e1-095c7ee65b0f
+
+	measure E-P-D-DAF-M3 = ```
+			-- Estoque em Peças em Dias DAF Mesa 3
+			
+			VAR pecas = 
+			
+			[qtd_segregação_daf]
+			var demanda = 
+			
+			[P-M-DAF-REV 2]
+			return
+			
+			pecas / demanda
+			```
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: 07cf6b40-6475-4c92-b946-5a4a884eb9bb
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure E-P-D-SCA-EMB = ```
+			-- Estoque em Peças em Dias Scania Embalagem
+			
+			VAR pecas = 
+			
+			[Scania] * 2
+			var demanda = 
+			
+			[P-M-SCA-REV 2]
+			return
+			
+			pecas / demanda
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\SCANIA\Estoque
+		lineageTag: e0cface2-771d-4799-a330-9cb038b18b31
+
+	measure E-P-D-FH-EMB = ```
+			-- Estoque em Peças em Dias FH Embalagem
+			
+			VAR pecas = 
+			
+			[FH] * 2
+			var demanda = 
+			
+			[P-M-FH-REV 2]
+			return
+			
+			IF(
+			pecas / demanda = BLANK(),0,
+			pecas / demanda
+			)
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\FH\Estoque
+		lineageTag: 7fa594ce-64d7-4ee5-b464-3be4afc0f843
+
+	measure T-M3 =
+			-- Tempo Mesa 3
+			
+			0
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\ALL\Tempo
+		lineageTag: 7b94ad7f-c012-43f4-9d61-518aa031cc25
+
+	measure F-H =
+			-- Fuso Horário em Minutos
+			
+			180
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\ALL\Fuso Horário
+		lineageTag: e1589272-73da-456f-9184-7b75cff21e02
+
+	measure E-P-D-DAF-EMB = ```
+			-- Estoque em Peças em Dias DAF Embalagem
+			
+			VAR pecas = 
+			
+			[DAF] * 2
+			var demanda = 
+			
+			[P-M-DAF-REV 2]
+			return
+			
+			IF(
+			pecas / demanda = BLANK(),0,
+			pecas / demanda
+			)
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\DAF\Estoque
+		lineageTag: 41fb058d-19f8-4618-afa1-60d952062392
+
+	measure E-P-D-VM-EMB = ```
+			-- Estoque em Peças em Dias VM Embalagem
+			
+			VAR pecas = 
+			
+			[VM] * 2
+			var demanda = 
+			
+			[P-M-VM-REV 2]
+			return
+			
+			IF(
+			pecas / demanda = BLANK(),0,
+			pecas / demanda
+			)
+			```
+		formatString: 0.000
+		displayFolder: ALL\0.0.MIFC\VM\Estoque
+		lineageTag: 3c1d19ab-85be-425f-9e20-af3de4bc0ebc
+
+	measure T-T-SCA = ```
+			-- Tempo Total Scania
+			    [T-T] +
+			    ([T-M] * 8) +
+			    CALCULATE(
+			        [Q-D-SCA],
+			        MP[Cliente] = "Scania"
+			    ) +
+			    CALCULATE(
+			        [E-P-D-SCA-RF3],
+			        'Operações'[Dados ] = "Roll Former 3"
+			    ) +
+			    [E-P-D-SCA-M3] +
+			    [D-E-SCA-B] +
+			    [D-E-SCA-P.A] +
+			    [D-E-SCA-CL] +
+			    [D-E-SCA-P.I] +
+			    [D-E-SCA-REB] +
+			    CALCULATE(
+			        [E-P-D-SCA-STJ],
+			        'Operações'[Dados ] = "Ag. Stenhøj"
+			    ) +
+			    CALCULATE(
+			        [E-P-D-SCA-EMB],
+			        'Operações'[Dados ] = "Estoque FG",
+			        'Dados de embarque'[Data] >= TODAY()
+			    )
+			
+			```
+		formatString: 0.00
+		displayFolder: ALL\0.0.MIFC\SCANIA\Tempo
+		lineageTag: 27d9c2a3-e2ee-4ce1-a121-71a1ea35c057
+
+	measure T-T-DAF = ```
+			-- Tempo Total DAF
+			     [T-T] +
+			    ([T-M] * 8) +
+			    CALCULATE(
+			        [Q-D-DAF],
+			        MP[Cliente] = "DAF" 
+			) +
+			    CALCULATE(
+			        [E-P-D-DAF-RF3],
+			        'Operações'[Dados ] = "Roll Former 3"
+			    ) +
+			[E-P-D-DAF-M3] +
+			    [D-E-DAF-B] +
+			    [D-E-DAF-CL] +
+			    [D-E-DAF-P.I] +
+			    [D-E-DAF-REB] +
+			
+			    CALCULATE(
+			        [E-P-D-DAF-STJ],
+			        'Operações'[Dados ] = "Ag. Stenhøj"
+			    ) + 
+			   CALCULATE(
+			    [E-P-D-DAF-EMB], 'Operações'[Dados ] = "Estoque FG",
+			    'Dados de embarque'[Data] >= TODAY()
+			   )
+			```
+		displayFolder: ALL\0.0.MIFC\DAF\Tempo
+		lineageTag: af693153-29e7-4904-8304-b09c2bdf9853
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-T-VM = ```
+			-- Tempo Total VM
+			    [T-T] +
+			    ([T-M] * 8) +
+			    CALCULATE(
+			        [Q-D-VM],
+			        MP[Cliente] = "VM"
+			    ) +
+			    CALCULATE(
+			        [E-P-D-VM-RF3],
+			        'Operações'[Dados ] = "Roll Former 3"
+			    ) +
+			    
+			    [D-E-VM-B] +
+			    [D-E-VM-CL] +
+			    [D-E-VM-P.I] +
+			    CALCULATE(
+			        [E-P-D-VM-EMB],
+			        'Operações'[Dados ] = "Estoque FG",
+			        'Dados de embarque'[Data] >= TODAY()
+			    )
+			
+			```
+		displayFolder: ALL\0.0.MIFC\VM\Tempo
+		lineageTag: 1ea5ffa4-9c4a-4a04-abb9-4077399c2c52
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-T-FH = ```
+			-- Tempo Total FH
+			    [T-T] +
+			    ([T-M] * 7) +
+			     [E-D-P-LCT]+
+			    CALCULATE(
+			        [Q-D-FH],
+			        MP[Cliente] = "FH"
+			    ) +
+			    CALCULATE(
+			        [E-D-P-RF2],MP[MP] = "4-MP600760SL445-0" || MP[MP] = "4-MP600450SL411-0",'Calendar'[Date] = TODAY()
+			    ) +
+			    CALCULATE(
+			        [E-P-D-FH-RF3],
+			        'Operações'[Dados ] = "Roll Former 3"
+			    ) +
+			    [E-P-D-FH-M3]+
+			    [D-E-FH-B] +
+			    [D-E-FH-CL] +
+			    [D-E-FH-P.I] +
+			    [D-E-FH-P.A]+
+			    CALCULATE(
+			        [E-P-D-FH-STJ],'Operações'[Dados ] = "Ag. Stenhøj"
+			    ) +
+			    CALCULATE(
+			        [E-P-D-FH-EMB],
+			        'Operações'[Dados ] = "Estoque FG",
+			        'Dados de embarque'[Data] >= TODAY()
+			    )
+			
+			```
+		displayFolder: ALL\0.0.MIFC\FH\Tempo
+		lineageTag: 1ca45be4-97f9-4a58-b4a8-ca39a1e55bf0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure M-G =
+			-- Média de Golpes
+			
+			AVERAGEX(BI_PUNCH_SCA,[T-N-P-B-M-SCA])
+		isHidden
+		displayFolder: ALL\Capacidade-Online
+		lineageTag: ed18cb80-8699-44ad-86fc-283a68c19754
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-C-H-RF3 =
+			--Tempo de Ciclo Hora RF3
+			
+			[T-L-H-RF3]/[P-RF3]
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: a57b2a70-e52f-46c5-a669-f6132f87b04d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure %P-RF3 =
+			
+			
+			([P-RF3] / [D-P-RF3])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: 80835230-80de-4bc2-9099-8d7836efd8fd
+
+	measure T-L-H-RF3 =
+			-- Tempo Liquído Hora RF3
+			(60-[P-P-RF3])
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: ec6a4742-547a-4582-ab6d-ad9e112ddb44
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure TKT-H-RF3 =
+			--Takt Time Hora RF3
+			
+			[T-L-H-RF3] / [TKT-C-RF3]
+		formatString: 0
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: eb811487-ed7a-49e8-863b-0feab48abc9d
+
+	measure Q-P-T =
+			--Quantidade de Paradas totais
+			
+			DISTINCTCOUNT(
+			    Paradas[ID_PARADA]
+			)
+		formatString: 0
+		lineageTag: bbd46be4-6a27-43e4-94f2-694c0b95fa50
+
+	measure DT-RF3 =
+			--DownTime Rollformer III
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[OPERAÇÃO] = "ROLLFORMER 3"
+			)  - [P-P-RF3]
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: 0cb6b3d9-ba8c-456c-a4ad-3156eb20d6b3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure PT-RF3 =
+			--Paradas Totais Rollformer III
+			
+			CALCULATE(
+			    SUMX(Paradas,
+			    Paradas[RETORNO] - Paradas[PARADA]) * 1440 ,
+			    Paradas[OPERAÇÃO] = "ROLLFORMER 3"
+			)
+		displayFolder: ALL\Máquinas\0.Roll Former 3
+		lineageTag: 741f78b6-862f-4dcf-b5ba-c2cba708003a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure P-S-T = ```
+			-- Peso Slliter em Toneladas
+			
+			FORMAT(DIVIDE(SUM(Lotes[PESO]), 1000), "0.0") & " ton"
+			
+			```
+		displayFolder: ALL\Logística
+		lineageTag: b9a508b8-49c3-497c-873a-fdd34a457857
+
+	measure Q-D-E-T =
+			-- Quantidade de Dias Ship Date Geral
+			
+			[Q-D-E-DAF] + [Q-D-E-FH] + [Q-D-E-SCA] + [Q-D-E-VM]
+		formatString: 0
+		displayFolder: ALL\Logística
+		lineageTag: 07e50cf2-f9aa-4213-9f8e-4c632a8f05b2
+
+	measure Q-P-ShipDate+Acum = ```
+			
+			-- Quantidade de Peças Acumuladas por Data
+			
+			CALCULATE(
+			    COUNTX(
+			        FILTER(
+			            SCANIA,
+			            SCANIA[FINISH_LENGHT] <> BLANK() && SCANIA[LOCAL] = "Slitter"
+			        ),
+			        SCANIA[CHASSIS_NUMBER]
+			    ) +
+			    COUNTX(
+			        FILTER(
+			            FH,
+			            FH[FINISH_LENGHT] <> BLANK() && FH[LOCAL] = "Slitter"
+			        ),
+			        FH[CHASSIS_NUMBER]
+			    ) +
+			    COUNTX(
+			        FILTER(
+			            VM,
+			            VM[FINISH_LENGHT] <> BLANK() && VM[LOCAL] = "Slitter"
+			        ),
+			        VM[CHASSIS_NUMBER]
+			    ) +
+			    SUMX(
+			        FILTER(
+			            'DAF SLITTERS',
+			            'DAF SLITTERS'[FINISH_LENGTH] <> BLANK() && 'DAF SLITTERS'[LOCAL] = "Slitter"
+			        ),
+			        'DAF SLITTERS'[Pares Slitter] * 2
+			    ),
+			    FILTER(
+			        ALL('Calendar'),
+			        'Calendar'[Date] <= MAX('Calendar'[Date])
+			    )
+			)
+			
+			```
+		displayFolder: ALL\Logística
+		lineageTag: 6acca57a-5e1e-4139-9c21-232331f1217a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure R-L-MP = ```
+			-- Regra Logística MP 
+			CALCULATE(
+			 [E-M-P-S],ALL(
+			    'Calendar'[Date]
+			 )
+			) - [Q-P-ShipDate+Acum]
+			```
+		displayFolder: ALL\Logística
+		lineageTag: f08b1de3-b0d0-45dc-bc08-97b7cc207ac4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure R-L-COND-MP = ```
+			-- Regra Logística Condicional MP  
+			
+			IF(
+			    [R-L-MP] <=0, " " & "Qtd" & " " & "=" & " " & ([R-L-MP] *-1) & " " & "(" &
+			    SELECTEDVALUE(
+			        'Calendar'[Date]
+			    ) & ")"
+			)
+			```
+		displayFolder: ALL\Logística
+		lineageTag: 686d4c75-2941-4663-bfa8-0412dceac73e
+
+	measure Q-G-M-SCA =
+			-- Quantidade de Golpes Médios
+			
+			 [Q-G-SCA]/[Scania]
+		displayFolder: ALL\Capacidade-Online
+		lineageTag: c0d705e4-3d83-4910-9e3a-cfd23a474ef8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure C-M-E = ```
+			-- Comprimento Peças a serem Embaladas
+			VAR soma_sca = 
+			SUMX(
+			    FILTER(
+			        SCANIA,
+			        SCANIA[FINISH_LENGHT] <> BLANK() && SCANIA[LOCAL] <> "Estoque FG"
+			    ),
+			    SCANIA[FINISH_LENGHT]
+			)
+			
+			VAR soma_fh = 
+			SUMX(
+			    FILTER(
+			        FH,
+			        FH[FINISH_LENGHT] <> BLANK() && FH[LOCAL] <> "Estoque FG"
+			    ),
+			    FH[FINISH_LENGHT]
+			)
+			
+			VAR soma_vm = 
+			SUMX(
+			    FILTER(
+			        VM,
+			        VM[FINISH_LENGHT] <> BLANK() && VM[LOCAL] <> "Estoque FG"
+			    ),
+			    VM[FINISH_LENGHT]
+			)
+			
+			VAR soma_daf = 
+			SUMX(
+			    FILTER(
+			        'DAF SLITTERS',
+			        'DAF SLITTERS'[FINISH_LENGTH] <> BLANK() && 'DAF SLITTERS'[LOCAL] <> "Estoque FG"
+			    ),
+			    ('DAF SLITTERS'[Pares Slitter] * 2) * 'DAF SLITTERS'[FINISH_LENGTH]
+			)
+			
+			RETURN
+			    soma_sca + soma_fh + soma_vm + soma_daf
+			
+			```
+		lineageTag: 10adb73f-ba3c-4897-bbba-9644c2f521e9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Q-P-E =
+			-- Peças a serem Embaladas
+			
+			CALCULATE(
+			    [Scania] ,
+			    SCANIA[local] <> "Estoque FG"
+			) +
+			CALCULATE(
+			    [FH] ,
+			    FH[local] <> "Estoque FG"
+			)+
+			CALCULATE(
+			    [VM] ,
+			    VM[local] <> "Estoque FG"
+			)+
+			CALCULATE(
+			    [DAF] ,
+			    DAF[Local] <> "Estoque FG"
+			)
+		formatString: 0
+		lineageTag: 87faf497-d362-4c66-ad08-81c03413825e
+
+	measure Q-P-R = ```
+			-- Quantidade Reforçada
+			
+			(CALCULATE(
+			    COUNTROWS(SCANIA),
+			    SCANIA[TIPO] = "Reforço" && SCANIA[local] <> "Estoque FG"
+			) / 2) +
+			(CALCULATE(
+			    COUNTROWS(FH),
+			    FH[TIPO] = "Reforço" && FH[local] <> "Estoque FG"
+			) / 2) +
+			(CALCULATE(
+			    COUNTROWS(VM),
+			    VM[Tipo] = "Reforço" && VM[local] <> "Estoque FG"
+			) / 2) +
+			(CALCULATE(
+			    COUNTROWS(DAF),
+			    DAF[RAIL_TYPE_DESCRIPTION] = "Reforço" && DAF[Local] <> "Estoque FG"
+			) / 2)
+			
+			```
+		lineageTag: 3229947b-f3ae-4073-b3a5-7d51c5f7568a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'qtd_segregação cc' =
+			CALCULATE(
+			    DISTINCTCOUNT(Segregacao[RAIL_ID]),Segregacao[Processos e ENNs.ENN] = "Corte e Conformação"
+			)
+		formatString: 0
+		displayFolder: ALL\0.0.MIFC\Qualidade
+		lineageTag: aa450e5a-d6b2-4cbd-99ff-ce8ac93e6965
+
+	measure Q-D-S-RF2 = ```
+			-- Quantidade de Dias Segregados RF2    
+			DIVIDE(
+			    CALCULATE(
+			        [qtd_segregação cc],
+			        FILTER(Segregacao, Segregacao[LOCATION] = "Rollformer 2")
+			    ),
+			    CALCULATE(
+			        [D-P-RF2],
+			        'Calendar'[Date] = TODAY()
+			    )
+			)
+			
+			```
+		formatString: 0.000
+		lineageTag: aa812100-c5c8-49b2-a7bd-405651980e1f
+
+	measure Q-D-S-LPP2 = ```
+			-- Quantidade de Dias Segregados Pintura
+			DIVIDE(
+			    CALCULATE(
+			        [qtd_segregação pintura],
+			        FILTER(
+			            Segregacao, 
+			            Segregacao[LOCATION] = "Pintura Input 2" || Segregacao[LOCATION] = "Pintura Output 2"
+			        )
+			    ),
+			    CALCULATE(
+			        [D-P-LPP2],
+			        'Calendar'[Date] = TODAY()
+			    )
+			)
+			
+			```
+		formatString: 0.000
+		lineageTag: 414c2a79-a0f9-4d5d-8e1f-7da3e08c6397
+
+	measure T-N-E-P = ```
+			-- Tempo Necessário para embalar peças
+			
+			
+			    [T-N-E-P-DAF] + [T-N-E-P-FH] + [T-N-E-P-SCA] 
+			```
+		formatString: 0.0
+		lineageTag: 038efeae-7858-4355-8daf-185dd946800e
+
+	measure Carros_DAF_CARGA = ((SUM(DAF[QTD long Reforçada]))/2)+((SUM(DAF[QTD long SIMPLES]))/2) + CALCULATE(sum('DAF SLITTERS'[Pares Slitter]),FILTER('DAF SLITTERS', 'DAF SLITTERS'[RAIL_TYPE]="M"))
+		lineageTag: bd9b4b64-574c-4053-be0c-1922517548f6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Carros_FH_CARGA = CALCULATE(DISTINCTCOUNT(FH[CHASSIS_NUMBER]))
+		formatString: 0
+		lineageTag: 1f3d722a-95d4-40a9-93fd-91403a624231
+
+	measure Carros_VM_CARGA = CALCULATE(DISTINCTCOUNT(VM[CHASSIS_NUMBER]))
+		formatString: 0
+		lineageTag: f6d59b90-a450-4e97-868b-7b07f2f3f9d8
+
+	measure Carros_SCASB_CARGA =
+			// Conta o número de chassis que não se repetem para o cliente scania
+			
+			
+			CALCULATE(DISTINCTCOUNT(SCANIA[CHASSIS_NUMBER]))
+		formatString: 0
+		lineageTag: 597cc061-9e5f-48f8-94dd-ecc67276bef4
+
+	measure Carros_SCASB_CARGA_N-EMB =
+			// Conta o número de chassis que não se repetem para o cliente scania que não estão na embalagem
+			
+			
+			CALCULATE(DISTINCTCOUNT(SCANIA[CHASSIS_NUMBER]),SCANIA[local_revisado stenhoj] <> "Estoque FG" && SCANIA[local_revisado stenhoj] <> BLANK())
+		formatString: 0
+		lineageTag: 92a9a85e-97aa-4a4e-9ec6-2f26151f06c5
+
+	measure Carros_VM_CARGA_N-EMB = CALCULATE(DISTINCTCOUNT(VM[CHASSIS_NUMBER]),VM[local]<>"Estoque FG")
+		formatString: 0
+		lineageTag: 61c75bdd-7471-4a39-ba8f-cb5c8f84f917
+
+	measure Carros_FH_CARGA_N-EMB = CALCULATE(DISTINCTCOUNT(FH[CHASSIS_NUMBER]),FH[local]<>"Estoque FG")
+		formatString: 0
+		lineageTag: 269bc64b-ff7e-4045-893b-2b1c6e0e77b0
+
+	measure T-N-E-P-VM = ```
+			-- Tempo Necessário para embalar carros VM
+			    CALCULATE(
+			        [Q-P-R], 
+			        VM[local] <> "Estoque FG", 
+			        MP[Cliente] = "VM"
+			
+			    ) * 
+			    CALCULATE(
+			        SUM('Emb Reta'[Tempo de processamento (min)]), 
+			        'Emb Reta'[Cliente] = "Volvo VM Reforçada"
+			    )
+			 +
+			(
+			    CALCULATE(
+			        ([Carros_VM_CARGA] - [Q-P-R]), 
+			        VM[local] <> "Estoque FG", 
+			        MP[Cliente] = "VM"
+			    ) * 
+			    CALCULATE(
+			        SUM('Emb Reta'[Tempo de processamento (min)]), 
+			        'Emb Reta'[Cliente] = "Volvo VM Simples"
+			    ))
+			```
+		formatString: 0.0
+		lineageTag: 9564f384-4723-4fcd-8fc4-1d59908323dd
+
+	measure T-N-E-P-FH = ```
+			-- Tempo Necessário para embalar carros FH
+			
+			
+			    (CALCULATE(
+			        [Q-P-R], 
+			        FH[local] <> "Estoque FG", 
+			        FH[Tipo] = "Reforço",
+			        MP[Cliente] = "FH"
+			    ) * 
+			    CALCULATE(
+			        SUM('Emb Offset'[Tempo de processamento (min)]), 
+			        'Emb Offset'[Cliente] = "Volvo FH Reforçado"
+			    ) 
+			) +
+			(
+			    (CALCULATE(
+			        ([Carros_FH_CARGA] - [Q-P-R]), 
+			        FH[local] <> "Estoque FG", 
+			        FH[Tipo] <> "Reforço",
+			        MP[Cliente] = "FH"
+			    ) * 
+			    CALCULATE(
+			        SUM('Emb Offset'[Tempo de processamento (min)]), 
+			        'Emb Offset'[Cliente] = "Volvo FH Simples"
+			    )
+			))
+			```
+		formatString: 0.0
+		lineageTag: fa277433-03b0-4c94-a7cf-eb88f2c75fef
+
+	measure T-N-E-P-SCA = ```
+			-- Tempo Necessário para embalar carros Scania
+			
+			
+			    (CALCULATE(
+			    [Carros_SCASB_CARGA],
+			    SCANIA[local] <> "Estoque FG",
+			    MP[Cliente] = "Scania"
+			    ) * 
+			   CALCULATE(
+			        SUM('Emb Offset'[Tempo de processamento (min)]), 
+			        'Emb Offset'[Cliente] = "Scania"
+			   )
+			    )
+			```
+		formatString: 0.0
+		lineageTag: 3e0b9d28-f35f-40ff-88e9-e17610ba1041
+
+	measure T-N-E-P-DAF = ```
+			-- Tempo Necessário para embalar carros DAF
+			
+			(
+			    CALCULATE(
+			        [Carros_DAF_CARGA], 
+			        DAF[Local] <> "Estoque FG"
+			    
+			    ) * 
+			    CALCULATE(
+			        SUM('Emb Offset'[Tempo de processamento (min)]), 
+			        'Emb Offset'[Cliente] = "DAF",
+			        MP[Cliente] = "DAF"
+			    )
+			)
+			```
+		lineageTag: 685f55ff-4afb-4cda-944c-15fbe4a9fb01
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Carros_DAF_CARGA_N-EMB = ```
+			
+			CALCULATE(
+			    (SUM(DAF[QTD long Reforçada])/2) + 
+			    (SUM(DAF[QTD long SIMPLES])/2) + 
+			    SUMX(
+			        FILTER('DAF SLITTERS', 'DAF SLITTERS'[RAIL_TYPE] = "M"), 
+			        'DAF SLITTERS'[Pares Slitter]
+			    ),DAF[Local] <> "Estoque FG"
+			)
+			
+			```
+		lineageTag: 3da46597-1ee6-4090-8f65-00037fde9453
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure T-N-E-P-H = ```
+			-- Tempo Necessário para embalar peças (horas)
+			
+			VAR horas =
+			    [T-N-E-P-DAF] + [T-N-E-P-FH] + [T-N-E-P-SCA] 
+			
+			    return
+			
+			    horas / 60
+			```
+		formatString: 0.0
+		lineageTag: 11399bd1-2a49-4348-857e-857327fc1121
+
+	measure Carros_Total_N-EMB = ```
+			
+			
+			 [Carros_SCASB_CARGA_N-EMB] + [Carros_FH_CARGA_N-EMB] + [Carros_DAF_CARGA_N-EMB]
+			```
+		lineageTag: e4c1b858-771c-42e1-81b0-03e7da86cfa8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Carros_Total-EMB = ```
+			
+			
+			 [Carros_SCASB_CARGA] + [Carros_FH_CARGA] + [Carros_DAF_CARGA]
+			```
+		lineageTag: 588d023f-0fb0-45e9-8647-eb4946a1b7fc
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Q-D-S-RF3 = ```
+			-- Quantidade de Dias Segregados RF3    
+			DIVIDE(
+			    CALCULATE(
+			        [qtd_segregação cc],
+			        FILTER(Segregacao, Segregacao[LOCATION] = "Roll Former 3")
+			    ),
+			    CALCULATE(
+			        [D-P-RF3],
+			        'Calendar'[Date] = TODAY()
+			    )
+			)
+			
+			```
+		formatString: 0.000
+		lineageTag: 0bce7ea0-8893-4c8d-b396-c911f996d584
+
+	measure Q-D-S-STJ = ```
+			-- Quantidade de Dias Segregados Stenhoj    
+			DIVIDE(
+			    CALCULATE(
+			        [qtd_segregação see],
+			        FILTER(Segregacao, Segregacao[LOCATION] = "Stenhoj")
+			    ),
+			    CALCULATE(
+			        [D-P-STJ],
+			        'Calendar'[Date] = TODAY()
+			    )
+			)
+			
+			```
+		formatString: 0.000
+		lineageTag: c085ac4c-3844-481f-a66a-1a973c4635b6
+
+	measure Q-D-S-EMB = ```
+			-- Quantidade de Dias Segregados Embalagem 
+			DIVIDE(
+			    CALCULATE(
+			        [qtd_segregação see],
+			        FILTER(Segregacao, Segregacao[LOCATION] IN {"Embalaje 1","Embalaje 3"})
+			    ),
+			    CALCULATE(
+			        [D-P-LPP2],
+			        'Calendar'[Date] = TODAY()
+			    )
+			)
+			
+			```
+		formatString: 0.000
+		lineageTag: 898b55ef-a011-402c-ac15-c3add3d1ecfa
+
+	measure Q-D-S-T = ```
+			-- Quantidade de Dias Segregados Total
+			
+			[Q-D-S-EMB] + [Q-D-S-LPP2] + [Q-D-S-RF2] + [Q-D-S-RF3] + [Q-D-S-STJ] 
+			```
+		formatString: 0.000
+		lineageTag: da3e467a-83cd-42c1-a0eb-0aa54485455c
+
+	column Column
+		formatString: 0
+		displayFolder: ALL\9.Estoque
+		lineageTag: 8b0032f0-543f-4f2a-a013-fbbe1db08f93
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 1-Measure = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = 726cdc93ecd04d13b311e523c3b18b65
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+

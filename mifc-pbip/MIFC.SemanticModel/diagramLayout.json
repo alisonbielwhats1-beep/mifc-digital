@@ -1,0 +1,358 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 3946.660919517843,
+        "y": 8298.1747151213658
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 4167.96294349992,
+            "y": 8472.0142211532311
+          },
+          "nodeIndex": "Calendar",
+          "nodeLineageTag": "302e14c2-5588-4290-b94e-d970994639a9",
+          "size": {
+            "height": 205.50701830690741,
+            "width": 234
+          },
+          "zIndex": 24
+        },
+        {
+          "location": {
+            "x": 2360.7386590368164,
+            "y": 11109.708090173554
+          },
+          "nodeIndex": "Produção",
+          "nodeLineageTag": "aad2138e-5420-4f37-ad23-67c68b76cbcd",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 28
+        },
+        {
+          "location": {
+            "x": 2617.6755524491027,
+            "y": 11106.067067626733
+          },
+          "nodeIndex": "Paradas",
+          "nodeLineageTag": "9d254059-3d80-4012-a298-75b7144c550e",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 3629.1376499538987,
+            "y": 11110.231908826179
+          },
+          "nodeIndex": "SHIPDATE",
+          "nodeLineageTag": "b89d1cac-ac36-4762-b606-d38924ece989",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 3372.7081278887822,
+            "y": 11110.502148241056
+          },
+          "nodeIndex": "DAF",
+          "nodeLineageTag": "a8c6ea9c-d527-42aa-a065-457c356bfd32",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 12
+        },
+        {
+          "location": {
+            "x": 3123.1309047010891,
+            "y": 11110.799470455728
+          },
+          "nodeIndex": "FH",
+          "nodeLineageTag": "781df3bf-a937-459d-bb13-03bd243f1fda",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 18
+        },
+        {
+          "location": {
+            "x": 2874.8239661662028,
+            "y": 11106.827030615914
+          },
+          "nodeIndex": "SCANIA",
+          "nodeLineageTag": "06af901f-3402-4e8e-93f0-04d5f8101a98",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 17
+        },
+        {
+          "location": {
+            "x": 3885.3539238127805,
+            "y": 11110.905320867405
+          },
+          "nodeIndex": "VM",
+          "nodeLineageTag": "39b448bf-7783-476d-bec3-6276f746b750",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 13
+        },
+        {
+          "location": {
+            "x": 4149.2614874300953,
+            "y": 11110.56799741276
+          },
+          "nodeIndex": "DAF SLITTERS",
+          "nodeLineageTag": "3718e71b-3612-4183-be3a-7957d46103f8",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 27
+        },
+        {
+          "location": {
+            "x": 4403.53255412486,
+            "y": 11111.267321942825
+          },
+          "nodeIndex": "Lotes",
+          "nodeLineageTag": "5557e917-c74a-4caf-bfad-0b525642876c",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 14
+        },
+        {
+          "location": {
+            "x": 1077.9517951554908,
+            "y": 10144.571788886175
+          },
+          "nodeIndex": "Operações",
+          "nodeLineageTag": "995fc521-c13c-420f-ae01-a055f920d913",
+          "size": {
+            "height": 204.1299010822886,
+            "width": 234
+          },
+          "zIndex": 20
+        },
+        {
+          "location": {
+            "x": 6690.5775563084217,
+            "y": 10161.238034219226
+          },
+          "nodeIndex": "MP",
+          "nodeLineageTag": "310df5d9-7aaa-45f8-8bce-2e5c93d5da24",
+          "size": {
+            "height": 204.16147407863286,
+            "width": 234
+          },
+          "zIndex": 22
+        },
+        {
+          "location": {
+            "x": 4659.5946367173,
+            "y": 11110.166222919092
+          },
+          "nodeIndex": "BI_OEE_SCRAP",
+          "nodeLineageTag": "b6db075a-fdc8-4f95-b7f0-1c3252e3e1d7",
+          "size": {
+            "height": 997.441865659066,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 6959.6247719429784,
+            "y": 10163.069559391213
+          },
+          "nodeIndex": "dOperacao",
+          "nodeLineageTag": "1f4b5987-a00a-46cc-b874-33f76592f865",
+          "size": {
+            "height": 203.97563003357482,
+            "width": 234
+          },
+          "zIndex": 16
+        },
+        {
+          "location": {
+            "x": 7041.6738526983709,
+            "y": 8298.36649266008
+          },
+          "nodeIndex": "Máquinas",
+          "nodeLineageTag": "8acd6a73-8ba2-45ea-bdac-3a676cb6fb98",
+          "size": {
+            "height": 210.78241973304648,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 5141.2720636540753,
+            "y": 11109.70366954472
+          },
+          "nodeIndex": "Produção LCT",
+          "nodeLineageTag": "3030a3ca-c8e9-47ce-985f-a7ad8e1e38e1",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 21
+        },
+        {
+          "location": {
+            "x": 5402.6274841221084,
+            "y": 11108.532687198203
+          },
+          "nodeIndex": "Produção RF2",
+          "nodeLineageTag": "f006eb02-d965-4a4f-9a72-54b5428955dd",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 4908.0843193439605,
+            "y": 11110.170901903515
+          },
+          "nodeIndex": "Segregacao",
+          "nodeLineageTag": "b9c24e3e-2726-4e03-ae89-4d24fcc821b7",
+          "size": {
+            "height": 998.45008118325313,
+            "width": 211.2875438150395
+          },
+          "zIndex": 23
+        },
+        {
+          "location": {
+            "x": 5237.4071920799142,
+            "y": 0
+          },
+          "nodeIndex": "Relatorio_Item RF2",
+          "nodeLineageTag": "cf178bb8-9270-4c8a-bbb8-05e5d742543c",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 5237.4071920799142,
+            "y": 0
+          },
+          "nodeIndex": "Relatorio_bases",
+          "nodeLineageTag": "3f930cc9-45c9-48f1-b5d7-828ccb14b80d",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 5237.4071920799142,
+            "y": 0
+          },
+          "nodeIndex": "BI_MIFC_LCT_POS_STOCK",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 7311.2027876829034,
+            "y": 8298.9150992201048
+          },
+          "nodeIndex": "1-Measure",
+          "size": {
+            "height": 213.15029732538824,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 6190.8003428530974,
+            "y": 11109.655398153112
+          },
+          "nodeIndex": "Dados de embarque",
+          "nodeLineageTag": "7f3c57ae-05a5-49e7-8b49-5d967aa10c01",
+          "size": {
+            "height": 1000,
+            "width": 234
+          },
+          "zIndex": 26
+        },
+        {
+          "location": {
+            "x": 5613.8474965135229,
+            "y": 8449.92515235081
+          },
+          "nodeIndex": "Base_Desc_Hora",
+          "nodeLineageTag": "4f97c824-2a56-47d9-a5bd-0df440098dc4",
+          "size": {
+            "height": 215.17929516110053,
+            "width": 234
+          },
+          "zIndex": 25
+        },
+        {
+          "location": {
+            "x": 6517.2509925274126,
+            "y": 5980.0084167621253
+          },
+          "nodeIndex": "Emb Offset",
+          "nodeLineageTag": "2733cfca-5550-4ae4-b9e2-1f8980487d1e",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 6801.2509925274126,
+            "y": 5980.0084167621253
+          },
+          "nodeIndex": "Emb Reta",
+          "nodeLineageTag": "2de46141-c22d-4318-9032-436905a80de0",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 2
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 25.523685300822486,
+      "pinKeyFieldsToTop": true,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}

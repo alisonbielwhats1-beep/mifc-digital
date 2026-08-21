@@ -1,0 +1,120 @@
+table Paradas
+	lineageTag: 9d254059-3d80-4012-a298-75b7144c550e
+
+	column OPERAÇÃO
+		dataType: string
+		lineageTag: d83d217e-cfcd-48fc-b34a-d4604374bc28
+		summarizeBy: none
+		sourceColumn: OPERAÇÃO
+
+		annotation SummarizationSetBy = Automatic
+
+	column AREA
+		dataType: string
+		lineageTag: 64763742-897b-4cdb-8344-543979cab336
+		summarizeBy: none
+		sourceColumn: AREA
+
+		annotation SummarizationSetBy = Automatic
+
+	column CODIGO
+		dataType: string
+		lineageTag: 80dc8678-8005-4ce9-98b6-677c01f83dfd
+		summarizeBy: none
+		sourceColumn: CODIGO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DESCRIÇÃO
+		dataType: string
+		lineageTag: d53a5bf4-d965-47da-a074-3cac1e73703c
+		summarizeBy: none
+		sourceColumn: DESCRIÇÃO
+
+		annotation SummarizationSetBy = Automatic
+
+	column COMENTÁRIOS
+		dataType: string
+		lineageTag: 2b55fdd6-2b53-488e-af43-4c62131282b0
+		summarizeBy: none
+		sourceColumn: COMENTÁRIOS
+
+		annotation SummarizationSetBy = Automatic
+
+	column PARADA
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: c75a3da6-635a-4d24-aabb-4bd5e741c26c
+		summarizeBy: none
+		sourceColumn: PARADA
+
+		variation Variation
+			isDefault
+			relationship: ef46a15f-5e12-4803-be92-73a73714dc7a
+			defaultHierarchy: LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column RETORNO
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 9d225df9-8171-4b89-9dba-1fa0d8b0a4a8
+		summarizeBy: none
+		sourceColumn: RETORNO
+
+		variation Variation
+			isDefault
+			relationship: 0141b489-a46a-4b27-824e-7a6ed785c881
+			defaultHierarchy: LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a00eb584-4a92-483e-ae9a-0d6ccd5f7d95
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Início da Hora'
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 58bae474-85c8-4b90-af2f-ed9b1691509c
+		summarizeBy: none
+		sourceColumn: Início da Hora
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column ID_PARADA
+		dataType: string
+		lineageTag: 8390a3ce-e4f4-4580-bb8d-bddaaf57c8ce
+		summarizeBy: none
+		sourceColumn: ID_PARADA
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Paradas = m
+		mode: import
+		queryGroup: 3-Paradas
+		source =
+				let
+				    Fonte = Oracle.Database("10.44.34.68:1522/MESBR", [HierarchicalNavigation=true]),
+				    BOMES = Fonte{[Schema="BOMES"]}[Data],
+				    BI_MFIC_PARADAS1 = BOMES{[Name="BI_MFIC_PARADAS"]}[Data],
+				    #"Tipo Alterado" = Table.TransformColumnTypes(BI_MFIC_PARADAS1,{{"PARADA", type datetime}, {"RETORNO", type datetime}}),
+				    #"Data Inserida" = Table.AddColumn(#"Tipo Alterado", "Data", each DateTime.Date([PARADA]), type date),
+				    #"Início da Hora Inserido" = Table.AddColumn(#"Data Inserida", "Início da Hora", each Time.StartOfHour([PARADA]), type datetime),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Início da Hora Inserido",{{"Início da Hora", type time}, {"ID_PARADA", type text}})
+				in
+				    #"Tipo Alterado1"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

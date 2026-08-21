@@ -1,0 +1,146 @@
+table Lotes
+	lineageTag: 5557e917-c74a-4caf-bfad-0b525642876c
+
+	column LOTE
+		dataType: string
+		lineageTag: 52204f9f-f19c-47b8-8f09-501c832e1bf2
+		summarizeBy: none
+		sourceColumn: LOTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column MP
+		dataType: string
+		lineageTag: 0d142ed9-1452-4e75-b037-5edb12236ac3
+		summarizeBy: none
+		sourceColumn: MP
+
+		annotation SummarizationSetBy = Automatic
+
+	column DESCRIPTION
+		dataType: string
+		lineageTag: db54eccc-1a9a-4cd6-904e-ffb7f3492841
+		summarizeBy: none
+		sourceColumn: DESCRIPTION
+
+		annotation SummarizationSetBy = Automatic
+
+	column ESPESSURA
+		dataType: double
+		formatString: 0.00
+		lineageTag: d0e7121b-33ec-4787-b614-3bb06f0e43b7
+		summarizeBy: sum
+		sourceColumn: ESPESSURA
+
+		annotation SummarizationSetBy = Automatic
+
+	column PESO
+		dataType: double
+		lineageTag: 25bf46d5-9e19-40f7-a625-c632f509a20e
+		summarizeBy: sum
+		sourceColumn: PESO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LARGURA
+		dataType: double
+		lineageTag: 4d59a7ab-a666-4040-8806-3b80fe29c63a
+		summarizeBy: sum
+		sourceColumn: LARGURA
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column CREATION_DATE
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4b1755df-0af2-4877-ae46-c4c0c0fc66f5
+		summarizeBy: none
+		sourceColumn: CREATION_DATE
+
+		variation Variation
+			isDefault
+			relationship: 75ee6e3a-63a6-4d7b-97a7-b1968e698631
+			defaultHierarchy: LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 20a4544d-1e0a-414b-85e9-2dac4fe4ee3d
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column MP(m) = ```
+			
+			VAR EspessuraMetros = Lotes[ESPESSURA] / 1000
+			VAR LarguraMetros = Lotes[LARGURA] / 1000
+			VAR Densidade = 7850
+			VAR Volume = Lotes[PESO] / Densidade
+			VAR Comprimento = Volume / (EspessuraMetros * LarguraMetros)
+			RETURN Comprimento
+			
+			```
+		lineageTag: e83caf5e-0a13-4efe-a004-58a988afbafe
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column SLITTERSTATUS
+		dataType: string
+		lineageTag: 1c31bc1c-c9d2-4ba3-9ca2-a12564be1268
+		summarizeBy: none
+		sourceColumn: SLITTERSTATUS
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente = RIGHT(Lotes[DESCRIPTION],3)
+		lineageTag: d9e97f44-98bf-4288-ad37-f1f075f9a77b
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column teste_cond_coluna = ```
+			
+			IF(
+			    [R-L-MP] <= 0,
+			    " Peças Faltantes = " & ([R-L-MP] * -1) & " (" & 
+			    CALCULATE(
+			        SELECTEDVALUE('Lotes'[CREATION_DATE]), 
+			        ALL('Lotes'[CREATION_DATE]), 
+			        ALL('Calendar'[Date])
+			    ) & ")",
+			    BLANK() -- Opcional: Caso o valor de [teste] não
+			)
+			```
+		lineageTag: 75b9046f-47a7-4c5b-a3e7-600ecd17390e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Lotes = m
+		mode: import
+		queryGroup: 5-Slliters
+		source =
+				let
+				    Fonte = Oracle.Database("10.44.34.68:1522/MESBR", [HierarchicalNavigation=true]),
+				    BOMES = Fonte{[Schema="BOMES"]}[Data],
+				    BI_MFIC_LOTES1 = BOMES{[Name="BI_MFIC_LOTES"]}[Data],
+				    #"Data Inserida" = Table.AddColumn(BI_MFIC_LOTES1, "Data", each DateTime.Date([CREATION_DATE]), type date)
+				in
+				    #"Data Inserida"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

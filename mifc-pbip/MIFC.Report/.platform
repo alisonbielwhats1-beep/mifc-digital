@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "MIFC"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "71008e75-d275-450c-b905-439b549ce7f8"
+  }
+}

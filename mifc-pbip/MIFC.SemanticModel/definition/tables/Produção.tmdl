@@ -1,0 +1,172 @@
+table Produção
+	lineageTag: aad2138e-5420-4f37-ad23-67c68b76cbcd
+
+	column RAIL_ID
+		dataType: string
+		lineageTag: d8fec336-6818-4c58-9cff-af5d63a5f7ad
+		summarizeBy: none
+		sourceColumn: RAIL_ID
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	column CUSTOMER_CODE
+		dataType: string
+		lineageTag: af34f7ac-632e-49d5-a871-5e23876bd13d
+		summarizeBy: none
+		sourceColumn: CUSTOMER_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column RAIL_TYPE
+		dataType: string
+		lineageTag: fc96d333-0031-47be-9419-a9d8ffdaf346
+		summarizeBy: none
+		sourceColumn: RAIL_TYPE
+
+		annotation SummarizationSetBy = Automatic
+
+	column ITEM
+		dataType: string
+		lineageTag: 3b4659d7-7a51-4a5f-a96a-55ebd4d994fe
+		summarizeBy: none
+		sourceColumn: ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column FINISH_LENGTH
+		dataType: double
+		lineageTag: 425dee47-ea0e-4021-9ce4-4958870338e6
+		summarizeBy: sum
+		sourceColumn: FINISH_LENGTH
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column CREATION_DATE
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 79a298f6-1217-40ca-a84e-aad8e20eeb36
+		summarizeBy: none
+		sourceColumn: CREATION_DATE
+
+		variation Variation
+			isDefault
+			relationship: 6fc339a1-2544-409e-b5ed-f01b27e91792
+			defaultHierarchy: LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DESCRIPTION
+		dataType: string
+		lineageTag: 82081924-66da-488b-b040-161184ef03b2
+		summarizeBy: none
+		sourceColumn: DESCRIPTION
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 4eee9353-c5ee-4b18-9e4b-5d8a7716368a
+		summarizeBy: none
+		sourceColumn: Data
+
+		variation Variation
+			isDefault
+			relationship: a79b598f-2a19-4d08-b45b-7071b2c7672f
+			defaultHierarchy: LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column MP
+		dataType: string
+		lineageTag: b0baf9d2-f034-492f-89a5-6a6db4802336
+		summarizeBy: none
+		sourceColumn: MP
+
+		annotation SummarizationSetBy = Automatic
+
+	column ITEM(m) = ```
+			
+			VAR valor = 'Produção'[FINISH_LENGTH] * 25.4
+			RETURN 
+			TRUNC(valor / 1000, 1)
+			
+			```
+		lineageTag: 4b69514f-2973-408e-87b2-fe76705389a0
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LOCATION_DATE
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 36cc69ab-2332-48e1-9974-49a3805faef5
+		summarizeBy: none
+		sourceColumn: LOCATION_DATE
+
+		variation Variation
+			isDefault
+			relationship: 6a470b2d-5237-4a0e-9d80-70de1da17d6c
+			defaultHierarchy: LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Processada
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7ccd125a-c2ac-4efd-9ec1-827acf30c425
+		summarizeBy: none
+		sourceColumn: Data_Processada
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Início da Hora'
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 744bf146-f080-477f-ad68-6ab4b7aed2ec
+		summarizeBy: none
+		sourceColumn: Início da Hora
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column CHASSIS_NUMBER
+		dataType: string
+		lineageTag: 1c628723-69c6-43d5-9b7d-a78e388b2e30
+		summarizeBy: none
+		sourceColumn: CHASSIS_NUMBER
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Produção = m
+		mode: import
+		queryGroup: 4-Produção
+		source =
+				let
+				    Fonte = Oracle.Database("10.44.34.68:1522/MESBR", [HierarchicalNavigation=true]),
+				    BOMES = Fonte{[Schema="BOMES"]}[Data],
+				    BI_MFIC_PROD1 = BOMES{[Name="BI_MFIC_PROD"]}[Data],
+				    #"Data Inserida" = Table.AddColumn(BI_MFIC_PROD1, "Data", each DateTime.Date([CREATION_DATE]), type date),
+				    #"Data Inserida1" = Table.AddColumn(#"Data Inserida", "Data.1", each DateTime.Date([LOCATION_DATE]), type date),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Data Inserida1",{{"Data.1", "Data_Processada"}}),
+				    #"Início da Hora Inserido" = Table.AddColumn(#"Colunas Renomeadas", "Início da Hora", each Time.StartOfHour([LOCATION_DATE]), type datetime),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Início da Hora Inserido",{{"Início da Hora", type time}}),
+				    #"Reordered Columns" = Table.ReorderColumns(#"Tipo Alterado",{"CHASSIS_NUMBER", "RAIL_ID", "CUSTOMER_CODE", "RAIL_TYPE", "ITEM", "MP", "FINISH_LENGTH", "LOCATION_DATE", "CREATION_DATE", "DESCRIPTION", "Data", "Data_Processada", "Início da Hora"})
+				in
+				    #"Reordered Columns"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

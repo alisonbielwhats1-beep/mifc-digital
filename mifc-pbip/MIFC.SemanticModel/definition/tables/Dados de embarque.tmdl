@@ -1,0 +1,124 @@
+table 'Dados de embarque'
+	lineageTag: 7f3c57ae-05a5-49e7-8b49-5d967aa10c01
+
+	column Flatbed
+		dataType: string
+		lineageTag: c9f205b0-22b1-40da-a17b-fea43f25fd17
+		summarizeBy: none
+		sourceColumn: Flatbed
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 35937df0-e37f-4674-9d39-0ed193e8685c
+		summarizeBy: none
+		sourceColumn: Data
+
+		variation Variation
+			isDefault
+			relationship: 92b9924d-d858-4d53-ab6e-e746ef25e4b3
+			defaultHierarchy: LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Horário
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 0b53c18d-0da0-4216-a83b-3739216f047a
+		summarizeBy: none
+		sourceColumn: Horário
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column Data__horario
+		dataType: string
+		lineageTag: 06a684cf-c0fe-41f0-92ff-0978357db611
+		summarizeBy: none
+		sourceColumn: Data__horario
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente
+		dataType: string
+		lineageTag: 2621f5a1-0475-4172-ad4e-f8009a76a8a6
+		summarizeBy: none
+		sourceColumn: Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column5
+		dataType: string
+		lineageTag: 5de00b4d-53bb-4718-8d13-9e5c87da22ba
+		summarizeBy: none
+		sourceColumn: Column5
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column6
+		dataType: string
+		lineageTag: 44871c6d-5562-46ac-af2a-f405cb178d89
+		summarizeBy: none
+		sourceColumn: Column6
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column7
+		dataType: string
+		lineageTag: baefb282-6824-4a6d-8694-f858e812a6e2
+		summarizeBy: none
+		sourceColumn: Column7
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column8
+		dataType: string
+		lineageTag: 50b82e4c-bc64-4380-99f5-034dd5d03181
+		summarizeBy: none
+		sourceColumn: Column8
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column9
+		dataType: string
+		lineageTag: cdceec28-e1e9-4c00-adfa-bff962a581bd
+		summarizeBy: none
+		sourceColumn: Column9
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column10
+		dataType: string
+		lineageTag: 3c065f46-4c29-43fc-952e-2768639517ce
+		summarizeBy: none
+		sourceColumn: Column10
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Dados de embarque' = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents("\\metbrosawfse01\Publico\GESTÃO INFORMAÇÃO CLIENTES\ANDON LOGÍSTICA\Bi Logística\Dados excel\Programacao_embarque.xlsx"), null, true),
+				    #"Data Embarque_Sheet" = Fonte{[Item="Data Embarque",Kind="Sheet"]}[Data],
+				    #"Cabeçalhos Promovidos1" = Table.PromoteHeaders(#"Data Embarque_Sheet", [PromoteAllScalars=true]),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos1",{{"Flatbed", type text}, {"Data", type date}, {"Horário", type time}}),
+				    #"Primeiros Caracteres Inseridos" = Table.AddColumn(#"Tipo Alterado1", "Primeiros caracteres", each Text.Start([Flatbed], 3), type text),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Primeiros Caracteres Inseridos",{{"Primeiros caracteres", "Cliente"}}),
+				    #"Índice Adicionado" = Table.AddIndexColumn(#"Colunas Renomeadas","Índice", 1, 1),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Índice Adicionado",{"Índice"}),
+				    #"Removed Blank Rows" = Table.SelectRows(#"Colunas Removidas", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+				    #"Removed Blank Rows1" = Table.SelectRows(#"Removed Blank Rows", each not List.IsEmpty(List.RemoveMatchingItems(Record.FieldValues(_), {"", null}))),
+				    #"Removed Bottom Rows" = Table.RemoveLastN(#"Removed Blank Rows1",1)
+				in
+				    #"Removed Bottom Rows"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

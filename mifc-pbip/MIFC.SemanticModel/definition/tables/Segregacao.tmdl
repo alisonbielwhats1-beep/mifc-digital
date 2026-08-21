@@ -1,0 +1,175 @@
+table Segregacao
+	lineageTag: b9c24e3e-2726-4e03-ae89-4d24fcc821b7
+
+	column RAIL_ID
+		dataType: string
+		lineageTag: e2a018f9-78e6-47ae-ae54-4959b1cb37d9
+		summarizeBy: none
+		sourceColumn: RAIL_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHASSIS_NUMBER
+		dataType: string
+		lineageTag: a5adffe4-82f6-4cb6-ac42-7ce64bc193d7
+		summarizeBy: none
+		sourceColumn: CHASSIS_NUMBER
+
+		annotation SummarizationSetBy = Automatic
+
+	column LOCATION
+		dataType: string
+		lineageTag: 908f5b38-29c1-4ce1-b300-4501cef0271d
+		summarizeBy: none
+		sourceColumn: LOCATION
+
+		annotation SummarizationSetBy = Automatic
+
+	column ITEM
+		dataType: string
+		lineageTag: ec58bc98-685b-4db4-8ecc-c81043e08f35
+		summarizeBy: none
+		sourceColumn: ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'STATUS ATUAL'
+		dataType: string
+		lineageTag: b9762ed3-2861-46d0-aa10-05f78a69faf5
+		summarizeBy: none
+		sourceColumn: STATUS ATUAL
+
+		annotation SummarizationSetBy = Automatic
+
+	column LOT_ID
+		dataType: string
+		lineageTag: fe44091d-6686-4908-b3b8-df0ecb0f5991
+		summarizeBy: none
+		sourceColumn: LOT_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'DATA SEGREGAÇÃO'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f31aa8cd-000a-4edf-ad07-299a1df12a95
+		summarizeBy: none
+		sourceColumn: DATA SEGREGAÇÃO
+
+		variation Variation
+			isDefault
+			relationship: 0ac784f3-1c6e-477a-9fea-1235ccdd5321
+			defaultHierarchy: LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column MOTIVO
+		dataType: string
+		lineageTag: daaa0660-ebf8-44a0-b5ee-89ac794fdc4c
+		summarizeBy: none
+		sourceColumn: MOTIVO
+
+		annotation SummarizationSetBy = Automatic
+
+	column USERNAME
+		dataType: string
+		lineageTag: b38fc984-a6f4-430e-ab46-7e724f14cab1
+		summarizeBy: none
+		sourceColumn: USERNAME
+
+		annotation SummarizationSetBy = Automatic
+
+	column CUSTOMER_CODE
+		dataType: string
+		lineageTag: 132bda53-e308-4872-92c2-a40bc201040b
+		summarizeBy: none
+		sourceColumn: CUSTOMER_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Hora segregação'
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: e27b3941-89b9-4129-8c3a-b56fbcdcb676
+		summarizeBy: none
+		sourceColumn: Hora segregação
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 156b6e13-c1e1-42c5-9a1a-e3164f9ec850
+		summarizeBy: none
+		sourceColumn: Data
+
+		variation Variation
+			isDefault
+			relationship: 0d7f1ad0-f7c4-4a82-b4b9-580ec453665f
+			defaultHierarchy: LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Quantidade
+		dataType: int64
+		formatString: 0
+		lineageTag: 1cf60afa-83bb-4a6e-a6c9-fcc356917230
+		summarizeBy: sum
+		sourceColumn: Quantidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Processos e ENNs.ENN'
+		dataType: string
+		lineageTag: 9174a345-6f86-4338-8938-65ecb7c1a746
+		summarizeBy: none
+		sourceColumn: Processos e ENNs.ENN
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente = ```
+			
+			    IF(
+			        Segregacao[CUSTOMER_CODE] = BLANK() && Segregacao[LOCATION] = "RollFormer 2", 
+			        "FH", 
+			        IF(
+			            Segregacao[CUSTOMER_CODE] = BLANK() && Segregacao[LOCATION] = "Roll Former 3",
+			            "FH-VM/RF3",
+			            Segregacao[CUSTOMER_CODE]
+			        )
+			    )
+			
+			```
+		lineageTag: aab01c88-bce9-409b-a199-f2264959895e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Segregacao = m
+		mode: import
+		source =
+				let
+				    Fonte = Oracle.Database("10.44.34.68:1522/MESBR", [HierarchicalNavigation=true, Query="SELECT R.RAIL_ID, R.CHASSIS_NUMBER,L.DESCRIPTION AS LOCATION,I.ITEM, RS.DESCRIPTION AS ""STATUS ATUAL"", #(lf)R.LOT_ID, NCD.CREATION_DATE AS ""DATA SEGREGAÇÃO"", D.DESCRIPTION AS MOTIVO, MU.USERNAME, I.CUSTOMER_CODE#(lf)FROM NON_COMPLIANT_DETAIL NCD#(lf)INNER JOIN NON_COMPLIANT NC ON NCD.NON_COMPLIANT_ID = NC.NON_COMPLIANT_ID#(lf)INNER JOIN RAIL R ON R.RAIL_ID = NC.RAIL_ID#(lf)INNER JOIN ITEM I ON R.ITEM_ID = I.ITEM_ID#(lf)INNER JOIN DEFECTS D ON NCD.DEFECT_ID = D.DEFECT_ID#(lf)INNER JOIN RAIL_STATUS RS ON R.RAIL_STATUS_ID = RS.RAIL_STATUS_ID#(lf)INNER JOIN LOCATIONS L ON R.LOCATION_ID = L.LOCATION_ID#(lf)INNER JOIN M_USERS MU ON MU.M_USER_NUM = NCD.USER_ID_REGISTER #(lf)WHERE R.RAIL_STATUS_ID IN (8,9)#(lf)AND NCD.CREATION_DATE BETWEEN TO_DATE(SYSDATE-60) AND TO_DATE(SYSDATE+1)#(lf)AND NCD.NON_COMPLIANT_STATUS_ID = 2#(lf)ORDER BY  NCD.CREATION_DATE DESC#(lf)"]),
+				    #"Linhas Filtradas1" = Table.SelectRows(Fonte, each true),
+				    #"Hora Inserida" = Table.AddColumn(#"Linhas Filtradas1", "Hora", each DateTime.Time([DATA SEGREGAÇÃO]), type time),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Hora Inserida",{{"Hora", "Hora segregação"}}),
+				    #"Data Inserida" = Table.AddColumn(#"Colunas Renomeadas", "Data", each DateTime.Date([DATA SEGREGAÇÃO]), type date),
+				    #"Personalização Adicionada" = Table.AddColumn(#"Data Inserida", "Quantidade", each 1),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Personalização Adicionada",{{"Quantidade", Int64.Type}}),
+				    #"Consultas Mescladas" = Table.NestedJoin(#"Tipo Alterado", {"LOCATION"}, #"Processos e ENNs", {"Description"}, "Processos e ENNs", JoinKind.LeftOuter),
+				    #"Processos e ENNs Expandido" = Table.ExpandTableColumn(#"Consultas Mescladas", "Processos e ENNs", {"ENN"}, {"Processos e ENNs.ENN"}),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Processos e ENNs Expandido",{{"RAIL_ID", type text}}),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Tipo Alterado1", each true),
+				    #"Linhas Classificadas" = Table.Sort(#"Linhas Filtradas",{{"DATA SEGREGAÇÃO", Order.Ascending}}),
+				    #"Linhas Filtradas2" = Table.SelectRows(#"Linhas Classificadas", each ([RAIL_ID] <> "1896038"))
+				in
+				    #"Linhas Filtradas2"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

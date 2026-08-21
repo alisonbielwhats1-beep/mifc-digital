@@ -1,0 +1,94 @@
+table Relatorio_bases
+	lineageTag: 3f930cc9-45c9-48f1-b5d7-828ccb14b80d
+
+	column 'Rail id'
+		dataType: string
+		lineageTag: 728cdbb6-06cb-4767-ae8b-2f689b2107a2
+		summarizeBy: none
+		sourceColumn: Rail id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Item
+		dataType: string
+		lineageTag: f8cdd6a9-40db-4e90-b867-9e4b12d369ab
+		summarizeBy: none
+		sourceColumn: Item
+
+		annotation SummarizationSetBy = Automatic
+
+	column Slitter
+		dataType: string
+		lineageTag: 33010d8f-d733-45c0-a396-e15743f5635f
+		summarizeBy: none
+		sourceColumn: Slitter
+
+		annotation SummarizationSetBy = Automatic
+
+	column Lote
+		dataType: string
+		lineageTag: c7bbe24a-4936-4f14-9816-5ef40dcb09c7
+		summarizeBy: none
+		sourceColumn: Lote
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Rail type'
+		dataType: string
+		lineageTag: 23056424-2a20-46ca-99da-ab9287f210cf
+		summarizeBy: none
+		sourceColumn: Rail type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data de fabricação'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 5249fe66-2fa3-40f9-9b6e-3041e285d6e3
+		summarizeBy: none
+		sourceColumn: Data de fabricação
+
+		variation Variation
+			isDefault
+			relationship: a0eff1f4-036a-409b-aa75-ad59119f6206
+			defaultHierarchy: LocalDateTable_4c664494-c110-4144-b060-941925149f29.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: a199a3df-86b3-4032-8781-d6e4dade4a43
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7c1e1de0-38ae-414e-a633-e667f422e893
+		summarizeBy: none
+		sourceColumn: Data
+
+		variation Variation
+			isDefault
+			relationship: c55939e7-6612-4a7a-84f5-449758d05a9e
+			defaultHierarchy: LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Relatorio_bases = m
+		mode: import
+		source =
+				let
+				    Fonte = Oracle.Database("10.44.34.68:1522/MESBR", [HierarchicalNavigation=true, Query="SELECT DISTINCT R.RAIL_ID as ""Rail id"", I2.ITEM AS ""Item"", I.ITEM as ""Slitter"", R.LOT_ID as ""Lote"",#(lf)                    RT.DESCRIPTION as ""Rail type"", R.CREATION_DATE AS ""Data de fabricação"",#(lf)                    CASE WHEN R.RAIL_STATUS_ID IN (8,9) THEN 'Segregada' ELSE 'OK' END AS ""Status""#(lf)                FROM RAIL R #(lf)                    INNER JOIN ITEM I2 ON R.ITEM_ID = I2.ITEM_ID #(lf)                    INNER JOIN LOT L ON R.LOT_ID = L.LOT_ID #(lf)                    INNER JOIN ITEM I ON L.ITEM_ID = I.ITEM_ID #(lf)                    INNER JOIN RAIL_PROCESS_ATTRIBUTES RP ON R.RAIL_ID = RP.RAIL_ID #(lf)                    INNER JOIN ROLL_FORMER_SETUP RF ON RP.VALUE = RF.NAME #(lf)                    INNER JOIN RAIL_TYPE RT ON RF.RAIL_TYPE = RT.VALUE#(lf)                WHERE I2.ITEM_TYPE = 'BB' #(lf)                AND R.RAIL_STATUS_ID NOT IN (10,11)                #(lf)                AND RP.PROCESS_ATTRIBUTES_ID = 4#(lf)                AND R.CREATION_DATE > SYSDATE-365"]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"Rail id", type text}}),
+				    #"Data Inserida" = Table.AddColumn(#"Tipo Alterado", "Data", each DateTime.Date([Data de fabricação]), type date),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Data Inserida", each ([Status] = "OK"))
+				in
+				    #"Linhas Filtradas"
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,216 @@
+table FH
+	lineageTag: 781df3bf-a937-459d-bb13-03bd243f1fda
+
+	column DESCRIPTION
+		dataType: string
+		lineageTag: 24fca5b8-76db-4e3f-8ea4-a69edb8a1ef8
+		summarizeBy: none
+		sourceColumn: DESCRIPTION
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHASSIS_NUMBER
+		dataType: string
+		lineageTag: 7fb15c6a-4b6c-4c72-aa51-9b72daebfc9d
+		summarizeBy: none
+		sourceColumn: CHASSIS_NUMBER
+
+		annotation SummarizationSetBy = Automatic
+
+	column ITEM
+		dataType: string
+		lineageTag: 1da9abbc-6310-4abe-9970-60788724d54c
+		summarizeBy: none
+		sourceColumn: ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column COMPONENT
+		dataType: string
+		lineageTag: 8c2b2916-460c-438d-989e-b17290843b82
+		summarizeBy: none
+		sourceColumn: COMPONENT
+
+		annotation SummarizationSetBy = Automatic
+
+	column CUSTOMER_CODE
+		dataType: string
+		lineageTag: 37b10f05-07d9-4aac-a68e-d5713185517f
+		summarizeBy: none
+		sourceColumn: CUSTOMER_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column MP
+		dataType: string
+		lineageTag: d60cc523-fd28-4135-89b2-f41cabb1f746
+		summarizeBy: none
+		sourceColumn: MP
+
+		annotation SummarizationSetBy = Automatic
+
+	column SHIP_DATE
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0eb7ee6c-8eff-40fd-b10f-f5d328fd05fc
+		summarizeBy: none
+		sourceColumn: SHIP_DATE
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column DIA
+		dataType: string
+		lineageTag: d8fef350-7915-43c9-87c8-bf4ad1f6377b
+		summarizeBy: none
+		sourceColumn: DIA
+
+		annotation SummarizationSetBy = Automatic
+
+	column ANO
+		dataType: string
+		lineageTag: b052ad58-f96d-4726-b9e3-316a8f37e90a
+		summarizeBy: none
+		sourceColumn: ANO
+
+		annotation SummarizationSetBy = Automatic
+
+	column FLATBED
+		dataType: int64
+		formatString: 0
+		lineageTag: 08adcfe0-a37b-4559-899d-06c950c89e67
+		summarizeBy: sum
+		sourceColumn: FLATBED
+
+		annotation SummarizationSetBy = Automatic
+
+	column BUNDLE
+		dataType: int64
+		formatString: 0
+		lineageTag: c919b06d-a77e-43ff-af1f-6dda2aa7dc18
+		summarizeBy: sum
+		sourceColumn: BUNDLE
+
+		annotation SummarizationSetBy = Automatic
+
+	column PRODUCT_CLASS
+		dataType: string
+		lineageTag: 055e6d20-5bc1-4bbf-8507-14e362978ac4
+		summarizeBy: none
+		sourceColumn: PRODUCT_CLASS
+
+		annotation SummarizationSetBy = Automatic
+
+	column HAND
+		dataType: string
+		lineageTag: 1d17337d-7c5a-4500-ba7e-acba8d2d65f9
+		summarizeBy: none
+		sourceColumn: HAND
+
+		annotation SummarizationSetBy = Automatic
+
+	column LOCATION
+		dataType: string
+		lineageTag: 2e080d0d-69b2-48aa-bc37-42163c17fe5b
+		summarizeBy: none
+		sourceColumn: LOCATION
+
+		annotation SummarizationSetBy = Automatic
+
+	column REFORÇADA
+		dataType: string
+		lineageTag: d59b6542-88b6-4ecf-abd6-141a32554cea
+		summarizeBy: none
+		sourceColumn: REFORÇADA
+
+		annotation SummarizationSetBy = Automatic
+
+	column Clientes
+		dataType: string
+		lineageTag: 394ee062-13df-4774-9b97-2922a0c951e4
+		summarizeBy: none
+		sourceColumn: Clientes
+
+		annotation SummarizationSetBy = Automatic
+
+	column local
+		dataType: string
+		lineageTag: ae3396de-293b-4e5f-8dec-1e59aa33af9b
+		summarizeBy: none
+		sourceColumn: local
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo
+		dataType: string
+		lineageTag: cb16a0f3-a248-48e1-8a2d-ea4f63e44ac7
+		summarizeBy: none
+		sourceColumn: Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'DIVISÃO RF3/RF2'
+		dataType: string
+		lineageTag: 61f0c404-763d-4a45-9b7d-654b0369aa2b
+		summarizeBy: none
+		sourceColumn: DIVISÃO RF3/RF2
+
+		annotation SummarizationSetBy = Automatic
+
+	column FINISH_LENGHT
+		dataType: double
+		lineageTag: c2d62a05-3ea8-4f2a-8a81-54ddaf37c913
+		summarizeBy: sum
+		sourceColumn: FINISH_LENGHT
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'FH Flatbed_2' = ```
+			
+			IF(
+			    MONTH(FH[SHIP_DATE]) <= 9,
+			    FH[CUSTOMER_CODE] & "_" & FH[ANO] & "0" & MONTH(FH[SHIP_DATE]) & FH[DIA] & "_" & FH[FLATBED],
+			    FH[CUSTOMER_CODE] & "_" & FH[ANO] & MONTH(FH[SHIP_DATE]) & FH[DIA] & "_" & FH[FLATBED]
+			)
+			
+			```
+		lineageTag: 7babc540-01c4-494b-9253-b8fd04b64ce1
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FH = m
+		mode: import
+		queryGroup: 1-E-Kanban
+		source =
+				let
+				    Fonte = Base1,
+				    #"Linhas Filtradas2" = Table.SelectRows(Fonte, each ([Clientes] <> "SCA" and [Clientes] <> "VM")),
+				    #"Valor Substituído" = Table.ReplaceValue(#"Linhas Filtradas2","Pintura Output 2","Ag. Stenhøj",Replacer.ReplaceText,{"LOCATION"}),
+				    #"Valor Substituído1" = Table.ReplaceValue(#"Valor Substituído","Stenhoj","Ag. Emb1",Replacer.ReplaceText,{"local"}),
+				    #"Últimos caracteres inseridos" = Table.AddColumn(#"Valor Substituído1", "Últimos caracteres", each Text.End(Text.From([SHIP_DATE], "pt-BR"), 2), type text),
+				    #"Colunas Reordenadas" = Table.ReorderColumns(#"Últimos caracteres inseridos",{"DESCRIPTION", "CHASSIS_NUMBER", "ITEM", "COMPONENT", "CUSTOMER_CODE", "MP", "SHIP_DATE", "Últimos caracteres", "FLATBED", "BUNDLE", "HAND", "LOCATION", "REFORÇADA", "Clientes", "local"}),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Colunas Reordenadas",{{"Últimos caracteres", "ano"}}),
+				    #"Primeiros Caracteres Inseridos" = Table.AddColumn(#"Colunas Renomeadas", "Primeiros caracteres", each Text.Start(Text.From([SHIP_DATE], "pt-BR"), 2), type text),
+				    #"Colunas Reordenadas1" = Table.ReorderColumns(#"Primeiros Caracteres Inseridos",{"DESCRIPTION", "CHASSIS_NUMBER", "ITEM", "COMPONENT", "CUSTOMER_CODE", "MP", "SHIP_DATE", "Primeiros caracteres", "ano", "FLATBED", "BUNDLE", "HAND", "LOCATION", "REFORÇADA", "Clientes", "local"}),
+				    #"Colunas Renomeadas1" = Table.RenameColumns(#"Colunas Reordenadas1",{{"Primeiros caracteres", "DIA"}, {"ano", "ANO"}}),
+				    #"Valor Substituído2" = Table.ReplaceValue(#"Colunas Renomeadas1","VDB","VDBCL",Replacer.ReplaceText,{"CUSTOMER_CODE"}),
+				    #"Coluna Condicional Adicionada" = Table.AddColumn(#"Valor Substituído2", "Tipo", each if Text.StartsWith([ITEM], "1-L") then "Longarina" else if Text.StartsWith([ITEM], "1-R") then "Reforço" else null),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Coluna Condicional Adicionada",{{"Tipo", type text}}),
+				    #"Colunas Renomeadas2" = Table.RenameColumns(#"Tipo Alterado",{{"local", "local_1"}}),
+				    #"Coluna Condicional Adicionada1" = Table.AddColumn(#"Colunas Renomeadas2", "DIVISÃO RF3/RF2", each if [MP] = "2-MP600760SL445-0" then "FH - RF2" else "FH - RF3"),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Coluna Condicional Adicionada1",{{"DIVISÃO RF3/RF2", type text}}),
+				    #"Linhas Filtradas1" = Table.SelectRows(#"Tipo Alterado1", each true),
+				    #"Valor Substituído3" = Table.ReplaceValue(#"Linhas Filtradas1","Pintura Output 2","Ag. Stenhøj",Replacer.ReplaceText,{"local_1"}),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Valor Substituído3", each [Clientes] = "FH"),
+				    #"Colunas Renomeadas3" = Table.RenameColumns(#"Linhas Filtradas",{{"local_1", "local"}})
+				in
+				    #"Colunas Renomeadas3"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

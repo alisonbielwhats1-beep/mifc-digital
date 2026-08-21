@@ -1,0 +1,85 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup 1-E-Kanban
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup 2-Golpes_ShipDate
+
+	annotation PBI_QueryGroupOrder = 1
+
+queryGroup 3-Paradas
+
+	annotation PBI_QueryGroupOrder = 2
+
+queryGroup 4-Produção
+
+	annotation PBI_QueryGroupOrder = 3
+
+queryGroup 5-Slliters
+
+	annotation PBI_QueryGroupOrder = 4
+
+queryGroup 6-Sucatas
+
+	annotation PBI_QueryGroupOrder = 5
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["SHIPDATE","Produção","Paradas","Base1","Base2","VM","FH","DAF","DAF SIMPLES","DAF REFORÇADA","SCANIA","SCANIA SIMPLES","SCANIA REFORÇADA","DAF SLITTERS","Lotes","Operações","MP","BI_OEE_SCRAP","BI_PUNCH_SCA","BI_PUNCH_VDB","dOperacao","Máquinas","Produção RF2","Produção LCT","Segregacao","Processos e ENNs","Relatorio_Item RF2","Relatorio_bases","BI_MIFC_LCT_POS_STOCK","Dados de embarque","Base_Desc_Hora","Emb Reta","Emb Offset"]
+
+annotation PBI_ProTooling = ["DaxQueryView_Desktop","DevMode"]
+
+ref table DateTableTemplate_80b13de7-03a3-4a1a-ae69-b2445697b582
+ref table Calendar
+ref table Produção
+ref table LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11
+ref table 1-Measure
+ref table Paradas
+ref table LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114
+ref table LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4
+ref table SHIPDATE
+ref table VM
+ref table FH
+ref table DAF
+ref table SCANIA
+ref table 'DAF SLITTERS'
+ref table Lotes
+ref table LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2
+ref table LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd
+ref table Operações
+ref table LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28
+ref table MP
+ref table BI_OEE_SCRAP
+ref table LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c
+ref table dOperacao
+ref table Máquinas
+ref table 'Produção RF2'
+ref table LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e
+ref table 'Produção LCT'
+ref table LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df
+ref table Segregacao
+ref table LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa
+ref table LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0
+ref table 'Relatorio_Item RF2'
+ref table LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616
+ref table LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0
+ref table Relatorio_bases
+ref table LocalDateTable_4c664494-c110-4144-b060-941925149f29
+ref table LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66
+ref table BI_MIFC_LCT_POS_STOCK
+ref table 'Dados de embarque'
+ref table LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c
+ref table Base_Desc_Hora
+ref table LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8
+ref table 'Emb Reta'
+ref table 'Emb Offset'
+
+ref cultureInfo pt-BR
+

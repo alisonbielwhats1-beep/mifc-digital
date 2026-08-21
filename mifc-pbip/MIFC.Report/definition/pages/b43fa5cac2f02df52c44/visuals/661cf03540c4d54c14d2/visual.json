@@ -1,0 +1,153 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "661cf03540c4d54c14d2",
+  "position": {
+    "x": 0,
+    "y": 302.22222222222223,
+    "z": 1000,
+    "height": 796.66666666666663,
+    "width": 507.77777777777777,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dados de embarque"
+                    }
+                  },
+                  "Property": "Flatbed"
+                }
+              },
+              "queryRef": "Dados de embarque.Flatbed",
+              "nativeQueryRef": "Flatbed"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Q-P-E"
+                }
+              },
+              "queryRef": "1-Measure.Q-P-E",
+              "nativeQueryRef": "Q-P-E"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Carros_SCASB_CARGA"
+                }
+              },
+              "queryRef": "1-Measure.Carros_SCASB_CARGA",
+              "nativeQueryRef": "Carros_SCASB_CARGA"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Carros_SCASB_CARGA_N-EMB"
+                }
+              },
+              "queryRef": "1-Measure.Carros_SCASB_CARGA_N-EMB",
+              "nativeQueryRef": "Carga-Não-Emb",
+              "displayName": "Carga-Não-Emb"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "T-N-E-P-SCA"
+                }
+              },
+              "queryRef": "1-Measure.T-N-E-P-SCA",
+              "nativeQueryRef": "T-N-E-P-SCA"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "05b724a3aeac438d4926",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "MP"
+              }
+            },
+            "Property": "Cliente"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "m",
+              "Entity": "MP",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "m"
+                          }
+                        },
+                        "Property": "Cliente"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'Scania'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      }
+    ]
+  }
+}

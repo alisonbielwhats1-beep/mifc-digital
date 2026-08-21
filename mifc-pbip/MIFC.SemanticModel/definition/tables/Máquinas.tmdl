@@ -1,0 +1,42 @@
+table Máquinas
+	lineageTag: 8acd6a73-8ba2-45ea-bdac-3a676cb6fb98
+
+	column 'Tempo Disponivel (Hrs)'
+		dataType: double
+		lineageTag: 39aa7239-07c3-4e67-b9b4-20223b1a18d3
+		summarizeBy: sum
+		sourceColumn: Tempo Disponivel (Hrs)
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Tempo Disponível (Min)'
+		dataType: int64
+		formatString: 0
+		lineageTag: a74a0f63-c682-48fc-8683-d7c3a22cccb1
+		summarizeBy: sum
+		sourceColumn: Tempo Disponível (Min)
+
+		annotation SummarizationSetBy = Automatic
+
+	column Máquina
+		dataType: string
+		lineageTag: 270076d2-7218-41ff-907e-fe69666dd968
+		summarizeBy: none
+		sourceColumn: Máquina
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Máquinas = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents("\\metbrosawfse01\Publico\SOM\MIFC\BI MIFC\Parâmetros.xlsx"), null, true),
+				    Máquinas_Table = Fonte{[Item="Máquinas",Kind="Table"]}[Data],
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Máquinas_Table,{{"Tempo Disponivel (Hrs)", type number}, {"Tempo Disponível (Min)", Int64.Type}, {"Máquina", type text}})
+				in
+				    #"Tipo Alterado"
+
+	annotation PBI_ResultType = Table
+

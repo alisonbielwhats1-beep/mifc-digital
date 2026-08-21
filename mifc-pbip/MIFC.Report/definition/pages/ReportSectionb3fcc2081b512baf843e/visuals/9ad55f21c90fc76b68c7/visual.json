@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "9ad55f21c90fc76b68c7",
+  "position": {
+    "x": 2060,
+    "y": 660,
+    "z": 9000,
+    "height": 490,
+    "width": 350,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "card",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Scania"
+                }
+              },
+              "queryRef": "1-Medidas.Scania",
+              "nativeQueryRef": "Scania"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

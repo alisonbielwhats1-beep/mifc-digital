@@ -1,0 +1,407 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "CY23SU08",
+      "reportVersionAtImport": {
+        "visual": "1.8.84",
+        "report": "2.0.84",
+        "page": "1.3.84"
+      },
+      "type": "SharedResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "publicCustomVisuals": [
+    "ScrollingTextVisual1448795304508"
+  ],
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "CY23SU08",
+          "path": "BaseThemes/CY23SU08.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "13556648837368861.png",
+          "path": "13556648837368861.png",
+          "type": "Image"
+        },
+        {
+          "name": "Base_de_Dados7068334909365708.png",
+          "path": "Base_de_Dados7068334909365708.png",
+          "type": "Image"
+        },
+        {
+          "name": "Buffer4769535383589081.png",
+          "path": "Buffer4769535383589081.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminh_o4925486796951597.gif",
+          "path": "Caminh_o4925486796951597.gif",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_10_png10546218905441851.png",
+          "path": "Caminho_10_png10546218905441851.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_14_png8905940251749263.png",
+          "path": "Caminho_14_png8905940251749263.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_15_png4058176569433274.png",
+          "path": "Caminho_15_png4058176569433274.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_16_png2879019232333071.png",
+          "path": "Caminho_16_png2879019232333071.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_17_png6161996625180659.png",
+          "path": "Caminho_17_png6161996625180659.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_18_png8511115330118995.png",
+          "path": "Caminho_18_png8511115330118995.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_19_png40616348646096445.png",
+          "path": "Caminho_19_png40616348646096445.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_20_png2773799015429408.png",
+          "path": "Caminho_20_png2773799015429408.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_21_png03195695132143084.png",
+          "path": "Caminho_21_png03195695132143084.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_21490127266290482.png",
+          "path": "Caminho_21490127266290482.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_22_png35156699055031093.png",
+          "path": "Caminho_22_png35156699055031093.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_24_png8626504781381816.png",
+          "path": "Caminho_24_png8626504781381816.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_25_png3077122021820464.png",
+          "path": "Caminho_25_png3077122021820464.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_26_png6168477323577533.png",
+          "path": "Caminho_26_png6168477323577533.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_27_png9320351206892159.png",
+          "path": "Caminho_27_png9320351206892159.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_28_png07811494347414372.png",
+          "path": "Caminho_28_png07811494347414372.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_29_png4495223630442877.png",
+          "path": "Caminho_29_png4495223630442877.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_30_png8260616259905595.png",
+          "path": "Caminho_30_png8260616259905595.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_31_png8499817203037021.png",
+          "path": "Caminho_31_png8499817203037021.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_32_png9674599677350992.png",
+          "path": "Caminho_32_png9674599677350992.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_33_png040963608151096675.png",
+          "path": "Caminho_33_png040963608151096675.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_34_png9175810395907367.png",
+          "path": "Caminho_34_png9175810395907367.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_348101993691263756.png",
+          "path": "Caminho_348101993691263756.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_35_png42391246319261944.png",
+          "path": "Caminho_35_png42391246319261944.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_36_png6831708572754718.png",
+          "path": "Caminho_36_png6831708572754718.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_38_png16884760444319946.png",
+          "path": "Caminho_38_png16884760444319946.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_39_png94672749945092.png",
+          "path": "Caminho_39_png94672749945092.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_49201454208820918.png",
+          "path": "Caminho_49201454208820918.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_53632239864693376.png",
+          "path": "Caminho_53632239864693376.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_623992282340525484.png",
+          "path": "Caminho_623992282340525484.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_78png42682470627758384.png",
+          "path": "Caminho_78png42682470627758384.png",
+          "type": "Image"
+        },
+        {
+          "name": "Caminho_9_png05421883643932657.png",
+          "path": "Caminho_9_png05421883643932657.png",
+          "type": "Image"
+        },
+        {
+          "name": "CSN11848286527304386.png",
+          "path": "CSN11848286527304386.png",
+          "type": "Image"
+        },
+        {
+          "name": "DAF14173122415660133.png",
+          "path": "DAF14173122415660133.png",
+          "type": "Image"
+        },
+        {
+          "name": "Empilhadeira9862579856113107.png",
+          "path": "Empilhadeira9862579856113107.png",
+          "type": "Image"
+        },
+        {
+          "name": "Estoque6171397770712785.png",
+          "path": "Estoque6171397770712785.png",
+          "type": "Image"
+        },
+        {
+          "name": "Imagem124208318167737675.png",
+          "path": "Imagem124208318167737675.png",
+          "type": "Image"
+        },
+        {
+          "name": "Imagem13png6260934581442887.png",
+          "path": "Imagem13png6260934581442887.png",
+          "type": "Image"
+        },
+        {
+          "name": "Imagem17131816779736069.png",
+          "path": "Imagem17131816779736069.png",
+          "type": "Image"
+        },
+        {
+          "name": "Imagem25846293116369576.png",
+          "path": "Imagem25846293116369576.png",
+          "type": "Image"
+        },
+        {
+          "name": "Kanban4075323988578414.png",
+          "path": "Kanban4075323988578414.png",
+          "type": "Image"
+        },
+        {
+          "name": "logo_volvo4977646487436742.jpg",
+          "path": "logo_volvo4977646487436742.jpg",
+          "type": "Image"
+        },
+        {
+          "name": "METALSA_LOGO_BLACK25026070670353273.png",
+          "path": "METALSA_LOGO_BLACK25026070670353273.png",
+          "type": "Image"
+        },
+        {
+          "name": "MicrosoftTeams-image_(1)6738325678046835.png",
+          "path": "MicrosoftTeams-image_(1)6738325678046835.png",
+          "type": "Image"
+        },
+        {
+          "name": "Quadro_de_Embarque1018601080582422.png",
+          "path": "Quadro_de_Embarque1018601080582422.png",
+          "type": "Image"
+        },
+        {
+          "name": "SCANIA7863558784443276.jpg",
+          "path": "SCANIA7863558784443276.jpg",
+          "type": "Image"
+        },
+        {
+          "name": "sequencia42502257518578124.png",
+          "path": "sequencia42502257518578124.png",
+          "type": "Image"
+        },
+        {
+          "name": "seta_0143304827309159655.png",
+          "path": "seta_0143304827309159655.png",
+          "type": "Image"
+        },
+        {
+          "name": "Seta_109944964667618987.png",
+          "path": "Seta_109944964667618987.png",
+          "type": "Image"
+        },
+        {
+          "name": "Seta_38895223679820858.png",
+          "path": "Seta_38895223679820858.png",
+          "type": "Image"
+        },
+        {
+          "name": "seta_501322614730549454.png",
+          "path": "seta_501322614730549454.png",
+          "type": "Image"
+        },
+        {
+          "name": "seta_510432675985237192.png",
+          "path": "seta_510432675985237192.png",
+          "type": "Image"
+        },
+        {
+          "name": "Seta.4_png6961245380025436.png",
+          "path": "Seta.4_png6961245380025436.png",
+          "type": "Image"
+        },
+        {
+          "name": "Seta.5_png6625631132101262.png",
+          "path": "Seta.5_png6625631132101262.png",
+          "type": "Image"
+        },
+        {
+          "name": "Seta.6_png3023242813882767.png",
+          "path": "Seta.6_png3023242813882767.png",
+          "type": "Image"
+        },
+        {
+          "name": "Seta.7_png9390626742953574.png",
+          "path": "Seta.7_png9390626742953574.png",
+          "type": "Image"
+        },
+        {
+          "name": "Seta0400568374421284.png",
+          "path": "Seta0400568374421284.png",
+          "type": "Image"
+        },
+        {
+          "name": "Seta6180389218783984.png",
+          "path": "Seta6180389218783984.png",
+          "type": "Image"
+        },
+        {
+          "name": "SSP09499522613315947.png",
+          "path": "SSP09499522613315947.png",
+          "type": "Image"
+        },
+        {
+          "name": "Tabela4976141560197922.png",
+          "path": "Tabela4976141560197922.png",
+          "type": "Image"
+        },
+        {
+          "name": "Talha7447730882201573.png",
+          "path": "Talha7447730882201573.png",
+          "type": "Image"
+        },
+        {
+          "name": "TESTE_25972148063059552.png",
+          "path": "TESTE_25972148063059552.png",
+          "type": "Image"
+        },
+        {
+          "name": "TESTE6016937237616942.png",
+          "path": "TESTE6016937237616942.png",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": true,
+    "useDefaultAggregateDisplayName": true
+  }
+}

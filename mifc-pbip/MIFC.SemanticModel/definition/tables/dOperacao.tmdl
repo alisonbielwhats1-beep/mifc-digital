@@ -1,0 +1,46 @@
+table dOperacao
+	lineageTag: 1f4b5987-a00a-46cc-b874-33f76592f865
+
+	column OPERAÇÃO
+		dataType: string
+		lineageTag: 8ddb2931-e883-48d1-b15d-1eba0d4effcd
+		summarizeBy: none
+		sourceColumn: OPERAÇÃO
+
+		annotation SummarizationSetBy = Automatic
+
+	column Capacidade
+		dataType: double
+		lineageTag: 14e76b5a-5a39-423e-b5c5-406f18428a16
+		summarizeBy: sum
+		sourceColumn: Capacidade
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Tempo Abastecimento'
+		dataType: double
+		lineageTag: 201d68c3-7014-478b-b192-9e273ff177ef
+		summarizeBy: sum
+		sourceColumn: Tempo Abastecimento
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition dOperacao = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i45WcnJ1DAmJNDBU0lEyMtExBVImpkqxOnAJI5CEBRYJY6CIsaEOmDJAljAB6TDXMYPqiAUA", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Operação = _t, #"Golpes por Minuto" = _t, #"Tempo Abastecimento" = _t]),
+				    #"Changed Type2" = Table.TransformColumnTypes(Source,{{"Golpes por Minuto", type number}}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Changed Type2",{{"Operação", type text}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type",{{"Operação", "OPERAÇÃO"}, {"Golpes por Minuto", "Capacidade"}}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Renamed Columns",{{"Tempo Abastecimento", type number}}),
+				    #"Valor Substituído" = Table.ReplaceValue(#"Changed Type1","0"," ",Replacer.ReplaceText,{"OPERAÇÃO"})
+				in
+				    #"Valor Substituído"
+
+	annotation PBI_ResultType = Table
+

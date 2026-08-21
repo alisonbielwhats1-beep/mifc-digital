@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "cc01453a560e4b5ad1c1",
+  "position": {
+    "x": 148.33333333333334,
+    "y": 543.33333333333337,
+    "z": 2000,
+    "height": 176.66666666666663,
+    "width": 516.66666666666674
+  },
+  "visual": {
+    "visualType": "card",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Q-D-S-RF3"
+                }
+              },
+              "queryRef": "1-Measure.Q-D-S-RF3",
+              "nativeQueryRef": "Q-D-S-RF3"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

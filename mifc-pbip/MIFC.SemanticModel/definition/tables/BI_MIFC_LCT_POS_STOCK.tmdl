@@ -1,0 +1,53 @@
+table BI_MIFC_LCT_POS_STOCK
+	lineageTag: a61fac7b-6ac4-4bee-86e1-e09c317cbb14
+
+	column LOCATION
+		dataType: string
+		lineageTag: 365276b8-bf26-4ac3-83dd-e4b6cf932845
+		summarizeBy: none
+		sourceColumn: LOCATION
+
+		annotation SummarizationSetBy = Automatic
+
+	column TO_PRODUCE
+		dataType: double
+		lineageTag: 86915c12-0003-41f7-83d8-e017890dae5c
+		summarizeBy: sum
+		sourceColumn: TO_PRODUCE
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column NON_COMPLIANT
+		dataType: double
+		lineageTag: eb5bb99c-6dfa-45ad-9e6a-4dc06872d3ca
+		summarizeBy: sum
+		sourceColumn: NON_COMPLIANT
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column TOTAL
+		dataType: double
+		lineageTag: 96fa4e18-38e9-478d-8bd4-8eaf042082f8
+		summarizeBy: sum
+		sourceColumn: TOTAL
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition BI_MIFC_LCT_POS_STOCK = m
+		mode: import
+		source =
+				let
+				    Fonte = Oracle.Database("10.44.34.68:1522/MESBR", [HierarchicalNavigation=true]),
+				    BOMES = Fonte{[Schema="BOMES"]}[Data],
+				    BI_LCT_POS_STOCK1 = BOMES{[Name="BI_MIFC_LCT_POS_STOCK"]}[Data]
+				in
+				    BI_LCT_POS_STOCK1
+
+	annotation PBI_ResultType = Table
+

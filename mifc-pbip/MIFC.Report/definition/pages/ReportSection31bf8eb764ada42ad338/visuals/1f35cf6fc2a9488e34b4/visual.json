@@ -1,0 +1,170 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "1f35cf6fc2a9488e34b4",
+  "position": {
+    "x": 57.142857142857146,
+    "y": 220,
+    "z": 0,
+    "height": 500.00000000000006,
+    "width": 1465.7142857142858,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SCANIA"
+                    }
+                  },
+                  "Property": "CHASSIS_NUMBER"
+                }
+              },
+              "queryRef": "SCANIA.CHASSIS_NUMBER",
+              "nativeQueryRef": "CHASSIS_NUMBER"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dOperacao"
+                    }
+                  },
+                  "Property": "OPERAÇÃO"
+                }
+              },
+              "queryRef": "dOperacao.OPERAÇÃO",
+              "nativeQueryRef": "OPERAÇÃO"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FH"
+                    }
+                  },
+                  "Property": "local"
+                }
+              },
+              "queryRef": "FH.local",
+              "nativeQueryRef": "local"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "BI_PUNCH_VDB"
+                    }
+                  },
+                  "Property": "ITEM"
+                }
+              },
+              "queryRef": "BI_PUNCH_VDB.ITEM",
+              "nativeQueryRef": "ITEM"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FH"
+                    }
+                  },
+                  "Property": "SHIP_DATE"
+                }
+              },
+              "queryRef": "FH.SHIP_DATE",
+              "nativeQueryRef": "SHIP_DATE"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "T-N-P-B-M-VDB"
+                }
+              },
+              "queryRef": "1-Medidas.T-N-P-B-M-VDB",
+              "nativeQueryRef": "T-N-P-B-M-VDB"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "1-Measure"
+                    }
+                  },
+                  "Property": "Q-G-VDB"
+                }
+              },
+              "queryRef": "1-Medidas.Q-G-VDB",
+              "nativeQueryRef": "Q-G-VDB"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dOperacao"
+                  }
+                },
+                "Property": "OPERAÇÃO"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnFormatting": [
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "SCANIA.CHASSIS_NUMBER"
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,286 @@
+table SCANIA
+	lineageTag: 06af901f-3402-4e8e-93f0-04d5f8101a98
+
+	column ITEM
+		dataType: string
+		lineageTag: 5d7ad129-cb06-4f79-8d31-051d69d058e5
+		summarizeBy: none
+		sourceColumn: ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column CHASSIS_NUMBER
+		dataType: string
+		lineageTag: f7a5258d-0175-4285-b5e6-84233bfc5761
+		summarizeBy: none
+		sourceColumn: CHASSIS_NUMBER
+
+		annotation SummarizationSetBy = Automatic
+
+	column CUSTOMER_CODE
+		dataType: string
+		lineageTag: d2e6c5b9-2f18-47c7-a562-5977a3cfb9a9
+		summarizeBy: none
+		sourceColumn: CUSTOMER_CODE
+
+		annotation SummarizationSetBy = Automatic
+
+	column SHIP_DATE
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 2ddaafd2-28f6-4a25-8d8b-ca08a16bfd12
+		summarizeBy: none
+		sourceColumn: SHIP_DATE
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column PLATAFORMA
+		dataType: string
+		lineageTag: a97353e8-e718-44e2-a152-3659d3f31c58
+		summarizeBy: none
+		sourceColumn: PLATAFORMA
+
+		annotation SummarizationSetBy = Automatic
+
+	column BUNDLE
+		dataType: double
+		lineageTag: c742d682-cb33-4fbf-88a3-c6e608cbbba7
+		summarizeBy: sum
+		sourceColumn: BUNDLE
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LOCATION
+		dataType: string
+		lineageTag: d942e44e-92bd-4382-af7b-e3fcd9ce65d8
+		summarizeBy: none
+		sourceColumn: LOCATION
+
+		annotation SummarizationSetBy = Automatic
+
+	column REFORÇADA
+		dataType: string
+		lineageTag: 9e93ce1c-70d5-4b68-b642-324a8ab6450a
+		summarizeBy: none
+		sourceColumn: REFORÇADA
+
+		annotation SummarizationSetBy = Automatic
+
+	column DESCRIPTION
+		dataType: string
+		lineageTag: 103634b6-da31-4d8b-9b64-26ab682d1a7d
+		summarizeBy: none
+		sourceColumn: DESCRIPTION
+
+		annotation SummarizationSetBy = Automatic
+
+	column COMPONENT
+		dataType: string
+		lineageTag: 724137d7-e8ef-421b-ad2b-d7e6067d37db
+		summarizeBy: none
+		sourceColumn: COMPONENT
+
+		annotation SummarizationSetBy = Automatic
+
+	column MP
+		dataType: string
+		lineageTag: 5b5a4d35-f429-45c8-aebb-aa74bd125a0f
+		summarizeBy: none
+		sourceColumn: MP
+
+		annotation SummarizationSetBy = Automatic
+
+	column DIA
+		dataType: string
+		lineageTag: d8cb99eb-00c1-41f9-9816-6877fd2bcb14
+		summarizeBy: none
+		sourceColumn: DIA
+
+		annotation SummarizationSetBy = Automatic
+
+	column ANO
+		dataType: string
+		lineageTag: e84d590d-05ee-475b-96ac-264f08b9b672
+		summarizeBy: none
+		sourceColumn: ANO
+
+		annotation SummarizationSetBy = Automatic
+
+	column FLATBED
+		dataType: int64
+		formatString: 0
+		lineageTag: e0ca2577-6cde-4db3-962e-912814d642e7
+		summarizeBy: sum
+		sourceColumn: FLATBED
+
+		annotation SummarizationSetBy = Automatic
+
+	column PRODUCT_CLASS
+		dataType: string
+		lineageTag: b523969a-c84d-4ef4-ad01-d8ab036c55c8
+		summarizeBy: none
+		sourceColumn: PRODUCT_CLASS
+
+		annotation SummarizationSetBy = Automatic
+
+	column HAND
+		dataType: string
+		lineageTag: 050e0c50-d4ed-4286-a0eb-b3dd263bd176
+		summarizeBy: none
+		sourceColumn: HAND
+
+		annotation SummarizationSetBy = Automatic
+
+	column Clientes
+		dataType: string
+		lineageTag: 958374e5-ab65-4d50-976c-b7312fac1a16
+		summarizeBy: none
+		sourceColumn: Clientes
+
+		annotation SummarizationSetBy = Automatic
+
+	column local
+		dataType: string
+		lineageTag: 9099303d-9c03-44cc-902c-43b326b89572
+		summarizeBy: none
+		sourceColumn: local
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'CDG ITEM'
+		dataType: string
+		lineageTag: 2d19df1b-9b78-44f5-9a91-3ffaa23cad21
+		summarizeBy: none
+		sourceColumn: CDG ITEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column TIPO
+		dataType: string
+		lineageTag: 67c45e68-dd4e-4214-a92f-9e9abe2a340c
+		summarizeBy: none
+		sourceColumn: TIPO
+
+		annotation SummarizationSetBy = Automatic
+
+	column local_revisado = ```
+			
+			            var vvin = SCANIA[CHASSIS_NUMBER]
+			            var Vrept =   SCANIA[REPETIÇÃO]
+			            var vtipo = SCANIA[REFORÇADA]
+			            var Vmax = CALCULATE(sum(SCANIA[REPETIÇÃO]),FILTER(SCANIA,vvin = SCANIA[CHASSIS_NUMBER]  && vtipo  = "Reforçada" ))
+			return
+			      IF ( Vmax > 30 , "Estoque FG" , SCANIA[local])
+			```
+		lineageTag: 496c5b54-fc18-4372-a7b6-9a92b86ef83e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column REPETIÇÃO = ```
+			
+			            var vvin = SCANIA[CHASSIS_NUMBER]
+			        
+			return
+			            CALCULATE(count(SCANIA[CHASSIS_NUMBER]),FILTER(SCANIA, vvin = SCANIA[CHASSIS_NUMBER] ))
+			```
+		formatString: 0
+		lineageTag: d0e94031-0c54-4fb2-91ec-31bf779eeff2
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'local_revisado stenhoj' = IF(SCANIA[TIPO] = "Reforço" && SCANIA[local_revisado] = "Ag. Stenhøj","",SCANIA[local_revisado])
+		lineageTag: cfb7decb-5d7e-47c4-ae5f-a18e0f977c10
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'QTD LONG REF' = IF(SCANIA[TIPO]="Longarina",IF(SCANIA[REFORÇADA] ="Reforçada",1,0),0)
+		formatString: 0
+		lineageTag: bad1c19b-227e-4917-80d3-7fb2bb9e201e
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'QTD long SIMPLES' = IF(SCANIA[TIPO]="Longarina",if(SCANIA[REFORÇADA] = "",1,0),0)
+		formatString: 0
+		lineageTag: 57ed8c79-120e-48bc-a65c-a1f7befe98cf
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'QTD CARROS REF' = IF(SCANIA[TIPO]="Conjunto",1,0)
+		formatString: 0
+		lineageTag: 5ee885a3-6c16-49a5-9f55-a41e7d0e53ea
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'QTD REF' = ```
+			IF(SCANIA[TIPO]="Reforço",if(SCANIA[local]="Ag. Stenhøj",0,1),0) 
+			```
+		formatString: 0
+		lineageTag: 0964d5e4-565c-4679-a18a-1cc9b0902f13
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column FINISH_LENGHT
+		dataType: double
+		lineageTag: 5b7abc1d-a3fd-4398-a915-d6c27c0ba4d0
+		summarizeBy: sum
+		sourceColumn: FINISH_LENGHT
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Flatbed_2 = ```
+			
+			IF(
+			    SCANIA[PLATAFORMA] = "" && MONTH(SCANIA[SHIP_DATE]) <= 9,
+			    SCANIA[CUSTOMER_CODE] & "_" & SCANIA[ANO] & "0" & MONTH(SCANIA[SHIP_DATE]) & SCANIA[DIA] & "_" & SCANIA[FLATBED],
+			    IF(
+			        SCANIA[PLATAFORMA] = "" && MONTH(SCANIA[SHIP_DATE]) > 9,
+			        SCANIA[CUSTOMER_CODE] & "_" & SCANIA[ANO] & MONTH(SCANIA[SHIP_DATE]) & SCANIA[DIA] & "_" & SCANIA[FLATBED],
+			        SCANIA[PLATAFORMA]
+			    )
+			)
+			
+			```
+		lineageTag: 06bbdfae-b297-4dfa-ad70-2b6c622bb6b0
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition SCANIA = m
+		mode: import
+		queryGroup: 1-E-Kanban
+		source =
+				let
+				    Fonte = Oracle.Database("10.44.34.68:1522/MESBR", [Query="SELECT distinct i.ITEM,w.CHASSIS_NUMBER,I.CUSTOMER_CODE,#(lf)HT.TRAFFIC_PLAN_DATE AS SHIP_DATE, F.PLATAFORMA, R.BUNDLE,nvl(l.DESCRIPTION, ' ') AS LOCATION,#(lf)CASE #(lf)#(tab)#(tab)WHEN EXISTS (#(lf)#(tab)#(tab)#(tab)#(tab)SELECT 1#(lf)#(tab)#(tab)#(tab)#(tab)FROM OCHASSIS OC#(lf)#(tab)#(tab)#(tab)#(tab)INNER JOIN ORAIL ORR ON OC.CHASSIS_ID = ORR.CHASSIS_ID#(lf)#(tab)#(tab)#(tab)#(tab)INNER JOIN ITEM II ON II.ITEM IN (#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab)ORR.LEFT_PART_NUMBER#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab),ORR.RIGHT_PART_NUMBER#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)#(tab))#(lf)#(tab)#(tab)#(tab)#(tab)WHERE OC.CHASSIS_NUMBER = C.CHASSIS_NUMBER#(tab)#(tab)#(tab)#(tab)#(tab)#(lf)#(tab)#(tab)#(tab)#(tab)#(tab)AND II.RAIL_TYPE <> 'M'#(lf)#(tab)#(tab)#(tab)#(tab))#(lf)#(tab)#(tab)#(tab)THEN 'Reforçada'#(lf)#(tab)#(tab)ELSE 'Simples'#(lf)#(tab)#(tab)END AS REFORÇADA#(lf)FROM WORK_ORDER w#(lf)INNER JOIN ITEM i ON w.ITEM_ID = i.ITEM_ID#(lf)INNER JOIN RESOURCES re ON w.RESOURCE_ID = re.RESOURCE_ID#(lf)INNER JOIN OPERATIONS o ON re.RESOURCE_ID = o.RESOURCE_ID#(lf)INNER JOIN OCHASSIS c ON w.CHASSIS_NUMBER = c.CHASSIS_NUMBER#(lf)#(tab)AND w.SHIP_TO = c.SHIP_TO_LOC_ID#(lf)INNER JOIN FLATBED F ON C.CHASSIS_ID = F.CHASSIS_ID#(lf)INNER JOIN HT_SHIP_FLATBED@XMFG_PRODMET HT ON HT.FLATBED_CODE = F.PLATAFORMA#(lf)INNER JOIN ORAIL r ON c.CHASSIS_ID = r.CHASSIS_ID#(lf)LEFT JOIN RAIL ra ON w.JOB_ORACLE = ra.JOB_ORACLE#(lf)#(tab)AND ra.RAIL_STATUS_ID NOT IN (10,11)#(lf)LEFT JOIN LOCATIONS l ON ra.LOCATION_ID = l.LOCATION_ID#(lf)LEFT JOIN (#(lf)#(tab)SELECT DISTINCT WW.JOB_ORACLE#(lf)#(tab)#(tab),WB.RAIL_ID#(lf)#(tab)FROM WORK_ORDER WW#(lf)#(tab)INNER JOIN WORK_ORDER_BASE WB ON WW.WORK_ORDER_ID = WB.WORK_ORDER_ID#(lf)#(tab)INNER JOIN RAIL R ON R.RAIL_ID = WB.RAIL_ID#(lf)#(tab)INNER JOIN ITEM I ON R.ITEM_ID = I.ITEM_ID#(lf)#(tab)WHERE I.ITEM_TYPE = 'BB'#(lf)#(tab)) WB ON W.JOB_ORACLE = WB.JOB_ORACLE#(lf)WHERE#(lf)  r.SHIP_DATE BETWEEN (SYSDATE - 2) AND (SYSDATE + 30)#(lf)#(tab)AND W.WORK_ORDER_STATUS_ID = 2#(lf)#(lf)ORDER BY SHIP_DATE asc", CreateNavigationProperties=false]),
+				    #"Linhas Classificadas1" = Table.Sort(Fonte,{{"SHIP_DATE", Order.Descending}}),
+				    #"Linhas Filtradas2" = Table.SelectRows(#"Linhas Classificadas1", each ([CUSTOMER_CODE] = "SCA")),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Linhas Filtradas2", each Text.StartsWith([ITEM], "1-F")),
+				    #"Linhas Filtradas1" = Table.SelectRows(#"Linhas Filtradas", each ([LOCATION] = "Embalaje 1")),
+				    #"Valor Substituído" = Table.ReplaceValue(#"Linhas Filtradas1","Embalaje 1","Estoque FG",Replacer.ReplaceText,{"LOCATION"}),
+				    #"Consulta Acrescentada" = Table.Combine({#"Valor Substituído", #"SCANIA SIMPLES", #"SCANIA REFORÇADA"}),
+				    #"Valor Substituído1" = Table.ReplaceValue(#"Consulta Acrescentada",null,"Estoque FG",Replacer.ReplaceValue,{"local"}),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Valor Substituído1",{{"SHIP_DATE", type date}}),
+				    #"Primeiros Caracteres Inseridos" = Table.AddColumn(#"Tipo Alterado", "Primeiros caracteres", each Text.Start([ITEM], 3), type text),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Primeiros Caracteres Inseridos",{{"Primeiros caracteres", "CDG ITEM"}}),
+				    #"Coluna Condicional Adicionada" = Table.AddColumn(#"Colunas Renomeadas", "Personalizar", each if Text.Contains([CDG ITEM], "1-F") then "Conjunto" else if Text.Contains([CDG ITEM], "2-R") then "Reforço" else if not Text.StartsWith([CDG ITEM], "2-R") then "Longarina " else if not Text.StartsWith([CDG ITEM], "1-F") then "Longarina " else null),
+				    #"Colunas Renomeadas1" = Table.RenameColumns(#"Coluna Condicional Adicionada",{{"Personalizar", "TIPO"}}),
+				    #"Linhas Classificadas" = Table.Sort(#"Colunas Renomeadas1",{{"SHIP_DATE", Order.Descending}})
+				in
+				    #"Linhas Classificadas"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

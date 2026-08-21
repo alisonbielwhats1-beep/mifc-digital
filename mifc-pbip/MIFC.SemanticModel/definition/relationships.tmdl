@@ -1,0 +1,231 @@
+relationship 6fc339a1-2544-409e-b5ed-f01b27e91792
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Produção.CREATION_DATE
+	toColumn: LocalDateTable_2668a948-55a4-4243-aea0-6eb63a676c11.Date
+
+relationship ef46a15f-5e12-4803-be92-73a73714dc7a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Paradas.PARADA
+	toColumn: LocalDateTable_16dd9421-78f6-4ec4-aee3-dbef05408114.Date
+
+relationship 0141b489-a46a-4b27-824e-7a6ed785c881
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Paradas.RETORNO
+	toColumn: LocalDateTable_bc64b178-b28a-4340-a003-2741b5ebdaf4.Date
+
+relationship 75ee6e3a-63a6-4d7b-97a7-b1968e698631
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Lotes.CREATION_DATE
+	toColumn: LocalDateTable_fb1561db-ee56-4754-bed0-b82cd47e4fe2.Date
+
+relationship 6a470b2d-5237-4a0e-9d80-70de1da17d6c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Produção.LOCATION_DATE
+	toColumn: LocalDateTable_883ca700-0662-4673-a7eb-af975f9b37dd.Date
+
+relationship 45931c34-0cc3-4049-8c8e-bb08763b0219
+	fromColumn: DAF.Local
+	toColumn: Operações.'Dados '
+
+relationship d8c7c6e8-eb59-46e3-8132-511f48e3dff0
+	fromColumn: 'DAF SLITTERS'.Local
+	toColumn: Operações.'Dados '
+
+relationship b8a42566-93fe-42ad-a283-88f850b2f4ea
+	fromColumn: FH.local
+	toColumn: Operações.'Dados '
+
+relationship bf5fa38d-a959-4e86-ab54-e797a96b859e
+	fromColumn: VM.local
+	toColumn: Operações.'Dados '
+
+relationship 1cf917d2-c14f-438d-bafb-f5c0acd769c9
+	fromColumn: SCANIA.local
+	toColumn: Operações.'Dados '
+
+relationship a79b598f-2a19-4d08-b45b-7071b2c7672f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Produção.Data
+	toColumn: LocalDateTable_2f96f5ca-adb6-4142-a190-eca2d40dcf28.Date
+
+relationship b05ed5f6-92c6-4edc-83d3-ea0c0573ed96
+	fromColumn: SCANIA.MP
+	toColumn: MP.MP
+
+relationship 79a5c206-f9e3-4b68-8d65-4664e7215326
+	fromColumn: FH.MP
+	toColumn: MP.MP
+
+relationship e50f8880-4d2f-4ce9-8cf8-fec6a757de7f
+	fromColumn: DAF.MP
+	toColumn: MP.MP
+
+relationship e1740009-7cd9-46b8-93e8-8b872221a45d
+	fromColumn: VM.MP
+	toColumn: MP.MP
+
+relationship 4c5a02ff-a4e0-4609-bc02-67d0ed87f650
+	fromColumn: 'DAF SLITTERS'.MP
+	toColumn: MP.MP
+
+relationship df328491-265e-4d23-b645-03d9f0bf1f80
+	fromColumn: Lotes.MP
+	toColumn: MP.MP
+
+relationship 334faf92-93aa-4811-a321-a7126f04b30a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: BI_OEE_SCRAP.Data
+	toColumn: LocalDateTable_7e5983f1-b926-4523-9374-212398ce949c.Date
+
+relationship 8f979a11-c951-46b6-9ebe-3c0e9a7ed93f
+	fromColumn: SCANIA.DESCRIPTION
+	toColumn: dOperacao.OPERAÇÃO
+
+relationship b726428e-27e6-4efb-9830-dfb6edcf1acd
+	fromColumn: FH.DESCRIPTION
+	toColumn: dOperacao.OPERAÇÃO
+
+relationship 120cdc8c-bd49-40aa-b5cc-b8b480996220
+	fromColumn: VM.DESCRIPTION
+	toColumn: dOperacao.OPERAÇÃO
+
+relationship 36a65f56-492c-45a8-8cc9-a4d0057ac9dd
+	fromColumn: DAF.DESCRIPTION
+	toColumn: dOperacao.OPERAÇÃO
+
+relationship 8fd16a17-b9b3-471f-b2ed-26db4fce97a7
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Produção RF2'._TIMESTAMP
+	toColumn: LocalDateTable_6cd6ea21-b1b4-4396-bfda-9a3642900c8e.Date
+
+relationship 8f219c27-5684-47ed-945d-ba91f4f7d3c7
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Produção LCT'._TIMESTAMP
+	toColumn: LocalDateTable_30288098-8075-4d5a-8d29-80e2328382df.Date
+
+relationship 0ac784f3-1c6e-477a-9fea-1235ccdd5321
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Segregacao.'DATA SEGREGAÇÃO'
+	toColumn: LocalDateTable_c7b04edd-82ca-49ef-8172-cd3debeafbfa.Date
+
+relationship 0d7f1ad0-f7c4-4a82-b4b9-580ec453665f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Segregacao.Data
+	toColumn: LocalDateTable_af03d25c-9d6e-4cfc-80aa-7a08eaf6b6b0.Date
+
+relationship c0e128f7-362e-43bb-a709-d04462395f5f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Relatorio_Item RF2'.'Data de fabricação'
+	toColumn: LocalDateTable_e08f0720-23ca-4b27-a391-2484c61cb616.Date
+
+relationship c65d5d13-25e1-42be-96b6-03c5003713d3
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Relatorio_Item RF2'.Data
+	toColumn: LocalDateTable_b828a273-3f9b-440c-a01a-2330f7b9e4e0.Date
+
+relationship a0eff1f4-036a-409b-aa75-ad59119f6206
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Relatorio_bases.'Data de fabricação'
+	toColumn: LocalDateTable_4c664494-c110-4144-b060-941925149f29.Date
+
+relationship c55939e7-6612-4a7a-84f5-449758d05a9e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Relatorio_bases.Data
+	toColumn: LocalDateTable_ff677675-4145-4373-ac0d-aea82aa89a66.Date
+
+relationship 92b9924d-d858-4d53-ab6e-e746ef25e4b3
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Dados de embarque'.Data
+	toColumn: LocalDateTable_b0a7bb07-8956-4d9d-8a96-18140a3a295c.Date
+
+relationship 9d40fe06-d6b2-7863-96d3-ee143f55ea29
+	fromColumn: DAF.Flatbed
+	toColumn: 'Dados de embarque'.Flatbed
+
+relationship 7f83b21d-bb70-20be-ae29-7df8b3f2bb70
+	fromColumn: FH.'FH Flatbed_2'
+	toColumn: 'Dados de embarque'.Flatbed
+
+relationship 7b54fd34-995a-aa39-513c-6e1bae7e83e9
+	fromColumn: VM.Flatbed_2
+	toColumn: 'Dados de embarque'.Flatbed
+
+relationship 385a99f3-16e5-610a-799f-5b8f3fdd169d
+	fromColumn: Produção.'Início da Hora'
+	toColumn: Base_Desc_Hora.Hora_Cheia
+
+relationship 25a4dc40-5d85-cf87-3dbd-0fce8037a719
+	fromColumn: Paradas.'Início da Hora'
+	toColumn: Base_Desc_Hora.Hora_Cheia
+
+relationship d165c557-2e2d-4c9f-9eac-aaf0c8214a85
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Calendar.Date
+	toColumn: LocalDateTable_2e5f1d7d-be9c-417f-9568-6bc186d3dce8.Date
+
+relationship fdd7cb51-13a8-44b5-b1c3-1e981bcd9182
+	fromColumn: Paradas.Data
+	toColumn: Calendar.Date
+
+relationship 0d491fd7-ab51-4255-8e44-c22d3c09cf7d
+	fromColumn: SCANIA.SHIP_DATE
+	toColumn: Calendar.Date
+
+relationship 70683530-e69e-4a6f-afe2-264319ed415b
+	fromColumn: FH.SHIP_DATE
+	toColumn: Calendar.Date
+
+relationship 12fb323a-0f67-4043-926c-709fe0a79337
+	fromColumn: DAF.SHIP_DATE
+	toColumn: Calendar.Date
+
+relationship baf1ba55-31e4-4597-be65-33a57b0a89d1
+	fromColumn: SHIPDATE.SHIP_DATE
+	toColumn: Calendar.Date
+
+relationship fb0525d3-76cc-47f8-8ffd-9e65173729bb
+	fromColumn: VM.SHIP_DATE
+	toColumn: Calendar.Date
+
+relationship 35588c83-cd5e-4f2b-bb9f-481c262d8824
+	fromColumn: 'DAF SLITTERS'.SHIP_DATE
+	toColumn: Calendar.Date
+
+relationship 653e0a6e-514f-4296-9df4-28e88e261066
+	isActive: false
+	fromColumn: Lotes.Data
+	toColumn: Calendar.Date
+
+relationship 558c203e-2a69-4233-b617-75c8deb3b1fe
+	fromColumn: Produção.Data_Processada
+	toColumn: Calendar.Date
+
+relationship 79b09866-a878-4eb9-b128-9e73f7844c36
+	fromColumn: 'Produção RF2'.Data
+	toColumn: Calendar.Date
+
+relationship b34df5c2-5a34-4461-8f86-67804926cceb
+	fromColumn: 'Produção LCT'.Data
+	toColumn: Calendar.Date
+
+relationship AutoDetected_98e7477c-f288-4883-a851-4c5f75b64462
+	fromColumn: DAF.Cliente
+	toColumn: 'Emb Offset'.Cliente
+
+relationship AutoDetected_cd29d147-13ab-4b46-9cb1-61dc23b930aa
+	isActive: false
+	fromColumn: MP.Cliente
+	toColumn: 'Emb Offset'.Cliente
+
+relationship 2b6204a8-fd1a-61f9-58d3-eba901c06c2d
+	fromColumn: SCANIA.Flatbed_2
+	toColumn: 'Dados de embarque'.Flatbed
+
+relationship 7453c601-46c4-363b-b5b3-fee772d4ddce
+	fromColumn: 'DAF SLITTERS'.Data
+	toColumn: 'Dados de embarque'.Flatbed
+
+relationship ae1f128b-962c-f711-52ba-8d84a727efc4
+	fromColumn: Produção.MP
+	toColumn: MP.MP
+
