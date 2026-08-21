@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute } from "vue-router";
-import { Activity, ChevronDown, Copy, Eye, Focus, Hand, Layers3, LayoutGrid, Maximize2, Minimize2, Minus, MousePointer2, Plus, RefreshCw, Redo2, Save, ShieldCheck, Trash2, Type as TypeIcon, Undo2, Waypoints } from "@lucide/vue";
+import { ChevronDown, Copy, Eye, Hand, Layers3, Maximize2, Minimize2, Minus, MousePointer2, Plus, Redo2, Save, Trash2, Type as TypeIcon, Undo2, Waypoints } from "@lucide/vue";
 import type { MifcFlowType } from "@mifc/domain";
 import { automaticCycleTimeStatus, calculateAutomaticCycleTimeSeconds, cycleTimeStatusLabel, type CycleTimeStatus } from "@/domain/cycle-time";
 import MifcNodeCard from "@/components/layout/MifcNodeCard.vue";
@@ -43,7 +43,7 @@ const fullscreenOrigin = reactive({ zoom: .72, x: 0, y: 0 });
 const panelOpen = ref(false);
 const renameFocusRequest = ref(0);
 const showLayers = ref(false);
-const visibleLayers = reactive({ information: false, material: true, metrics: false, buffers: false });
+const visibleLayers = reactive({ information: true, material: true, metrics: true });
 const activeFlow = ref<MifcFlowType>("material_push");
 const selectedNodeIds = ref<string[]>([]);
 const selectedTrace = ref<LayoutValueTrace | null>(null);
@@ -224,37 +224,6 @@ const worldStyle = computed(() => ({ width:`${WORLD_WIDTH}px`, height:`${WORLD_H
 
 function isInformationNode(node: LayoutNode) { return ["database","information","text"].includes(node.type); }
 function isInformationEdge(edge: LayoutEdge) { return ["information","electronic_information"].includes(edge.flowType); }
-const machineNodes = computed(() => activeRevision.value.nodes.filter((node) => node.type === "process"));
-const machineFocusActive = computed(() => visibleLayers.material && !visibleLayers.information && !visibleLayers.metrics && !visibleLayers.buffers);
-const fullLayoutActive = computed(() => visibleLayers.material && visibleLayers.information && visibleLayers.metrics && visibleLayers.buffers);
-const machineReadiness = computed(() => {
-  const metrics = machineNodes.value.map((node) => cycleMetricsForNode(node));
-  return {
-    total: metrics.length,
-    ready: metrics.filter((item) => item.status === "ready").length,
-    automatic: metrics.filter((item) => item.mode === "automatic").length,
-    pending: metrics.filter((item) => item.status !== "ready").length,
-  };
-});
-const visibleBounds = computed(() => {
-  const nodes = activeRevision.value.nodes.filter((node) => {
-    if (machineFocusActive.value) return ["process", "storage", "truck"].includes(node.type);
-    return isInformationNode(node) ? visibleLayers.information : visibleLayers.material;
-  });
-  const fallback = { x: 500, y: 350, width: 2_200, height: 700 };
-  if (!nodes.length) return fallback;
-  const padding = machineFocusActive.value ? 150 : 70;
-  const minX = Math.min(...nodes.map((node) => node.x));
-  const minY = Math.min(...nodes.map((node) => node.y));
-  const maxX = Math.max(...nodes.map((node) => node.x + node.width));
-  const maxY = Math.max(...nodes.map((node) => node.y + node.height), visibleLayers.metrics ? WORLD_HEIGHT - 8 : 0);
-  return { x: Math.max(0, minX - padding), y: Math.max(0, minY - padding), width: maxX - minX + padding * 2, height: maxY - minY + padding * 2 };
-});
-function isNodeVisible(node: LayoutNode) {
-  if (machineFocusActive.value) return ["process", "storage", "truck"].includes(node.type);
-  return isInformationNode(node) ? visibleLayers.information : visibleLayers.material;
-}
-function isEdgeVisible(edge: LayoutEdge) { return isInformationEdge(edge) ? visibleLayers.information : visibleLayers.material; }
 function displayNode(node: LayoutNode): LayoutNode {
   const capacity = node.processId ? forms.capacityRows.find((row) => row.id === node.processId) : undefined;
   if (!capacity) return node;
@@ -686,36 +655,7 @@ function endInteraction() {
 }
 function onWheel(event: WheelEvent) { event.preventDefault(); setZoom(zoom.value+(event.deltaY<0 ? .06 : -.06)); }
 function setZoom(value: number) { zoom.value=Math.min(1.5,Math.max(.35,value)); }
-function fitView(readable=false) {
-  const rect=canvas.value?.getBoundingClientRect();
-  if (!rect) return;
-  const bounds=visibleBounds.value;
-  const fitted=Math.min(1.08,(rect.width-36)/bounds.width,(rect.height-36)/bounds.height);
-  zoom.value=readable?Math.max(.52,fitted):fitted;
-  pan.x=(rect.width-bounds.width*zoom.value)/2-bounds.x*zoom.value;
-  pan.y=(rect.height-bounds.height*zoom.value)/2-bounds.y*zoom.value;
-}
-function setMachineFocus() {
-  visibleLayers.information=false;
-  visibleLayers.material=true;
-  visibleLayers.metrics=false;
-  visibleLayers.buffers=false;
-  showLayers.value=false;
-  void nextTick(() => fitView(true));
-}
-function setFullLayout() {
-  visibleLayers.information=true;
-  visibleLayers.material=true;
-  visibleLayers.metrics=true;
-  visibleLayers.buffers=true;
-  showLayers.value=false;
-  void nextTick(() => fitView());
-}
-function organizeLayout() {
-  layout.organizeLayout();
-  setMachineFocus();
-  ui.showSuccess("Layout reorganizado com foco no fluxo físico das máquinas.");
-}
+function fitView(readable=false) { const rect=canvas.value?.getBoundingClientRect(); if (!rect) return; const fitted=Math.min(1,(rect.width-28)/WORLD_WIDTH,(rect.height-28)/WORLD_HEIGHT); zoom.value=readable?Math.max(.48,fitted):fitted; pan.x=readable&&zoom.value>fitted?18:(rect.width-WORLD_WIDTH*zoom.value)/2; pan.y=readable&&zoom.value>fitted?8:(rect.height-WORLD_HEIGHT*zoom.value)/2; }
 function selectNode(id: string,event?:MouseEvent|KeyboardEvent) { if(suppressNextNodeClick.value){suppressNextNodeClick.value=false;return;} selectedTrace.value=null;selectedBufferId.value=null;selectedCapacityId.value=null;if (activeTool.value === "connect") layout.connectNode(id,activeFlow.value); else { const additive=Boolean(event&&(event.shiftKey||event.ctrlKey||event.metaKey)); if(additive)selectedNodeIds.value=selectedNodeIds.value.includes(id)?selectedNodeIds.value.filter((item)=>item!==id):[...selectedNodeIds.value,id];else selectedNodeIds.value=[id]; layout.selectNode(selectedNodeIds.value.includes(id)?id:selectedNodeIds.value.at(-1)??null); panelOpen.value=true; if(selectedNodeIds.value.length===1)renameFocusRequest.value+=1; } }
 function selectEdge(id: string) { selectedTrace.value=null;selectedBufferId.value=null;selectedCapacityId.value=null;selectedNodeIds.value=[]; layout.selectEdge(id); panelOpen.value=true; }
 function mappingFor(lane: ClientProcessLane, stage: PositionedClientStage): ClientStageMapping | undefined { return mappingForClientStage(lane,stage); }
@@ -838,7 +778,6 @@ function onKeydown(event: KeyboardEvent) { if(event.key==="Escape"&&isFullscreen
 onMounted(async()=>{layout.hydrate();forms.hydrate(layout.activeRevisionId);operations.hydrate();clearSelection();window.addEventListener("pointermove",onPointerMove,{passive:false});window.addEventListener("pointerup",endInteraction);window.addEventListener("keydown",onKeydown);document.addEventListener("fullscreenchange",onFullscreenChange);operationalNow.value=new Date();operationalClockTimer=setInterval(()=>{operationalNow.value=new Date();},15_000);await loadLayoutMeasures();layoutMeasuresTimer=setInterval(()=>void loadLayoutMeasures(),30_000);await nextTick();fitView(true);if(typeof route.query.focus==="string")focusNode(route.query.focus);});
 onBeforeUnmount(()=>{window.removeEventListener("pointermove",onPointerMove);window.removeEventListener("pointerup",endInteraction);window.removeEventListener("keydown",onKeydown);document.removeEventListener("fullscreenchange",onFullscreenChange);if(layoutMeasuresTimer)clearInterval(layoutMeasuresTimer);if(operationalClockTimer)clearInterval(operationalClockTimer);});
 watch(()=>route.query.focus,async(focus)=>{if(typeof focus!=="string")return;await nextTick();focusNode(focus);});
-watch(()=>[visibleLayers.information,visibleLayers.material,visibleLayers.metrics,visibleLayers.buffers],async()=>{await nextTick();fitView(true);});
 </script>
 
 <template>
@@ -847,27 +786,22 @@ watch(()=>[visibleLayers.information,visibleLayers.material,visibleLayers.metric
     <nav class="layout-toolbar" aria-label="Ferramentas do layout">
       <button :class="{active:activeTool==='select'}" @click="setTool('select')"><MousePointer2 :size="16"/>Selecionar</button><button :class="{active:activeTool==='connect'}" @click="chooseConnect('material_push')"><Waypoints :size="16"/>Conectar</button>
       <select v-model="activeFlow" aria-label="Tipo da conexão" @change="setTool('connect')"><option value="material_push">Material</option><option value="material_pull">Material puxado</option><option value="information">Informação</option><option value="electronic_information">Eletrônica</option></select>
-      <button :class="{active:activeTool==='text'}" @click="setTool('text')"><TypeIcon :size="16"/>Texto</button><button @click="chooseConnect(activeFlow)"><Minus :size="16"/>Linha</button><button :class="{active:activeTool==='pan'}" @click="setTool('pan')"><Hand :size="16"/>Mover tela</button><span class="toolbar-separator"></span><button class="focus-tool" :class="{active:machineFocusActive}" @click="setMachineFocus"><Focus :size="16"/>Foco máquinas</button><button :class="{active:fullLayoutActive}" @click="setFullLayout"><LayoutGrid :size="16"/>Fluxo completo</button><button @click="organizeLayout"><RefreshCw :size="16"/>Organizar</button><span class="toolbar-separator"></span>
+      <button :class="{active:activeTool==='text'}" @click="setTool('text')"><TypeIcon :size="16"/>Texto</button><button @click="chooseConnect(activeFlow)"><Minus :size="16"/>Linha</button><button :class="{active:activeTool==='pan'}" @click="setTool('pan')"><Hand :size="16"/>Mover tela</button><span class="toolbar-separator"></span>
       <button :disabled="!undoStack.length" @click="layout.undo"><Undo2 :size="17"/>Desfazer</button><button :disabled="!redoStack.length" @click="layout.redo"><Redo2 :size="17"/>Refazer</button><span class="toolbar-separator"></span><button :disabled="!selectedNode" @click="duplicate"><Copy :size="16"/>Duplicar</button><button class="danger-tool" :disabled="!selectedNode&&!selectedEdge" @click="removeSelected"><Trash2 :size="16"/>Excluir</button>
-      <div class="toolbar-spacer"></div><div class="layers-control"><button @click="showLayers=!showLayers"><Layers3 :size="16"/>Camadas</button><div v-if="showLayers" class="layers-popover"><label><input v-model="visibleLayers.information" type="checkbox"/>Fluxos de informação</label><label><input v-model="visibleLayers.material" type="checkbox"/>Fluxos de material</label><label><input v-model="visibleLayers.buffers" type="checkbox"/>Buffers e medidas</label><label><input v-model="visibleLayers.metrics" type="checkbox"/>Clientes / Lead Time</label></div></div><button :disabled="!selectedNode&&!selectedEdge&&!selectedTrace" @click="panelOpen=!panelOpen"><Eye :size="16"/>Exibir painel</button><button data-testid="fullscreen-toggle" @click="toggleFullscreen"><Minimize2 v-if="isFullscreen" :size="16"/><Maximize2 v-else :size="16"/>{{ isFullscreen ? 'Sair da tela cheia' : 'Tela cheia' }}</button>
+      <div class="toolbar-spacer"></div><div class="layers-control"><button @click="showLayers=!showLayers"><Layers3 :size="16"/>Camadas</button><div v-if="showLayers" class="layers-popover"><label><input v-model="visibleLayers.information" type="checkbox"/>Fluxos de informação</label><label><input v-model="visibleLayers.material" type="checkbox"/>Fluxos de material</label><label><input v-model="visibleLayers.metrics" type="checkbox"/>Clientes / Lead Time</label></div></div><button :disabled="!selectedNode&&!selectedEdge&&!selectedTrace" @click="panelOpen=!panelOpen"><Eye :size="16"/>Exibir painel</button><button data-testid="fullscreen-toggle" @click="toggleFullscreen"><Minimize2 v-if="isFullscreen" :size="16"/><Maximize2 v-else :size="16"/>{{ isFullscreen ? 'Sair da tela cheia' : 'Tela cheia' }}</button>
     </nav>
     <section class="editor-shell">
       <div ref="canvas" class="canvas-viewport" :class="[`tool-${activeTool}`, { 'is-panning': interaction.mode === 'pan' }]" data-testid="layout-canvas" @pointerdown.capture="onViewportPointerDown" @pointerdown.self="onCanvasPointerDown" @auxclick.prevent @wheel="onWheel">
         <MifcSymbolPalette @add="addSymbol" @flow="chooseConnect"/>
-        <div class="machine-focus-summary" data-testid="machine-focus-summary">
-          <div class="focus-summary-copy"><span class="focus-eyebrow"><Activity :size="13"/>FOCO OPERACIONAL</span><strong>Máquinas primeiro</strong><small>O fluxo físico fica em destaque; sistemas, buffers e análises entram sob demanda.</small></div>
-          <div class="focus-summary-stats"><span><b>{{ machineReadiness.total }}</b><small>máquinas</small></span><span><b>{{ machineReadiness.automatic }}</b><small>automáticas</small></span><span><b>{{ machineReadiness.pending }}</b><small>pendentes</small></span><span class="focus-data-status" :class="{ ready: oracleMeasures.ready }"><ShieldCheck :size="13"/><small>{{ oracleMeasures.ready ? 'MES lido' : 'MES aguardando' }}</small></span></div>
-        </div>
-        <div class="canvas-legend" data-testid="canvas-legend"><span class="machine"><i></i>Máquinas · foco principal</span><span v-if="visibleLayers.buffers" class="automatic"><i></i>Power BI / MES · medidas</span><span v-if="visibleLayers.information" class="information"><i></i>Informação · apoio</span></div>
+        <div class="buffer-legend" data-testid="buffer-legend"><span class="automatic"><i></i>Power BI / OMES · dias</span><span class="manual"><i></i>Manual · peças</span></div>
         <div class="canvas-world" :style="worldStyle" @pointerdown.self="onCanvasPointerDown">
-          <div v-if="machineFocusActive" class="machine-guide" aria-hidden="true"><div class="machine-guide-title">Fluxo físico · máquinas</div><div class="machine-guide-group preparation" style="left:580px;top:410px;width:700px;height:590px"><strong>01 · Preparação</strong><span>Entrada, LCT, RF2, RF3 e Mesa 3</span></div><div class="machine-guide-group welding" style="left:1280px;top:290px;width:250px;height:760px"><strong>02 · Solda</strong><span>Famílias Beatty por cliente</span></div><div class="machine-guide-group finishing" style="left:1535px;top:420px;width:505px;height:590px"><strong>03 · Acabamento</strong><span>P.A, CNC, Pintura e Rebitagem</span></div><div class="machine-guide-group shipping" style="left:2045px;top:420px;width:485px;height:590px"><strong>04 · Saída</strong><span>Stenhoj, Embalagem e expedição</span></div></div>
           <svg class="edge-layer" :width="WORLD_WIDTH" :height="WORLD_HEIGHT" @pointerdown.self="onCanvasPointerDown">
             <defs><marker id="arrow-material" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1f2c38"/></marker><marker id="arrow-info" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#526170"/></marker></defs>
-            <g v-for="edge in renderedEdges" v-show="isEdgeVisible(edge)" :key="edge.id" class="edge-group" :class="[edge.flowType,{selected:selectedEdge?.id===edge.id}]" @click.stop="selectEdge(edge.id)"><path class="edge-hit" :d="edge.geometry.path"/><path class="edge-line" :d="edge.geometry.path" :marker-end="`url(#${isInformationEdge(edge)?'arrow-info':'arrow-material'})`"/><circle v-if="selectedEdge?.id===edge.id" class="curve-handle" :cx="edge.geometry.control.x" :cy="edge.geometry.control.y" r="8" @pointerdown="startCurve($event,edge)"/></g>
+            <g v-for="edge in renderedEdges" v-show="isInformationEdge(edge)?visibleLayers.information:visibleLayers.material" :key="edge.id" class="edge-group" :class="[edge.flowType,{selected:selectedEdge?.id===edge.id}]" @click.stop="selectEdge(edge.id)"><path class="edge-hit" :d="edge.geometry.path"/><path class="edge-line" :d="edge.geometry.path" :marker-end="`url(#${isInformationEdge(edge)?'arrow-info':'arrow-material'})`"/><circle v-if="selectedEdge?.id===edge.id" class="curve-handle" :cx="edge.geometry.control.x" :cy="edge.geometry.control.y" r="8" @pointerdown="startCurve($event,edge)"/></g>
           </svg>
-          <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isNodeVisible(node)" :key="node.id" :node="displayNode(node)" :zoom="zoom" :selected="selectedNodeIds.includes(node.id)" :primary="selectedNode?.id===node.id" :connecting="activeTool==='connect'" :live-metrics="liveMetricsForNode(node)" :cycle-metrics="cycleMetricsForNode(node)" :action-summary="actionSummaryForNode(node)" :process-times="processTimesForNode(node)" :manual-values="manualValuesForNode(node)" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize" @metricselect="nodeMetricTrace"/>
-          <LayoutBufferCard v-for="buffer in positionedBuffers" v-show="visibleLayers.buffers" :key="buffer.id" :buffer="buffer" @select="(item) => openTrace(bufferTrace(item), item.id)" />
-          <LayoutMeasureBufferCard v-for="buffer in positionedMeasureBuffers" v-show="visibleLayers.buffers" :key="`measure-${buffer.id}`" :buffer="buffer" @select="(item, entry) => openTrace(measureBufferTrace(item, entry))" />
+          <MifcNodeCard v-for="node in activeRevision.nodes" v-show="isInformationNode(node)?visibleLayers.information:visibleLayers.material" :key="node.id" :node="displayNode(node)" :zoom="zoom" :selected="selectedNodeIds.includes(node.id)" :primary="selectedNode?.id===node.id" :connecting="activeTool==='connect'" :live-metrics="liveMetricsForNode(node)" :cycle-metrics="cycleMetricsForNode(node)" :action-summary="actionSummaryForNode(node)" :process-times="processTimesForNode(node)" :manual-values="manualValuesForNode(node)" @select="selectNode" @dragstart="startNodeDrag" @resizestart="startResize" @metricselect="nodeMetricTrace"/>
+          <LayoutBufferCard v-for="buffer in positionedBuffers" v-show="visibleLayers.material" :key="buffer.id" :buffer="buffer" @select="(item) => openTrace(bufferTrace(item), item.id)" />
+          <LayoutMeasureBufferCard v-for="buffer in positionedMeasureBuffers" v-show="visibleLayers.material" :key="`measure-${buffer.id}`" :buffer="buffer" @select="(item, entry) => openTrace(measureBufferTrace(item, entry))" />
           <div v-if="visibleLayers.metrics" class="client-lead-time-board" data-testid="client-lead-time-board">
             <div class="client-board-title"><strong>Clientes / Lead Time</strong><span>Somente valores em dias · subida = processo · reta = sem processo</span><em class="parity-warning">Fórmulas Power BI + total funcional sem duplicar ENN</em><em :class="{ connected: oracleMeasures.ready }">{{ oracleMeasures.ready ? `Filtro ${selectedDate} · ${filteredRowSummary.toLocaleString('pt-BR')} linhas · Oracle + parâmetros locais · ${oracleMeasures.updatedAt ? new Date(oracleMeasures.updatedAt).toLocaleTimeString('pt-BR') : 'atualizado'}` : 'Aguardando leitura das tabelas' }}</em></div>
             <div v-for="lane in clientLanes" :key="lane.key" class="client-lane" :data-client="lane.key" :data-testid="`client-lane-${lane.key}`">
@@ -916,8 +850,6 @@ watch(()=>[visibleLayers.information,visibleLayers.material,visibleLayers.metric
 .layout-toolbar button { display:flex; min-height:32px; align-items:center; gap:6px; padding:0 10px; border:1px solid transparent; border-radius:5px; background:transparent; color:#52627a; font-size:10px; }
 .layout-toolbar button:hover:not(:disabled),.layout-toolbar button.active { border-color:#cfdbfb; background:var(--brand-blue-soft); color:var(--brand-blue-strong); }
 .layout-toolbar button.active { background:var(--brand-blue); color:#fff; }
-.layout-toolbar button.focus-tool { border-color:#b8c8ef; background:#f5f8ff; color:#174fcf; font-weight:800; }
-.layout-toolbar button.focus-tool.active { background:#155eef; color:#fff; }
 .layout-toolbar select { height:30px; border:1px solid var(--border-subtle); border-radius:5px; background:#fff; color:var(--text-secondary); font-size:9px; }
 .toolbar-separator { width:1px; height:24px; margin:0 4px; background:var(--border-subtle); }
 .toolbar-spacer { flex:1; }
@@ -926,45 +858,20 @@ watch(()=>[visibleLayers.information,visibleLayers.material,visibleLayers.metric
 .layers-popover { position:absolute; z-index:80; top:38px; right:0; display:grid; width:190px; gap:8px; padding:12px; border:1px solid var(--border-subtle); border-radius:8px; background:#fff; box-shadow:var(--shadow-float); font-size:10px; }
 .layers-popover label { display:flex; align-items:center; gap:8px; }
 .editor-shell { position:relative; display:flex; min-height:0; flex:1; }
-.canvas-viewport { position:relative; min-width:0; flex:1; overflow:hidden; background-color:#f8fafc; background-image:linear-gradient(rgba(207,218,231,.26) 1px,transparent 1px),linear-gradient(90deg,rgba(207,218,231,.26) 1px,transparent 1px); background-size:32px 32px; touch-action:none; user-select:none; }
+.canvas-viewport { position:relative; min-width:0; flex:1; overflow:hidden; background-color:#fff; background-image:radial-gradient(#d8dee8 .8px,transparent .8px); background-size:14px 14px; touch-action:none; user-select:none; }
 .canvas-viewport.tool-pan { cursor:grab; }
 .canvas-viewport.is-panning { cursor:grabbing; }
 .canvas-viewport.tool-connect,.canvas-viewport.tool-text { cursor:crosshair; }
-.canvas-world { position:absolute; top:0; left:0; isolation:isolate; transform-origin:0 0; }
-.machine-focus-summary { position:absolute; z-index:32; top:14px; left:224px; display:flex; min-width:420px; max-width:calc(100% - 470px); align-items:center; justify-content:space-between; gap:22px; padding:11px 14px; border:1px solid #cbd8ee; border-radius:12px; background:rgba(255,255,255,.94); box-shadow:0 8px 24px rgba(30,65,120,.12); backdrop-filter:blur(8px); }
-.focus-summary-copy { display:grid; min-width:190px; gap:1px; }
-.focus-eyebrow { display:flex; align-items:center; gap:5px; color:#155eef; font-size:8px; font-weight:900; letter-spacing:.12em; }
-.focus-summary-copy strong { color:#172b4d; font-size:14px; line-height:1.2; }
-.focus-summary-copy small { color:#62738c; font-size:8px; line-height:1.3; }
-.focus-summary-stats { display:flex; align-items:center; gap:13px; }
-.focus-summary-stats>span { display:grid; min-width:40px; gap:0; color:#243a5b; text-align:center; }
-.focus-summary-stats b { font-size:15px; line-height:1; font-variant-numeric:tabular-nums; }
-.focus-summary-stats small { color:#718096; font-size:7px; font-weight:700; white-space:nowrap; }
-.focus-summary-stats .focus-data-status { display:flex; min-width:88px; align-items:center; justify-content:center; gap:5px; padding:5px 7px; border:1px solid #f1d39b; border-radius:999px; background:#fff8e8; color:#9a6500; }
-.focus-summary-stats .focus-data-status.ready { border-color:#b9e5c8; background:#effaf3; color:#15703b; }
-.canvas-legend { position:absolute; z-index:42; top:14px; right:18px; display:flex; gap:9px; padding:8px 10px; border:1px solid var(--border-subtle); border-radius:9px; background:rgba(255,255,255,.94); color:#52627a; font-size:8px; font-weight:800; box-shadow:var(--shadow-card); backdrop-filter:blur(8px); }
-.canvas-legend span { display:flex; align-items:center; gap:5px; white-space:nowrap; }
-.canvas-legend i { width:8px; height:8px; border:1px solid #8394aa; border-radius:3px; background:#fff; }
-.canvas-legend .machine i { border-color:#155eef; background:#155eef; }
-.canvas-legend .automatic i { border-color:#16884a; background:#e9f7ee; }
-.canvas-legend .information i { border-style:dashed; background:#f4f6f9; }
-.machine-guide { position:absolute; z-index:0; inset:0; pointer-events:none; }
-.machine-guide-title { position:absolute; top:330px; left:590px; padding:4px 8px; border-radius:999px; background:#eaf0ff; color:#155eef; font-size:10px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
-.machine-guide-group { position:absolute; display:grid; align-content:start; gap:3px; padding:12px 14px; border:1px solid rgba(109,135,177,.32); border-top:3px solid #9db5e9; border-radius:18px; background:rgba(242,247,255,.58); }
-.machine-guide-group strong { color:#3a5377; font-size:9px; letter-spacing:.08em; text-transform:uppercase; }
-.machine-guide-group span { color:#7a8da7; font-size:8px; }
-.machine-guide-group.welding { border-color:rgba(116,185,164,.34); border-top-color:#79bfa9; background:rgba(240,251,247,.62); }
-.machine-guide-group.finishing { border-color:rgba(236,181,106,.35); border-top-color:#e4ab57; background:rgba(255,250,240,.62); }
-.machine-guide-group.shipping { border-color:rgba(142,151,174,.35); border-top-color:#9aa7bc; background:rgba(246,248,251,.72); }
+.canvas-world { position:absolute; top:0; left:0; transform-origin:0 0; }
 .buffer-legend { position:absolute; z-index:42; top:14px; right:18px; display:flex; gap:7px; padding:7px 9px; border:1px solid var(--border-subtle); border-radius:7px; background:rgba(255,255,255,.96); color:#44556b; font-size:8px; font-weight:700; box-shadow:var(--shadow-card); }
 .buffer-legend span { display:flex; align-items:center; gap:5px; white-space:nowrap; }
 .buffer-legend i { width:8px; height:8px; border:1px solid #6f8298; border-radius:2px; background:#fff; }
 .buffer-legend .manual i { border-color:#b47b24; background:#fff7e8; }
 .edge-layer { position:absolute; z-index:1; inset:0; overflow:visible; }
-.edge-line { fill:none; stroke:#51677f; stroke-width:1.7; }
+.edge-line { fill:none; stroke:#1f2c38; stroke-width:1.6; }
 .edge-hit { fill:none; stroke:transparent; stroke-width:15; cursor:pointer; }
-.edge-group.information .edge-line { stroke:#7e8da1; stroke-dasharray:6 5; opacity:.62; }
-.edge-group.electronic_information .edge-line { stroke:#9ba8b8; stroke-dasharray:2 5; opacity:.5; }
+.edge-group.information .edge-line { stroke:#526170; stroke-dasharray:6 5; }
+.edge-group.electronic_information .edge-line { stroke:#526170; stroke-dasharray:2 5; }
 .edge-group.material_pull .edge-line { stroke-dasharray:9 4; }
 .edge-group.selected .edge-line { stroke:var(--brand-blue); stroke-width:3; }
 .curve-handle { fill:#fff; stroke:var(--brand-blue); stroke-width:3; cursor:move; }
@@ -1002,9 +909,6 @@ watch(()=>[visibleLayers.information,visibleLayers.material,visibleLayers.metric
 .zoom-controls button { display:grid; width:34px; height:34px; place-items:center; border:0; border-left:1px solid var(--border-subtle); background:#fff; }
 .zoom-controls button:first-child { border-left:0; }
 .zoom-controls span { width:52px; color:var(--text-secondary); font-size:9px; text-align:center; }
-.canvas-world .type-database,.canvas-world .type-information,.canvas-world .type-text { opacity:.72; }
-.canvas-world .type-customer_supplier,.canvas-world .type-storage,.canvas-world .type-truck { opacity:.84; }
 @media(max-width:1120px) { .layout-toolbar button { padding-inline:8px; } }
-@media(max-width:1120px) { .machine-focus-summary { left:210px; min-width:360px; } .focus-summary-copy small { display:none; } .focus-summary-stats { gap:8px; } }
-@media(max-width:760px) { .layout-page { height:calc(100vh - 64px); } .layout-heading { align-items:flex-start; gap:8px; padding:9px 12px; } .breadcrumb { flex-wrap:wrap; } .layout-toolbar { overflow-x:auto; } .canvas-status,.client-lead-time-board { display:none; } .machine-focus-summary { top:10px; right:10px; left:10px; min-width:0; max-width:none; } .focus-summary-copy strong { font-size:12px; } .focus-summary-stats>span:not(.focus-data-status) { display:none; } .canvas-legend { top:76px; right:10px; left:10px; justify-content:center; } }
+@media(max-width:760px) { .layout-page { height:calc(100vh - 64px); } .layout-heading { align-items:flex-start; gap:8px; padding:9px 12px; } .breadcrumb { flex-wrap:wrap; } .layout-toolbar { overflow-x:auto; } .canvas-status,.client-lead-time-board { display:none; } }
 </style>

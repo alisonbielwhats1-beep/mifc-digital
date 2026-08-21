@@ -50,7 +50,7 @@ describe("histórico e revisões do Layout", () => {
     expect(store.revisions).toHaveLength(2);
     expect(store.activeRevision.number).toBe(5);
     expect(store.activeRevision.nodes.every((node) => node.revisionId === store.activeRevision.id)).toBe(true);
-    expect(localStorage.getItem("mifc-digital:layout-reference-v2")).toContain('"schemaVersion":9');
+    expect(localStorage.getItem("mifc-digital:layout-reference-v2")).toContain('"schemaVersion":8');
   });
 
   it("move, redimensiona e conecta elementos com limites do canvas", () => {

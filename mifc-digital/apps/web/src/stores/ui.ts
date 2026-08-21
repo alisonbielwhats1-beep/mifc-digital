@@ -10,14 +10,6 @@ export const useUiStore = defineStore("ui", {
     toastMessage: "",
   }),
   actions: {
-    showSuccess(message: string) {
-      this.saveStatus = "success";
-      this.toastMessage = message;
-      window.setTimeout(() => {
-        this.saveStatus = "idle";
-        this.toastMessage = "";
-      }, 3500);
-    },
     showError(message: string) {
       this.saveStatus = "error";
       this.toastMessage = message;

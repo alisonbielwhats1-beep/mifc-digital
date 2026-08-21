@@ -18,11 +18,11 @@ describe("editor legível e seleção em grupo",()=>{
     const b4=store.activeRevision.nodes.find((item)=>item.id==="node-beatty-4")!;
     const b2=store.activeRevision.nodes.find((item)=>item.id==="node-beatty-2")!;
     const b1=store.activeRevision.nodes.find((item)=>item.id==="node-weld-2")!;
-    expect([b3.y,b4.y,b2.y,b1.y]).toEqual([340,520,700,880]);
-    expect(b3.x).toBe(b4.x);expect(b4.x).toBe(b2.x);expect(b2.x).toBe(b1.x);
+    expect([b3.y,b4.y,b2.y,b1.y]).toEqual([280,500,720,940]);
+    expect(b3.x).toBeLessThan(b4.x);expect(b4.x).toBeLessThan(b2.x);expect(b2.x).toBeLessThan(b1.x);
     expect([b1,b2,b3,b4].every((item)=>item.width>=150&&item.height>=108)).toBe(true);
     for (const [current,next] of [[b3,b4],[b4,b2],[b2,b1]]) {
-      expect(next.y-(current.y+current.height)).toBeGreaterThanOrEqual(45);
+      expect(next.y-(current.y+current.height)).toBeGreaterThanOrEqual(90);
     }
     const support=store.activeRevision.nodes.find((item)=>item.id==="node-quality-control")!;
     expect(support.y-(b1.y+b1.height)).toBeGreaterThanOrEqual(120);
@@ -69,12 +69,12 @@ describe("editor legível e seleção em grupo",()=>{
     localStorage.setItem("mifc-digital:layout-reference-v2",JSON.stringify({schemaVersion:6,activeRevisionId:revision.id,revisions:[revision]}));
     setActivePinia(createPinia());
     const store=useMifcLayoutStore();store.hydrate();
-    expect(store.activeRevision.nodes.find((item)=>item.id==="node-beatty-3")).toMatchObject({x:1310,y:340,label:"Beatty 3 Especial"});
+    expect(store.activeRevision.nodes.find((item)=>item.id==="node-beatty-3")).toMatchObject({x:1380,y:280,label:"Beatty 3 Especial"});
   });
 
-  it("persiste a revisão visual no schema 9",()=>{
+  it("persiste a revisão visual no schema 8",()=>{
     const store=useMifcLayoutStore();store.hydrate();store.save();
     const payload=JSON.parse(localStorage.getItem("mifc-digital:layout-reference-v2")??"{}");
-    expect(payload.schemaVersion).toBe(9);
+    expect(payload.schemaVersion).toBe(8);
   });
 });
