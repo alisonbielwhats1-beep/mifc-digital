@@ -254,7 +254,14 @@ function isNodeVisible(node: LayoutNode) {
   if (machineFocusActive.value) return ["process", "storage", "truck"].includes(node.type);
   return isInformationNode(node) ? visibleLayers.information : visibleLayers.material;
 }
-function isEdgeVisible(edge: LayoutEdge) { return isInformationEdge(edge) ? visibleLayers.information : visibleLayers.material; }
+function isEdgeVisible(edge: LayoutEdge) {
+  if (isInformationEdge(edge)) return visibleLayers.information;
+  if (!visibleLayers.material) return false;
+  if (!machineFocusActive.value) return true;
+  const source = nodesById.value.get(edge.sourceNodeId);
+  const target = nodesById.value.get(edge.targetNodeId);
+  return Boolean(source && target && isNodeVisible(source) && isNodeVisible(target));
+}
 function displayNode(node: LayoutNode): LayoutNode {
   const capacity = node.processId ? forms.capacityRows.find((row) => row.id === node.processId) : undefined;
   if (!capacity) return node;
@@ -852,7 +859,7 @@ watch(()=>[visibleLayers.information,visibleLayers.material,visibleLayers.metric
       <div class="toolbar-spacer"></div><div class="layers-control"><button @click="showLayers=!showLayers"><Layers3 :size="16"/>Camadas</button><div v-if="showLayers" class="layers-popover"><label><input v-model="visibleLayers.information" type="checkbox"/>Fluxos de informação</label><label><input v-model="visibleLayers.material" type="checkbox"/>Fluxos de material</label><label><input v-model="visibleLayers.buffers" type="checkbox"/>Buffers e medidas</label><label><input v-model="visibleLayers.metrics" type="checkbox"/>Clientes / Lead Time</label></div></div><button :disabled="!selectedNode&&!selectedEdge&&!selectedTrace" @click="panelOpen=!panelOpen"><Eye :size="16"/>Exibir painel</button><button data-testid="fullscreen-toggle" @click="toggleFullscreen"><Minimize2 v-if="isFullscreen" :size="16"/><Maximize2 v-else :size="16"/>{{ isFullscreen ? 'Sair da tela cheia' : 'Tela cheia' }}</button>
     </nav>
     <section class="editor-shell">
-      <div ref="canvas" class="canvas-viewport" :class="[`tool-${activeTool}`, { 'is-panning': interaction.mode === 'pan' }]" data-testid="layout-canvas" @pointerdown.capture="onViewportPointerDown" @pointerdown.self="onCanvasPointerDown" @auxclick.prevent @wheel="onWheel">
+      <div ref="canvas" class="canvas-viewport" :class="[`tool-${activeTool}`, { 'is-panning': interaction.mode === 'pan', 'has-metrics': visibleLayers.metrics }]" data-testid="layout-canvas" @pointerdown.capture="onViewportPointerDown" @pointerdown.self="onCanvasPointerDown" @auxclick.prevent @wheel="onWheel">
         <MifcSymbolPalette @add="addSymbol" @flow="chooseConnect"/>
         <div class="machine-focus-summary" data-testid="machine-focus-summary">
           <div class="focus-summary-copy"><span class="focus-eyebrow"><Activity :size="13"/>FOCO OPERACIONAL</span><strong>Máquinas primeiro</strong><small>O fluxo físico fica em destaque; sistemas, buffers e análises entram sob demanda.</small></div>
@@ -860,7 +867,6 @@ watch(()=>[visibleLayers.information,visibleLayers.material,visibleLayers.metric
         </div>
         <div class="canvas-legend" data-testid="canvas-legend"><span class="machine"><i></i>Máquinas · foco principal</span><span v-if="visibleLayers.buffers" class="automatic"><i></i>Power BI / MES · medidas</span><span v-if="visibleLayers.information" class="information"><i></i>Informação · apoio</span></div>
         <div class="canvas-world" :style="worldStyle" @pointerdown.self="onCanvasPointerDown">
-          <div v-if="machineFocusActive" class="machine-guide" aria-hidden="true"><div class="machine-guide-title">Fluxo físico · máquinas</div><div class="machine-guide-group preparation" style="left:580px;top:410px;width:700px;height:590px"><strong>01 · Preparação</strong><span>Entrada, LCT, RF2, RF3 e Mesa 3</span></div><div class="machine-guide-group welding" style="left:1280px;top:290px;width:250px;height:760px"><strong>02 · Solda</strong><span>Famílias Beatty por cliente</span></div><div class="machine-guide-group finishing" style="left:1535px;top:420px;width:505px;height:590px"><strong>03 · Acabamento</strong><span>P.A, CNC, Pintura e Rebitagem</span></div><div class="machine-guide-group shipping" style="left:2045px;top:420px;width:485px;height:590px"><strong>04 · Saída</strong><span>Stenhoj, Embalagem e expedição</span></div></div>
           <svg class="edge-layer" :width="WORLD_WIDTH" :height="WORLD_HEIGHT" @pointerdown.self="onCanvasPointerDown">
             <defs><marker id="arrow-material" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1f2c38"/></marker><marker id="arrow-info" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#526170"/></marker></defs>
             <g v-for="edge in renderedEdges" v-show="isEdgeVisible(edge)" :key="edge.id" class="edge-group" :class="[edge.flowType,{selected:selectedEdge?.id===edge.id}]" @click.stop="selectEdge(edge.id)"><path class="edge-hit" :d="edge.geometry.path"/><path class="edge-line" :d="edge.geometry.path" :marker-end="`url(#${isInformationEdge(edge)?'arrow-info':'arrow-material'})`"/><circle v-if="selectedEdge?.id===edge.id" class="curve-handle" :cx="edge.geometry.control.x" :cy="edge.geometry.control.y" r="8" @pointerdown="startCurve($event,edge)"/></g>
@@ -997,8 +1003,10 @@ watch(()=>[visibleLayers.information,visibleLayers.material,visibleLayers.metric
 .client-total small { font-size:7px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
 .client-total strong { font-size:15px; }
 .client-total em { color:var(--text-tertiary); font-size:7px; font-style:normal; }
-.canvas-status { position:absolute; bottom:350px; left:15px; z-index:40; padding:7px 10px; border:1px solid var(--border-subtle); border-radius:6px; background:rgba(255,255,255,.94); color:var(--text-secondary); font-size:10px; box-shadow:var(--shadow-card); }
-.zoom-controls { position:absolute; right:18px; bottom:350px; z-index:40; display:flex; align-items:center; border:1px solid var(--border-subtle); border-radius:7px; background:#fff; box-shadow:var(--shadow-card); }
+.canvas-status { position:absolute; bottom:16px; left:15px; z-index:40; padding:7px 10px; border:1px solid var(--border-subtle); border-radius:6px; background:rgba(255,255,255,.94); color:var(--text-secondary); font-size:10px; box-shadow:var(--shadow-card); }
+.zoom-controls { position:absolute; right:18px; bottom:16px; z-index:40; display:flex; align-items:center; border:1px solid var(--border-subtle); border-radius:7px; background:#fff; box-shadow:var(--shadow-card); }
+.canvas-viewport.has-metrics .canvas-status { bottom:346px; }
+.canvas-viewport.has-metrics .zoom-controls { bottom:346px; }
 .zoom-controls button { display:grid; width:34px; height:34px; place-items:center; border:0; border-left:1px solid var(--border-subtle); background:#fff; }
 .zoom-controls button:first-child { border-left:0; }
 .zoom-controls span { width:52px; color:var(--text-secondary); font-size:9px; text-align:center; }
