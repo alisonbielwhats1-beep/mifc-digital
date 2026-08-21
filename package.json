@@ -1,0 +1,41 @@
+{
+  "name": "mifc-digital",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "node tools/dev.mjs",
+    "dev:web": "vite --config apps/web/vite.config.ts --configLoader runner",
+    "dev:api": "tsx apps/api/src/server.ts",
+    "build": "vite build --config apps/web/vite.config.ts --configLoader runner",
+    "test": "vitest run --config apps/web/vitest.config.ts --configLoader runner",
+    "test:e2e": "playwright test --config apps/web/playwright.config.ts",
+    "test:e2e:visual": "playwright test --config apps/web/playwright.config.ts --grep \"evidência visual\"",
+    "typecheck": "npm run typecheck:api && npm run typecheck:web",
+    "typecheck:api": "tsc --noEmit -p tsconfig.json",
+    "typecheck:web": "vue-tsc --noEmit -p apps/web/tsconfig.json",
+    "oracle:preflight": "tsx apps/api/src/oracle/preflight.ts",
+    "oracle:catalog-audit": "tsx apps/api/src/oracle/catalog-audit.ts"
+  },
+  "dependencies": {
+    "@lucide/vue": "^1.32.0",
+    "dotenv": "^16.4.7",
+    "oracledb": "^6.8.0",
+    "pinia": "^2.3.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@types/node": "^22.10.0",
+    "playwright": "1.62.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vitest": "^3.2.4",
+    "vue-tsc": "^2.2.0"
+  }
+}

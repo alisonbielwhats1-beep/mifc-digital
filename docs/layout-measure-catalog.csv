@@ -1,0 +1,127 @@
+measure,card_count,clients,layout_lanes,description,display_folder,format_string,measure_dependencies,direct_tables,upstream_tables,source_class,numeric_literals,formula
+
+D-E-DAF-B,2,DAF,DAF — estoque/logística; Rodapé sobreposto,Dias de Estoque DAF Beattys,ALL\0.0.MIFC\DAF\Estoque,0.000,E-B-DAF; P-M-DAF,,DAF; DAF SLITTERS,BANCO/CÁLCULO,2; 0,"-- Dias de Estoque DAF Beattys var valor = [E-B-DAF] var producao = [P-M-DAF] / 2 RETURN IF( valor / producao = BLANK(),0, valor / producao )"
+
+D-E-DAF-CL,2,DAF,DAF — estoque/logística; Rodapé sobreposto,Dias de Estoque DAF Cantilever,ALL\0.0.MIFC\DAF\Estoque,0.000,E-CL-DAF; P-M-DAF,,DAF; DAF SLITTERS,BANCO/CÁLCULO,2,-- Dias de Estoque DAF Cantilever var valor = [E-CL-DAF] var producao = [P-M-DAF] / 2 RETURN valor / producao
+
+D-E-DAF-P.I,2,DAF,DAF — estoque/logística; Rodapé sobreposto,Dias de Estoque DAF Pintura Input,ALL\0.0.MIFC\DAF\Estoque,0.000,E-PI-DAF; P-M-DAF,,DAF; DAF SLITTERS,BANCO/CÁLCULO,2,-- Dias de Estoque DAF Pintura Input var valor = [E-PI-DAF] var producao = [P-M-DAF] / 2 RETURN valor / producao
+
+D-E-DAF-REB,2,DAF,DAF — estoque/logística; Rodapé sobreposto,Dias de Estoque DAF Rebitagem,ALL\0.0.MIFC\DAF\Estoque,,E-REB-DAF; P-M-DAF,,DAF; DAF SLITTERS,BANCO/CÁLCULO,2,-- Dias de Estoque DAF Rebitagem var valor = [E-REB-DAF] var producao = [P-M-DAF] / 2 RETURN valor / producao
+
+D-E-FH-B,1,Volvo FH,Volvo FH — estoque/logística,Dias de Estoque FH Beattys,ALL\0.0.MIFC\FH\Estoque,0.000,E-B-FH; P-M-FH,,FH,BANCO/CÁLCULO,2; 0,"-- Dias de Estoque FH Beattys var valor = [E-B-FH] var producao = [P-M-FH] / 2 RETURN IF( valor/producao = BLANK(), 0, valor/producao )"
+
+D-E-FH-CL,1,Volvo FH,Volvo FH — estoque/logística,Dias de Estoque FH Cantilever,ALL\0.0.MIFC\FH\Estoque,0.000,E-CL-FH; P-M-FH,,FH,BANCO/CÁLCULO,2,-- Dias de Estoque FH Cantilever var valor = [E-CL-FH] var producao = [P-M-FH] / 2 RETURN valor / producao
+
+D-E-FH-P.A,1,Volvo FH,Volvo FH — estoque/logística,Dias de Estoque VM P.A,ALL\0.0.MIFC\FH\Estoque,0.000,E-P.A-FH; P-M-FH,,FH,BANCO/CÁLCULO,2,-- Dias de Estoque VM P.A var valor = [E-P.A-FH] var producao = [P-M-FH] / 2 RETURN valor / producao
+
+D-E-FH-P.I,1,Volvo FH,Volvo FH — estoque/logística,Dias de Estoque FH Pintura Input,ALL\0.0.MIFC\FH\Estoque,0.000,E-PI-FH; P-M-FH,,FH,BANCO/CÁLCULO,2,-- Dias de Estoque FH Pintura Input var valor = [E-PI-FH] var producao = [P-M-FH] * 2 RETURN valor / producao
+
+D-E-SCA-B,1,Scania,Scania — estoque/logística,Dias de Estoque Scania Beattys,ALL\0.0.MIFC\SCANIA\Estoque,0.000,E-B-SCA; P-M-SCA,,SCANIA,BANCO/CÁLCULO,2; 0,"-- Dias de Estoque Scania Beattys var valor = [E-B-SCA] var producao = [P-M-SCA] / 2 RETURN IF( valor / producao = BLANK(),0, valor / producao )"
+
+D-E-SCA-CL,1,Scania,Scania — estoque/logística,Dias de Estoque Scania Cantilever,ALL\0.0.MIFC\SCANIA\Estoque,0.000,E-CL-SCA; P-M-SCA,,SCANIA,BANCO/CÁLCULO,2,-- Dias de Estoque Scania Cantilever var valor = [E-CL-SCA] var producao = [P-M-SCA] * 2 RETURN valor / producao
+
+D-E-SCA-P.A,1,Scania,Scania — estoque/logística,Dias de Estoque Scania P.A,ALL\0.0.MIFC\SCANIA\Estoque,0.000,E-P.A-SCA; P-M-SCA,,SCANIA,BANCO/CÁLCULO,2,-- Dias de Estoque Scania P.A var valor = [E-P.A-SCA] var producao = [P-M-SCA] / 2 RETURN valor / producao
+
+D-E-SCA-P.I,1,Scania,Scania — estoque/logística,Dias de Estoque Scania Pintura Input,ALL\0.0.MIFC\SCANIA\Estoque,0.000,E-PI-SCA; P-M-SCA,,SCANIA,BANCO/CÁLCULO,2,-- Dias de Estoque Scania Pintura Input var valor = [E-PI-SCA] var producao = [P-M-SCA] / 2 RETURN valor / producao
+
+D-E-SCA-REB,1,Scania,Scania — estoque/logística,Dias de Estoque Scania Rebitagem,ALL\0.0.MIFC\SCANIA\Estoque,0.000,E-REB-SCA; P-M-SCA,,SCANIA,BANCO/CÁLCULO,2,-- Dias de Estoque Scania Rebitagem var valor = [E-REB-SCA] var producao = [P-M-SCA] / 2 RETURN valor / producao
+
+D-E-VM-B,1,Volvo VM,Volvo VM — estoque/logística,Dias de Estoque VM Beattys,ALL\0.0.MIFC\VM\Estoque,0.000,E-B-VM; P-M-VM,,VM,BANCO/CÁLCULO,2; 0,"-- Dias de Estoque VM Beattys var valor = [E-B-VM] var producao = [P-M-VM] / 2 RETURN IF( valor / producao = BLANK(),0, valor / producao )"
+
+D-E-VM-CL,1,Volvo VM,Volvo VM — estoque/logística,Dias de Estoque VM Cantilever,ALL\0.0.MIFC\VM\Estoque,0.000,E-CL-VM; P-M-VM,,VM,BANCO/CÁLCULO,2,-- Dias de Estoque VM Cantilever var valor = [E-CL-VM] var producao = [P-M-VM] / 2 RETURN valor / producao
+
+D-E-VM-P.I,1,Volvo VM,Volvo VM — estoque/logística,Dias de Estoque VM Pintura Input,ALL\0.0.MIFC\VM\Estoque,0.000,E-PI-VM; P-M-VM,,VM,BANCO/CÁLCULO,2,-- Dias de Estoque VM Pintura Input var valor = [E-PI-VM] var producao = [P-M-VM] / 2 RETURN valor / producao
+
+E-D-P-LCT,1,Volvo FH,Volvo FH — estoque/logística,Estoque em dias Pós LCT,ALL\0.0.MIFC\ALL\Estoque,0.000,E-P-LCT; P-M-FH,,BI_MIFC_LCT_POS_STOCK; FH,BANCO/CÁLCULO,,-- Estoque em dias Pós LCT [E-P-LCT]/[P-M-FH]
+
+E-D-P-RF2,1,Volvo FH,Volvo FH — estoque/logística,,ALL\0.0.MIFC\ALL\Estoque,0.000,Pares RF2; P-M-FH,,FH; Relatorio_Item RF2,BANCO/CÁLCULO,2,VAR pecas_rf2 = [Pares RF2] * 2 var dias = pecas_rf2 / [P-M-FH] return dias
+
+E-P-D-DAF-EMB,2,DAF,DAF — estoque/logística; Rodapé sobreposto,Estoque em Peças em Dias DAF Embalagem,ALL\0.0.MIFC\DAF\Estoque,0.000,DAF; P-M-DAF-REV 2,,Calendar; DAF; DAF SLITTERS,BANCO/CÁLCULO,2; 0,"-- Estoque em Peças em Dias DAF Embalagem VAR pecas = [DAF] * 2 var demanda = [P-M-DAF-REV 2] return IF( pecas / demanda = BLANK(),0, pecas / demanda )"
+
+E-P-D-DAF-M3,2,DAF,DAF — estoque/logística; Rodapé sobreposto,Estoque em Peças em Dias DAF Mesa 3,ALL\0.0.MIFC\DAF\Estoque,,qtd_segregação_daf; P-M-DAF-REV 2,,Calendar; DAF; DAF SLITTERS; Segregacao,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias DAF Mesa 3 VAR pecas = [qtd_segregação_daf] var demanda = [P-M-DAF-REV 2] return pecas / demanda
+
+E-P-D-DAF-RF3,2,DAF,DAF — estoque/logística; Rodapé sobreposto,Estoque em Peças em Dias na DAF Pós Rollformer 3,ALL\0.0.MIFC\DAF\Estoque,0.000,DAF; P-M-DAF-REV 2,,Calendar; DAF; DAF SLITTERS,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias na DAF Pós Rollformer 3 VAR pecas = [DAF] * 2 var demanda = [P-M-DAF-REV 2] return pecas / demanda
+
+E-P-D-DAF-STJ,2,DAF,DAF — estoque/logística; Rodapé sobreposto,Estoque em Peças em Dias DAF Stenhoj,ALL\0.0.MIFC\DAF\Estoque,,DAF; P-M-DAF-REV 2,,Calendar; DAF; DAF SLITTERS,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias DAF Stenhoj VAR pecas = [DAF] * 2 var demanda = [P-M-DAF-REV 2] return pecas / demanda
+
+E-P-D-FH-EMB,1,Volvo FH,Volvo FH — estoque/logística,Estoque em Peças em Dias FH Embalagem,ALL\0.0.MIFC\FH\Estoque,0.000,FH; P-M-FH-REV 2,,Calendar; FH,BANCO/CÁLCULO,2; 0,"-- Estoque em Peças em Dias FH Embalagem VAR pecas = [FH] * 2 var demanda = [P-M-FH-REV 2] return IF( pecas / demanda = BLANK(),0, pecas / demanda )"
+
+E-P-D-FH-M3,1,Volvo FH,Volvo FH — estoque/logística,Estoque em Peças em Dias FH Mesa 3,ALL\0.0.MIFC\FH\Estoque,0.000,qtd_segregação_fh; P-M-FH-REV 2,,Calendar; FH; Segregacao,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias FH Mesa 3 VAR pecas = [qtd_segregação_fh] var demanda = [P-M-FH-REV 2] return pecas / demanda
+
+E-P-D-FH-RF3,1,Volvo FH,Volvo FH — estoque/logística,Estoque em Peças em Dias na FH Pós Rollformer 3,ALL\0.0.MIFC\FH\Estoque,0.000,FH; P-M-FH-REV 2,,Calendar; FH,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias na FH Pós Rollformer 3 VAR pecas = [FH] * 2 var demanda = [P-M-FH-REV 2] return pecas / demanda
+
+E-P-D-FH-STJ,1,Volvo FH,Volvo FH — estoque/logística,Estoque em Peças em Dias na FH Stenhoj,ALL\0.0.MIFC\FH\Estoque,,FH; P-M-FH-REV 2,,Calendar; FH,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias na FH Stenhoj VAR pecas = [FH] * 2 var demanda = [P-M-FH-REV 2] return pecas / demanda
+
+E-P-D-SCA-EMB,1,Scania,Scania — estoque/logística,Estoque em Peças em Dias Scania Embalagem,ALL\0.0.MIFC\SCANIA\Estoque,0.000,Scania; P-M-SCA-REV 2,,Calendar; SCANIA,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias Scania Embalagem VAR pecas = [Scania] * 2 var demanda = [P-M-SCA-REV 2] return pecas / demanda
+
+E-P-D-SCA-M3,1,Scania,Scania — estoque/logística,Estoque em Peças em Dias Scania Mesa 3,ALL\0.0.MIFC\SCANIA\Estoque,0.000,qtd_segregação_scania; P-M-SCA-REV 2,,Calendar; SCANIA; Segregacao,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias Scania Mesa 3 VAR pecas = [qtd_segregação_scania] var demanda = [P-M-SCA-REV 2] return pecas / demanda
+
+E-P-D-SCA-RF3,1,Scania,Scania — estoque/logística,Estoque em Peças em Dias na Scania Pós Rollformer 3,ALL\0.0.MIFC\SCANIA\Estoque,0.000,Scania; P-M-SCA-REV 2,,Calendar; SCANIA,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias na Scania Pós Rollformer 3 VAR pecas = [Scania] * 2 var demanda = [P-M-SCA-REV 2] return pecas / demanda
+
+E-P-D-SCA-STJ,1,Scania,Scania — estoque/logística,Estoque em Peças em Dias Scania Stenhoj,ALL\0.0.MIFC\SCANIA\Estoque,,Scania; P-M-SCA-REV 2,,Calendar; SCANIA,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias Scania Stenhoj VAR pecas = [Scania] * 2 var demanda = [P-M-SCA-REV 2] return pecas / demanda
+
+E-P-D-VM-EMB,1,Volvo VM,Volvo VM — estoque/logística,Estoque em Peças em Dias VM Embalagem,ALL\0.0.MIFC\VM\Estoque,0.000,VM; P-M-VM-REV 2,,Calendar; VM,BANCO/CÁLCULO,2; 0,"-- Estoque em Peças em Dias VM Embalagem VAR pecas = [VM] * 2 var demanda = [P-M-VM-REV 2] return IF( pecas / demanda = BLANK(),0, pecas / demanda )"
+
+E-P-D-VM-RF3,1,Volvo VM,Volvo VM — estoque/logística,Estoque em Peças em Dias na VM Pós Rollformer 3,ALL\0.0.MIFC\VM\Estoque,0.000,VM; P-M-VM-REV 2,,Calendar; VM,BANCO/CÁLCULO,2,-- Estoque em Peças em Dias na VM Pós Rollformer 3 VAR pecas = [VM] * 2 var demanda = [P-M-VM-REV 2] return pecas / demanda
+
+Q-D-DAF,1,DAF,DAF — estoque/logística,Quantidade de Dias DAF,ALL\0.0.MIFC\Logística,,DAF; Q-D-E-DAF; E-M-P-S,,DAF; DAF SLITTERS; FH; Lotes; SCANIA; VM,BANCO/CÁLCULO,2,-- Quantidade de Dias DAF var qtd_pcs = ([DAF] * 2)/[Q-D-E-DAF] var qtd_resultado = [E-M-P-S] return qtd_resultado / qtd_pcs
+
+Q-D-FH,1,Volvo FH,Volvo FH — estoque/logística,,ALL\0.0.MIFC\Logística,,FH; Q-D-E-FH; E-M-P-S,Calendar,Calendar; DAF SLITTERS; FH; Lotes; SCANIA; VM,BANCO/CÁLCULO,2,"VAR qtd_pcs = ([FH] * 2) / [Q-D-E-FH] VAR qtd_resultado = [E-M-P-S] RETURN CALCULATE( qtd_resultado / qtd_pcs, REMOVEFILTERS('Calendar'[Date]) )"
+
+Q-D-S-EMB,1,Compartilhado/por contexto,Segregação,Quantidade de Dias Segregados Embalagem,,0.000,qtd_segregação see; D-P-LPP2,Calendar; Segregacao,Calendar; DAF; DAF SLITTERS; FH; SCANIA; Segregacao; VM,BANCO/CÁLCULO,1; 3,"-- Quantidade de Dias Segregados Embalagem DIVIDE( CALCULATE( [qtd_segregação see], FILTER(Segregacao, Segregacao[LOCATION] IN {""Embalaje 1"",""Embalaje 3""}) ), CALCULATE( [D-P-LPP2], 'Calendar'[Date] = TODAY() ) )"
+
+Q-D-S-LPP2,1,Compartilhado/por contexto,Segregação,Quantidade de Dias Segregados Pintura,,0.000,qtd_segregação pintura; D-P-LPP2,Calendar; Segregacao,Calendar; DAF; DAF SLITTERS; FH; SCANIA; Segregacao; VM,BANCO/CÁLCULO,2,"-- Quantidade de Dias Segregados Pintura DIVIDE( CALCULATE( [qtd_segregação pintura], FILTER( Segregacao, Segregacao[LOCATION] = ""Pintura Input 2"" || Segregacao[LOCATION] = ""Pintura Output 2"" ) ), CALCULATE( [D-P-LPP2], 'Calendar'[Date] = TODAY() ) )"
+
+Q-D-S-RF2,1,Compartilhado/por contexto,Segregação,Quantidade de Dias Segregados RF2,,0.000,qtd_segregação cc; D-P-RF2,Calendar; Segregacao,Calendar; FH; Segregacao,BANCO/CÁLCULO,2,"-- Quantidade de Dias Segregados RF2 DIVIDE( CALCULATE( [qtd_segregação cc], FILTER(Segregacao, Segregacao[LOCATION] = ""Rollformer 2"") ), CALCULATE( [D-P-RF2], 'Calendar'[Date] = TODAY() ) )"
+
+Q-D-S-RF3,1,Compartilhado/por contexto,Segregação,Quantidade de Dias Segregados RF3,,0.000,qtd_segregação cc; D-P-RF3,Calendar; Segregacao,Calendar; DAF; DAF SLITTERS; FH; SCANIA; Segregacao; VM,BANCO/CÁLCULO,3,"-- Quantidade de Dias Segregados RF3 DIVIDE( CALCULATE( [qtd_segregação cc], FILTER(Segregacao, Segregacao[LOCATION] = ""Roll Former 3"") ), CALCULATE( [D-P-RF3], 'Calendar'[Date] = TODAY() ) )"
+
+Q-D-S-STJ,1,Compartilhado/por contexto,Segregação,Quantidade de Dias Segregados Stenhoj,,0.000,qtd_segregação see; D-P-STJ,Calendar; Segregacao,Calendar; DAF; DAF SLITTERS; FH; SCANIA; Segregacao,BANCO/CÁLCULO,,"-- Quantidade de Dias Segregados Stenhoj DIVIDE( CALCULATE( [qtd_segregação see], FILTER(Segregacao, Segregacao[LOCATION] = ""Stenhoj"") ), CALCULATE( [D-P-STJ], 'Calendar'[Date] = TODAY() ) )"
+
+Q-D-S-T,1,Compartilhado/por contexto,Segregação,Quantidade de Dias Segregados Total,ALL\9.Estoque,0,Q-D-S-EMB; Q-D-S-LPP2; Q-D-S-RF2; Q-D-S-RF3; Q-D-S-STJ,,Calendar; DAF; DAF SLITTERS; FH; SCANIA; Segregacao; VM,BANCO/CÁLCULO,,-- Quantidade de Dias Segregados Total [Q-D-S-EMB] + [Q-D-S-LPP2] + [Q-D-S-RF2] + [Q-D-S-RF3] + [Q-D-S-STJ]
+
+Q-D-SCA,1,Scania,Scania — estoque/logística,Quantidade de Dias Scania,ALL\0.0.MIFC\Logística,,Scania; Q-D-E-SCA; E-M-P-S,,DAF SLITTERS; FH; Lotes; SCANIA; VM,BANCO/CÁLCULO,2,-- Quantidade de Dias Scania var qtd_dias = ([Scania]*2)/[Q-D-E-SCA] var qtd_resultado = [E-M-P-S] return qtd_resultado / qtd_dias
+
+Q-D-VM,1,Volvo VM,Volvo VM — estoque/logística,Quantidade de Dias VM,ALL\0.0.MIFC\Logística,,VM; Q-D-E-VM; E-M-P-S,,DAF SLITTERS; FH; Lotes; SCANIA; VM,BANCO/CÁLCULO,2,-- Quantidade de Dias VM var qtd_pcs = ([VM] * 2)/[Q-D-E-VM] var qtd_resultado = [E-M-P-S] return qtd_resultado / qtd_pcs
+
+T-B,4,DAF; Scania; Volvo FH; Volvo VM,DAF — estoque/logística; Scania — estoque/logística; Volvo FH — estoque/logística; Volvo VM — estoque/logística,Tempo Beneficiador,ALL\0.0.MIFC\ALL\Tempo,0,,,,CONSTANTE ou medida derivada,0,-- Tempo Beneficiador 0
+
+T-B1,4,DAF; Volvo VM,DAF — tempo de processo; Volvo VM — tempo de processo,Tempo de Beatty 1,ALL\0.0.MIFC\ALL\Tempo,0.000,T-P-M-B1; D-P-B1,,Máquinas; VM,MISTO: banco + parâmetro,1440,-- Tempo de Beatty 1 ([T-P-M-B1] / [D-P-B1]) / 1440
+
+T-B3,2,Scania,Scania — tempo de processo,Tempo de Beatty 3,ALL\0.0.MIFC\ALL\Tempo,0.000,T-P-M-B3; D-P-B3,,Máquinas; SCANIA,MISTO: banco + parâmetro,1440,-- Tempo de Beatty 3 ([T-P-M-B3] / [D-P-B3]) / 1440
+
+T-B4,2,Volvo FH,Volvo FH — tempo de processo,Tempo de Beatty 4,ALL\0.0.MIFC\ALL\Tempo,0.00000,T-P-M-B4; D-P-B4,,FH; Máquinas,MISTO: banco + parâmetro,1440,-- Tempo de Beatty 4 ([T-P-M-B4] / [D-P-B4]) / 1440
+
+T-CNC,2,DAF; Volvo VM,DAF — tempo de processo; Volvo VM — tempo de processo,Tempo de CNC,ALL\Máquinas\CNC Plasma,0.000,T-P-M-CNC; D-P-CNC,,DAF; DAF SLITTERS; Máquinas,MISTO: banco + parâmetro,1440,-- Tempo de CNC ([T-P-M-CNC] / [D-P-CNC]) / 1440
+
+T-DAF-REB,1,DAF,DAF — tempo de processo,Tempo de DAF Rebitagem,ALL\0.0.MIFC\DAF\Tempo,0.000,T-P-M-STJ; D-P-DAF-REB,,DAF; DAF SLITTERS; Máquinas,MISTO: banco + parâmetro,1440,-- Tempo de DAF Rebitagem ([T-P-M-STJ] / [D-P-DAF-REB]) / 1440
+
+T-EMB-VM,1,Volvo VM,Volvo VM — tempo de processo,Tempo de Embalagem VM,ALL\0.0.MIFC\VM\Tempo,,P-M-VM,,VM,BANCO/CÁLCULO,1440; 0,"-- Tempo de Embalagem VM IF( ((1440 / [P-M-VM]) / 1440) = BLANK(),0, (1440 / [P-M-VM]) / 1440 )"
+
+T-LCT/RF2,2,Volvo FH,Volvo FH — tempo de processo,Tempo de LCT/RF2,ALL\Máquinas\LCT,0.000,T-P-M-LCT; D-P-RF2,,FH; Máquinas,MISTO: banco + parâmetro,1440,-- Tempo de LCT/RF2 ([T-P-M-LCT] / [D-P-RF2]) / 1440
+
+T-LPP2,4,DAF; Scania; Volvo FH; Volvo VM,DAF — tempo de processo; Scania — tempo de processo; Volvo FH — tempo de processo; Volvo VM — tempo de processo,Tempo de Pintura,ALL\0.0.MIFC\ALL\Tempo,0.000,T-P-M-LPP2; D-P-LPP2,,DAF; DAF SLITTERS; FH; Máquinas; SCANIA; VM,MISTO: banco + parâmetro,1440,-- Tempo de Pintura ([T-P-M-LPP2] / [D-P-LPP2]) / 1440
+
+T-M,35,DAF; Scania; Volvo FH; Volvo VM,DAF — estoque/logística; Rodapé sobreposto; Scania — estoque/logística; Volvo FH — estoque/logística; Volvo VM — estoque/logística,Tempo de Movimentação,ALL\0.0.MIFC\ALL\Tempo,0.000,,,,CONSTANTE ou medida derivada,5; 1440,-- Tempo de Movimentação 5/1440
+
+T-M3,4,DAF; Scania; Volvo FH; Volvo VM,DAF — tempo de processo; Scania — tempo de processo; Volvo FH — tempo de processo; Volvo VM — tempo de processo,Tempo Mesa 3,ALL\0.0.MIFC\ALL\Tempo,0.000,,,,CONSTANTE ou medida derivada,0,-- Tempo Mesa 3 0
+
+T-P.A,2,Scania; Volvo FH,Scania — tempo de processo; Volvo FH — tempo de processo,Tempo de P.A,ALL\0.0.MIFC\ALL\Tempo,0.000,T-P-M-P.A; D-P-P.A,,FH; Máquinas; SCANIA,MISTO: banco + parâmetro,1440,-- Tempo de P.A ([T-P-M-P.A] / [D-P-P.A]) / 1440
+
+T-RF3,4,DAF; Scania; Volvo FH; Volvo VM,DAF — tempo de processo; Scania — tempo de processo; Volvo FH — tempo de processo; Volvo VM — tempo de processo,Tempo de Rollformer 3,ALL\0.0.MIFC\ALL\Tempo,0.000,T-P-M-RF3; D-P-RF3,,DAF; DAF SLITTERS; FH; Máquinas; SCANIA; VM,MISTO: banco + parâmetro,1440,-- Tempo de Rollformer 3 ([T-P-M-RF3] / [D-P-RF3]) / 1440
+
+T-SCA-REB,1,Scania,Scania — tempo de processo,Tempo de Scania Rebitagem,ALL\0.0.MIFC\SCANIA\Tempo,0.000,T-P-M-STJ; D-P-SCA-REB,,Máquinas; SCANIA,MISTO: banco + parâmetro,1440,-- Tempo de Scania Rebitagem ([T-P-M-STJ] / [D-P-SCA-REB]) / 1440
+
+T-STJ,6,DAF; Scania; Volvo FH,DAF — tempo de processo; Scania — tempo de processo; Volvo FH — tempo de processo,Tempo de Stenhoj,ALL\0.0.MIFC\ALL\Tempo,0.000,T-P-M-STJ; D-P-STJ,,DAF; DAF SLITTERS; FH; Máquinas; SCANIA,MISTO: banco + parâmetro,1440,-- Tempo de Stenhoj ([T-P-M-STJ] / [D-P-STJ]) / 1440
+
+T-T,4,DAF; Scania; Volvo FH; Volvo VM,DAF — estoque/logística; Scania — estoque/logística; Volvo FH — estoque/logística; Volvo VM — estoque/logística,Tempo de Transporte em Dias,ALL\0.0.MIFC\ALL\Tempo,,,,,CONSTANTE ou medida derivada,4; 24,-- Tempo de Transporte em Dias 4/24
+
+T-T-DAF,1,DAF,DAF — estoque/logística,Tempo Total DAF,ALL\0.0.MIFC\DAF\Tempo,,T-T; T-M; Q-D-DAF; E-P-D-DAF-RF3; E-P-D-DAF-M3; D-E-DAF-B; D-E-DAF-CL; D-E-DAF-P.I; D-E-DAF-REB; E-P-D-DAF-STJ; E-P-D-DAF-EMB,DAF; Dados de embarque; MP; Operações,Calendar; DAF; DAF SLITTERS; Dados de embarque; FH; Lotes; MP; Operações; SCANIA; Segregacao; VM,MISTO: banco + parâmetro,8; 3,"-- Tempo Total DAF [T-T] + ([T-M] * 8) + CALCULATE( [Q-D-DAF], MP[Cliente] = ""DAF"" ) + CALCULATE( [E-P-D-DAF-RF3], 'Operações'[Dados ] = ""Roll Former 3"" ) + [E-P-D-DAF-M3] + [D-E-DAF-B] + [D-E-DAF-CL] + [D-E-DAF-P.I] + [D-E-DAF-REB] + CALCULATE( [E-P-D-DAF-STJ], 'Operações'[Dados ] = ""Ag. Stenhøj"" ) + CALCULATE( [E-P-D-DAF-EMB], 'Operações'[Dados ] = ""Estoque FG"", 'Dados de embarque'[Data] >= TODAY() )"
+
+T-T-FH,1,Volvo FH,Volvo FH — estoque/logística,Tempo Total FH,ALL\0.0.MIFC\FH\Tempo,,T-T; T-M; E-D-P-LCT; Q-D-FH; E-D-P-RF2; E-P-D-FH-RF3; E-P-D-FH-M3; D-E-FH-B; D-E-FH-CL; D-E-FH-P.I; D-E-FH-P.A; E-P-D-FH-STJ; E-P-D-FH-EMB,Calendar; Dados de embarque; FH; MP; Operações,BI_MIFC_LCT_POS_STOCK; Calendar; DAF SLITTERS; Dados de embarque; FH; Lotes; MP; Operações; Relatorio_Item RF2; SCANIA; Segregacao; VM,MISTO: banco + parâmetro,7; 4; 0076; 45; 0; 0045; 11; 3,"-- Tempo Total FH [T-T] + ([T-M] * 7) + [E-D-P-LCT]+ CALCULATE( [Q-D-FH], MP[Cliente] = ""FH"" ) + CALCULATE( [E-D-P-RF2],MP[MP] = ""4-MP600760SL445-0"" || MP[MP] = ""4-MP600450SL411-0"",'Calendar'[Date] = TODAY() ) + CALCULATE( [E-P-D-FH-RF3], 'Operações'[Dados ] = ""Roll Former 3"" ) + [E-P-D-FH-M3]+ [D-E-FH-B] + [D-E-FH-CL] + [D-E-FH-P.I] + [D-E-FH-P.A]+ CALCULATE( [E-P-D-FH-STJ],'Operações'[Dados ] = ""Ag. Stenhøj"" ) + CALCULATE( [E-P-D-FH-EMB], 'Operações'[Dados ] = ""Estoque FG"", 'Dados de embarque'[Data] >= TODAY() )"
+
+T-T-SCA,1,Scania,Scania — estoque/logística,Tempo Total Scania,ALL\0.0.MIFC\SCANIA\Tempo,0.00,T-T; T-M; Q-D-SCA; E-P-D-SCA-RF3; E-P-D-SCA-M3; D-E-SCA-B; D-E-SCA-P.A; D-E-SCA-CL; D-E-SCA-P.I; D-E-SCA-REB; E-P-D-SCA-STJ; E-P-D-SCA-EMB,Dados de embarque; MP; Operações; SCANIA,Calendar; DAF SLITTERS; Dados de embarque; FH; Lotes; MP; Operações; SCANIA; Segregacao; VM,MISTO: banco + parâmetro,8; 3,"-- Tempo Total Scania [T-T] + ([T-M] * 8) + CALCULATE( [Q-D-SCA], MP[Cliente] = ""Scania"" ) + CALCULATE( [E-P-D-SCA-RF3], 'Operações'[Dados ] = ""Roll Former 3"" ) + [E-P-D-SCA-M3] + [D-E-SCA-B] + [D-E-SCA-P.A] + [D-E-SCA-CL] + [D-E-SCA-P.I] + [D-E-SCA-REB] + CALCULATE( [E-P-D-SCA-STJ], 'Operações'[Dados ] = ""Ag. Stenhøj"" ) + CALCULATE( [E-P-D-SCA-EMB], 'Operações'[Dados ] = ""Estoque FG"", 'Dados de embarque'[Data] >= TODAY() )"
+
+T-T-VM,1,Volvo VM,Volvo VM — estoque/logística,Tempo Total VM,ALL\0.0.MIFC\VM\Tempo,,T-T; T-M; Q-D-VM; E-P-D-VM-RF3; D-E-VM-B; D-E-VM-CL; D-E-VM-P.I; E-P-D-VM-EMB,Dados de embarque; MP; Operações; VM,Calendar; DAF SLITTERS; Dados de embarque; FH; Lotes; MP; Operações; SCANIA; VM,MISTO: banco + parâmetro,8; 3,"-- Tempo Total VM [T-T] + ([T-M] * 8) + CALCULATE( [Q-D-VM], MP[Cliente] = ""VM"" ) + CALCULATE( [E-P-D-VM-RF3], 'Operações'[Dados ] = ""Roll Former 3"" ) + [D-E-VM-B] + [D-E-VM-CL] + [D-E-VM-P.I] + CALCULATE( [E-P-D-VM-EMB], 'Operações'[Dados ] = ""Estoque FG"", 'Dados de embarque'[Data] >= TODAY() )"
+
+

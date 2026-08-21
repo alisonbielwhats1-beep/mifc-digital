@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+
+# Dados locais e caches
+apps/api/.data/
+apps/api/.cache/
+**/.pbi/cache.abf
