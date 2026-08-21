@@ -67,7 +67,7 @@ describe("buffers automáticos posicionados no fluxograma", () => {
   });
 
   it("expõe todas as 42 medidas de buffer em dias catalogadas no Power BI", () => {
-    const nodes = ["node-raw", "node-cut", "node-stamp", "node-weld-1", "node-beatty-4", "node-weld-2", "node-beatty-3", "node-beatty-2", "node-weld-3", "node-assembly", "node-inspection"]
+    const nodes = ["node-raw", "node-cut", "node-rf2", "node-stamp", "node-weld-1", "node-beatty-4", "node-weld-2", "node-beatty-3", "node-beatty-2", "node-weld-3", "node-cnc", "node-assembly", "node-rework", "node-inspection", "node-packaging"]
       .map((id, index) => node(id, 150 + index * 220, 455));
     const expected = [
       "D-E-DAF-B", "D-E-DAF-CL", "D-E-DAF-P.I", "D-E-DAF-REB",

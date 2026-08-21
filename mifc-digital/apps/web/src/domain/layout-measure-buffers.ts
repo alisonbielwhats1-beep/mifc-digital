@@ -37,7 +37,7 @@ const clientLabels: Record<LayoutClientKey | "ALL", string> = {
 const definitions: MeasureBufferDefinition[] = [
   { id: "slitter", label: "Slitter", anchorNodeId: "node-raw", measures: [["FH", "Q-D-FH"], ["VM", "Q-D-VM"], ["SCA", "Q-D-SCA"], ["DAF", "Q-D-DAF"]] },
   { id: "lct", label: "Buffer LCT", anchorNodeId: "node-cut", offsetX: -78, measures: [["FH", "E-D-P-LCT"]] },
-  { id: "rf2", label: "Buffer RF2", anchorNodeId: "node-cut", offsetX: 82, measures: [["FH", "E-D-P-RF2"], ["ALL", "Q-D-S-RF2"]] },
+  { id: "rf2", label: "Buffer RF2", anchorNodeId: "node-rf2", measures: [["FH", "E-D-P-RF2"], ["ALL", "Q-D-S-RF2"]] },
   { id: "rf3", label: "Buffer RF3", anchorNodeId: "node-stamp", measures: [["FH", "E-P-D-FH-RF3"], ["VM", "E-P-D-VM-RF3"], ["SCA", "E-P-D-SCA-RF3"], ["DAF", "E-P-D-DAF-RF3"], ["ALL", "Q-D-S-RF3"]] },
   { id: "mesa-3", label: "Buffer Mesa 3", anchorNodeId: "node-weld-1", measures: [["FH", "E-P-D-FH-M3"], ["SCA", "E-P-D-SCA-M3"], ["DAF", "E-P-D-DAF-M3"]] },
   { id: "beatty-4", label: "Buffer Beatty 4", anchorNodeId: "node-beatty-4", measures: [["FH", "D-E-FH-B"]] },
@@ -47,9 +47,9 @@ const definitions: MeasureBufferDefinition[] = [
   { id: "pa", label: "Buffer P.A", anchorNodeId: "node-weld-3", offsetX: -78, measures: [["FH", "D-E-FH-P.A"], ["SCA", "D-E-SCA-P.A"]] },
   { id: "cantilever", label: "Buffer Cantilever", anchorNodeId: "node-weld-3", offsetX: 82, measures: [["FH", "D-E-FH-CL"], ["VM", "D-E-VM-CL"], ["SCA", "D-E-SCA-CL"], ["DAF", "D-E-DAF-CL"]] },
   { id: "paint-input", label: "Buffer Pintura", anchorNodeId: "node-assembly", offsetX: -78, measures: [["FH", "D-E-FH-P.I"], ["VM", "D-E-VM-P.I"], ["SCA", "D-E-SCA-P.I"], ["DAF", "D-E-DAF-P.I"], ["ALL", "Q-D-S-LPP2"]] },
-  { id: "rebitagem", label: "Buffer Rebitagem", anchorNodeId: "node-assembly", offsetX: 82, measures: [["SCA", "D-E-SCA-REB"], ["DAF", "D-E-DAF-REB"]] },
+  { id: "rebitagem", label: "Buffer Rebitagem", anchorNodeId: "node-rework", measures: [["SCA", "D-E-SCA-REB"], ["DAF", "D-E-DAF-REB"]] },
   { id: "stenhoj", label: "Buffer Stenhoj", anchorNodeId: "node-inspection", offsetX: -78, measures: [["FH", "E-P-D-FH-STJ"], ["SCA", "E-P-D-SCA-STJ"], ["DAF", "E-P-D-DAF-STJ"], ["ALL", "Q-D-S-STJ"]] },
-  { id: "embalagem", label: "Buffer Embalagem", anchorNodeId: "node-inspection", offsetX: 82, measures: [["FH", "E-P-D-FH-EMB"], ["VM", "E-P-D-VM-EMB"], ["SCA", "E-P-D-SCA-EMB"], ["DAF", "E-P-D-DAF-EMB"], ["ALL", "Q-D-S-EMB"], ["ALL", "Q-D-S-T", "Seg. total"]] },
+  { id: "embalagem", label: "Buffer Embalagem", anchorNodeId: "node-packaging", measures: [["FH", "E-P-D-FH-EMB"], ["VM", "E-P-D-VM-EMB"], ["SCA", "E-P-D-SCA-EMB"], ["DAF", "E-P-D-DAF-EMB"], ["ALL", "Q-D-S-EMB"], ["ALL", "Q-D-S-T", "Seg. total"]] },
 ];
 
 function nodeBySuffix(nodes: LayoutNode[], suffix: string): LayoutNode | undefined {

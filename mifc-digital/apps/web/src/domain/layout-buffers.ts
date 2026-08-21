@@ -26,16 +26,20 @@ export interface PositionedLayoutBuffer extends LayoutBufferInput {
 
 const aliases: Array<[RegExp, string[]]> = [
   [/slitter|mat[eé]ria.?prima|almox/i, ["node-raw"]],
-  [/lct|rf2|rollformer 2|roll former 2/i, ["node-cut"]],
+  [/rf2|rollformer 2|roll former 2/i, ["node-rf2"]],
+  [/lct/i, ["node-cut"]],
   [/rf3|rollformer 3|roll former 3/i, ["node-stamp"]],
   [/mesa 3/i, ["node-weld-1"]],
   [/beatty 1/i, ["node-weld-2"]],
   [/beatty 2/i, ["node-beatty-2"]],
   [/beatty 3/i, ["node-beatty-3"]],
   [/beatty 4/i, ["node-beatty-4"]],
-  [/p\.?a|cantilever|cnc|plasma|grava[cç][aã]o/i, ["node-weld-3"]],
-  [/montagem|pintura|rebitagem/i, ["node-assembly"]],
-  [/stenhoj|embalagem|embalaje/i, ["node-inspection"]],
+  [/p\.?a|cantilever/i, ["node-weld-3"]],
+  [/cnc|plasma|grava[cç][aã]o/i, ["node-cnc"]],
+  [/montagem|pintura/i, ["node-assembly"]],
+  [/rebitagem/i, ["node-rework"]],
+  [/stenhoj/i, ["node-inspection"]],
+  [/embalagem|embalaje/i, ["node-packaging"]],
   [/produto acabado|estoque fg|expedi[cç][aã]o/i, ["node-finished", "node-shipping"]],
 ];
 
